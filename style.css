@@ -195,14 +195,22 @@ button.small {
 }
 
 .door-header h2 {
+  flex: none;
   margin: 0;
+  font-size: clamp(1.25rem, 5.5vw, 1.5rem);
+  white-space: nowrap;
 }
 
+/* One line always; a title too long for the screen is shortened with an ellipsis. */
 .door-subtitle {
+  min-width: 0;
+  overflow: hidden;
   margin: 0;
-  font-size: 1.25rem;
+  font-size: clamp(1.05rem, 4.5vw, 1.25rem);
   font-style: italic;
   text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-area {
