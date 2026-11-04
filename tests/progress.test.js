@@ -22,7 +22,7 @@ test("missing or malformed progress means nothing completed", () => {
 test("challenge texts match the agreed wording", () => {
   assert.equal(PHOTO_INSTRUCTION, "Skicka en bild till spelledaren och tryck sedan på knappen.");
   assert.equal(PHOTO_SENT_LABEL, "📸 Jag har skickat bilden till spelledaren!");
-  assert.equal(CHALLENGE_DONE_LABEL, "✅ Klart!");
+  assert.equal(CHALLENGE_DONE_LABEL, "Klart!");
 });
 
 test("saved crosswords are read per task key", () => {
