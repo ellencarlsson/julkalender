@@ -94,6 +94,7 @@ button.small {
 
 .main-nav {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
@@ -102,6 +103,18 @@ button.small {
   padding: 0.5rem 1rem;
   border-radius: 999px;
   text-decoration: none;
+}
+
+.main-nav .icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0;
+  border: 2px solid var(--cream);
+  font-size: 1.6rem;
+  line-height: 1;
 }
 
 .main-nav a[aria-current="page"] {

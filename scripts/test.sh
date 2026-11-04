@@ -51,6 +51,8 @@ check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has back link" grep -q 'class="back-link"' index.html
 check "backpack view exists" grep -q 'data-view="backpack"' index.html
+check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
+check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.html'
 check "ui.js has valid syntax" check_js_syntax ui.js
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
