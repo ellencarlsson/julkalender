@@ -42,6 +42,17 @@ export function showLevel(level, xpInLevel) {
   element("level").textContent = level;
 }
 
+const LEVEL_UP_VISIBLE_MS = 4000;
+let levelUpTimer = null;
+
+export function showLevelUp(level) {
+  const toast = element("level-up");
+  toast.textContent = `Nivå upp! Du är nu på nivå ${level} 🎉`;
+  toast.hidden = false;
+  clearTimeout(levelUpTimer);
+  levelUpTimer = setTimeout(() => (toast.hidden = true), LEVEL_UP_VISIBLE_MS);
+}
+
 /**
  * Builds the shell once and returns a function that shows the view for the current hash.
  *
