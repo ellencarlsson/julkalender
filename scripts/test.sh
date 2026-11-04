@@ -32,7 +32,7 @@ check_sign_out_in_footer() {
 check "index.html exists" test -f index.html
 check "page shows the Haris Julkalender heading" bash -c '[ "$(sed -nE "s/.*(<h1[^>]*>.*<\/h1>).*/\1/p" index.html | sed -E "s/<[^>]+>//g")" = "Haris Julkalender" ]'
 check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
-check "title letters wear Santa hats" bash -c '[ "$(grep -o "class=\"hat\"" index.html | wc -l)" -ge 2 ]'
+check "title has no Santa hats" bash -c '! grep -q "class=\"hat\"" index.html && ! grep -q "\.hat" style.css'
 check "stylesheet is linked" grep -q 'href="style.css"' index.html
 check "style.css exists" test -f style.css
 check "viewport meta for mobile" grep -q 'name="viewport"' index.html
