@@ -44,6 +44,7 @@ check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --s
 check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
 check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js style.css index.html'
 check "square checkmark icon defined" grep -q "check-mask" style.css
+check "footer is pushed to the bottom of the page" bash -c 'sed -n "/^\.app-footer {/,/^}/p" style.css | grep -q "margin-top: auto"'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
