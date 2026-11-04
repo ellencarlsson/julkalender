@@ -15,11 +15,56 @@
       <button id="sign-in-button" type="button">Logga in med Google</button>
     </section>
 
-    <section id="signed-in" hidden>
-      <p>Hej, <span id="user-name"></span>!</p>
-      <button id="sign-out-button" type="button">Logga ut</button>
+    <div id="signed-in" hidden>
+      <header class="game-header">
+        <div class="user-row">
+          <p>Hej, <span id="user-name"></span>!</p>
+          <button id="sign-out-button" class="small" type="button">Logga ut</button>
+        </div>
 
-      <section id="admin" hidden>
+        <div class="stats">
+          <span>Nivå <strong id="level">0</strong></span>
+          <div class="xp-bar" role="progressbar" aria-label="XP mot nästa nivå" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="xp-fill" class="xp-fill"></div>
+          </div>
+          <span id="xp-text">0 / 100 XP</span>
+          <span><strong id="hint-points">0</strong> ledtrådspoäng</span>
+        </div>
+
+        <nav class="main-nav">
+          <a href="#/" data-nav="overview">Luckor</a>
+          <a href="#/backpack" data-nav="backpack">Ryggsäck</a>
+          <a href="#/admin" data-nav="admin" id="admin-link" hidden>Admin</a>
+        </nav>
+      </header>
+
+      <section id="view-overview" data-view="overview">
+        <h2>Luckor</h2>
+        <ol id="door-grid" class="door-grid"></ol>
+      </section>
+
+      <section id="view-door" data-view="door" hidden>
+        <a href="#/" class="back-link">← Tillbaka till luckorna</a>
+        <h2 id="door-title">Lucka</h2>
+        <div id="task-area" class="panel">
+          <p>Här kommer luckans uppgifter.</p>
+        </div>
+      </section>
+
+      <section id="view-backpack" data-view="backpack" hidden>
+        <h2>Ryggsäck</h2>
+        <div class="panel">
+          <h3>Ledtrådar</h3>
+          <ul id="clue-list"></ul>
+          <p id="clues-empty">Inga ledtrådar än.</p>
+        </div>
+        <div class="panel">
+          <h3>Ledtrådspoäng</h3>
+          <p>Du har <strong id="backpack-hint-points">0</strong> ledtrådspoäng.</p>
+        </div>
+      </section>
+
+      <section id="admin" data-view="admin" hidden>
         <h2>Admin</h2>
         <label for="content-files">Innehåll (JSON-filer för luckor och slutmeddelande)</label>
         <input id="content-files" type="file" accept=".json,application/json" multiple>
@@ -27,7 +72,7 @@
         <button id="reset-button" type="button">Nollställ min progress</button>
         <pre id="admin-status" role="status"></pre>
       </section>
-    </section>
+    </div>
 
     <p id="auth-error" role="alert" hidden></p>
   </main>
