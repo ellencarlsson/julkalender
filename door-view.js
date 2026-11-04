@@ -1,5 +1,6 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
+import { HONOR_PLEDGE, taskKey } from "./lib/progress.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -18,7 +19,36 @@ function taskPrompt(task) {
   return "Korsordet visas här snart.";
 }
 
-function taskCard(task) {
+async function completeTask(card, box, status, save) {
+  box.disabled = true;
+  try {
+    await save();
+    card.classList.add("task--done");
+    status.textContent = "Klart! Bra jobbat.";
+  } catch {
+    box.checked = false;
+    box.disabled = false;
+    status.textContent = "Kunde inte spara. Försök igen.";
+  }
+}
+
+/** Honor checkbox for real-life challenges; once ticked it stays ticked. */
+function honorCheckbox(card, key, progress) {
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  box.checked = box.disabled = progress.isCompleted(key);
+  const label = document.createElement("label");
+  label.className = "honor";
+  label.append(box, ` ${HONOR_PLEDGE}`);
+  const status = document.createElement("p");
+  status.className = "task-status";
+  status.setAttribute("role", "status");
+  if (box.checked) status.textContent = "Klart!";
+  box.addEventListener("change", () => completeTask(card, box, status, () => progress.complete(key)));
+  return [label, status];
+}
+
+function taskCard(task, door, progress) {
   const card = document.createElement("article");
   card.className = "task";
   const heading = document.createElement("h3");
@@ -26,6 +56,9 @@ function taskCard(task) {
   const prompt = document.createElement("p");
   prompt.textContent = taskPrompt(task);
   card.append(heading, prompt);
+  const key = taskKey(door, task.id);
+  if (task.type === "challenge") card.append(...honorCheckbox(card, key, progress));
+  if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
 
@@ -46,11 +79,18 @@ export function showDoorLoading() {
   showMessage(STATE_MESSAGES.loading);
 }
 
-/** Shows an open door's title and tasks, or a message for any other state. */
-export function showDoorContent({ state, door }) {
+/**
+ * Shows an open door's title and tasks, or a message for any other state.
+ *
+ * Args:
+ *   number: the door number, used to build progress keys.
+ *   result: { state, door } from the door reader.
+ *   progress: { isCompleted(key), complete(key) } for the signed-in user.
+ */
+export function showDoorContent(number, { state, door }, progress) {
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   const subtitle = element("door-subtitle");
   subtitle.textContent = door.title ?? "";
   subtitle.hidden = !door.title;
-  element("task-area").replaceChildren(...(door.tasks ?? []).map(taskCard));
+  element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
 }
