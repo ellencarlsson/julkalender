@@ -14,6 +14,10 @@ Live: https://ellencarlsson.github.io/julkalender/
 Door N opens December N, 2026 at 07:00 Swedish time, enforced by Google's server
 clock in the rules. The admin account sees all doors.
 
+**Temporary test door 25** is always locked, also for the admin, so the locked view can be
+checked while building. Remove it before giving the calendar away: search for
+`TEST_LOCKED_DOOR` (`lib/test-door.js` and its uses).
+
 ## Managing content from the terminal
 
 There is no admin page; content and progress are managed with scripts in `tools/`

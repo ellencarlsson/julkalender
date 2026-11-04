@@ -1,6 +1,7 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { HONOR_PLEDGE, taskKey } from "./lib/progress.js";
+import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 
 const element = (id) => document.getElementById(id);
@@ -73,7 +74,8 @@ function showMessage(...lines) {
 }
 
 function showLocked(number) {
-  showMessage("🔒 Denna lucka är låst", unlockLabel(number));
+  const when = number === TEST_LOCKED_DOOR ? TEST_LOCKED_DOOR_LABEL : unlockLabel(number);
+  showMessage("🔒 Denna lucka är låst", when);
   element("task-area").firstChild.className = "locked-title";
 }
 
