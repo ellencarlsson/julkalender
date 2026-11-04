@@ -45,11 +45,7 @@ check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has back link" grep -q 'class="back-link"' index.html
 check "backpack view exists" grep -q 'data-view="backpack"' index.html
-check "admin nav link hidden by default" grep -q 'id="admin-link" hidden' index.html
 check "ui.js has valid syntax" check_js_syntax ui.js
-check "admin panel is hidden by default" grep -qE '<section id="admin"[^>]* hidden>' index.html
-check "reset progress button exists" grep -q 'id="reset-button"' index.html
-check "admin.js has valid syntax" check_js_syntax admin.js
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
 check "all local imports exist" check_local_imports

@@ -1,5 +1,4 @@
 /** Signed-in app shell: door grid and hash-based switching between views. */
-import { isAdmin } from "./lib/admin.js";
 import { doorHash, parseRoute } from "./lib/router.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 
@@ -19,11 +18,6 @@ function renderDoorGrid() {
   }
 }
 
-function resolveRoute(user) {
-  const route = parseRoute(location.hash);
-  return route.view === "admin" && !isAdmin(user) ? { view: "overview" } : route;
-}
-
 function showRoute(route) {
   for (const section of document.querySelectorAll("[data-view]")) {
     section.hidden = section.dataset.view !== route.view;
@@ -36,14 +30,10 @@ function showRoute(route) {
   window.scrollTo(0, 0);
 }
 
-/** Builds the shell once and returns a function to call on every auth change. */
+/** Builds the shell once and returns a function that shows the view for the current hash. */
 export function createShell() {
   renderDoorGrid();
-  let currentUser = null;
-  const render = () => showRoute(resolveRoute(currentUser));
+  const render = () => showRoute(parseRoute(location.hash));
   window.addEventListener("hashchange", render);
-  return (user) => {
-    currentUser = user;
-    render();
-  };
+  return render;
 }

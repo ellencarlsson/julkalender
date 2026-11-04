@@ -19,13 +19,12 @@ test("invalid door numbers fall back to the overview", () => {
   }
 });
 
-test("backpack and admin routes", () => {
+test("backpack route", () => {
   assert.deepEqual(parseRoute("#/backpack"), { view: "backpack" });
-  assert.deepEqual(parseRoute("#/admin"), { view: "admin" });
 });
 
 test("unknown or overlong hashes fall back to the overview", () => {
-  for (const hash of ["#/nope", "#/backpack/x", "#/door/1/extra", "#something"]) {
+  for (const hash of ["#/nope", "#/admin", "#/backpack/x", "#/door/1/extra", "#something"]) {
     assert.deepEqual(parseRoute(hash), { view: "overview" }, hash);
   }
 });
