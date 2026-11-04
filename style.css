@@ -228,6 +228,105 @@ button.small {
   display: none;
 }
 
+.cw {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cw-current-clue {
+  min-height: 1.5em;
+  margin: 0;
+  font-style: italic;
+}
+
+.cw-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 3rem));
+  gap: 2px;
+  justify-content: center;
+}
+
+.cw-cell,
+.cw-block {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.cw-cell input {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: var(--cream);
+  color: var(--red);
+  /* 16px minimum stops iOS Safari from zooming in when a cell is tapped. */
+  font: bold max(16px, 1.25rem) Georgia, serif;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: transparent;
+}
+
+.cw-active-word input {
+  background: #f3d9a4;
+}
+
+.cw-current input {
+  outline: 3px solid #f5b400;
+  outline-offset: -3px;
+}
+
+.cw--solved input {
+  background: #d8efc9;
+}
+
+.cw-number {
+  position: absolute;
+  top: 1px;
+  left: 3px;
+  z-index: 1;
+  color: var(--red);
+  font-size: 0.6rem;
+  pointer-events: none;
+}
+
+.cw-clues {
+  display: grid;
+  gap: 0.5rem 1.5rem;
+}
+
+.cw-clue-group h4 {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.cw-clue-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cw-clue {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--cream);
+  font-size: 1rem;
+  text-align: left;
+}
+
+.cw-clue[aria-current] {
+  background: var(--cream);
+  color: var(--red);
+}
+
+@media (min-width: 36rem) {
+  .cw-clues {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: 0.5rem;
