@@ -6,11 +6,28 @@ cd "$(dirname "$0")/.."
 passed=0
 fail() { echo "FAIL: $1"; exit 1; }
 pass() { echo "PASS: $1"; passed=$((passed + 1)); }
+check() { local name="$1"; shift; if "$@" >/dev/null 2>&1; then pass "$name"; else fail "$name"; fi; }
 
-[ -f index.html ] && pass "index.html exists" || fail "index.html exists"
-grep -q "<h1>Julkalender</h1>" index.html && pass "page shows Julkalender heading" || fail "page shows Julkalender heading"
-grep -q 'href="style.css"' index.html && pass "stylesheet is linked" || fail "stylesheet is linked"
-[ -f style.css ] && pass "style.css exists" || fail "style.css exists"
-grep -q 'name="viewport"' index.html && pass "viewport meta for mobile" || fail "viewport meta for mobile"
+check_js_syntax() {
+  local tmp
+  tmp="$(mktemp -d)"
+  cp "$1" "$tmp/check.mjs"
+  node --check "$tmp/check.mjs"
+}
+
+check "index.html exists" test -f index.html
+check "page shows Julkalender heading" grep -q "<h1>Julkalender</h1>" index.html
+check "stylesheet is linked" grep -q 'href="style.css"' index.html
+check "style.css exists" test -f style.css
+check "viewport meta for mobile" grep -q 'name="viewport"' index.html
+check "app.js loaded as module" grep -q '<script type="module" src="app.js">' index.html
+check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
+check "sign-out button exists" grep -q 'id="sign-out-button"' index.html
+check "user name placeholder exists" grep -q 'id="user-name"' index.html
+check "firebase config has project id" grep -q 'projectId: "julkalender-db633"' firebase-config.js
+check "app.js uses Google provider" grep -q "GoogleAuthProvider" app.js
+check "app.js listens for auth state" grep -q "onAuthStateChanged" app.js
+check "app.js has valid syntax" check_js_syntax app.js
+check "firebase-config.js has valid syntax" check_js_syntax firebase-config.js
 
 echo "All $passed tests passed"

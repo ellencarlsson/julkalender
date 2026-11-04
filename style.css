@@ -7,8 +7,24 @@ body {
   background: #8b1e2d;
   color: #fdf6e3;
   font-family: Georgia, serif;
+  text-align: center;
 }
 
 h1 {
   font-size: clamp(2.5rem, 10vw, 5rem);
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: #fdf6e3;
+  color: #8b1e2d;
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+#auth-error {
+  color: #ffd6d6;
 }
