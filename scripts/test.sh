@@ -51,6 +51,7 @@ check "no greeting in header" bash -c '! sed -n "/<header/,/<\/header>/p" index.
 check "signed-in name in footer" bash -c 'sed -n "/<footer/,/<\/footer>/p" index.html | grep -q "Inloggad som: <span id=\"user-name\">"'
 check "hint points shown in backpack" grep -q 'id="backpack-hint-points"' index.html
 check "door overview grid exists" grep -q 'id="door-grid"' index.html
+check "no Luckor heading above the doors" bash -c '! grep -q "<h2>Luckor</h2>" index.html'
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has back link" grep -q 'class="back-link"' index.html
 check "backpack view exists" grep -q 'data-view="backpack"' index.html

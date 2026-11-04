@@ -52,11 +52,20 @@ button.small {
   color: #ffd6d6;
 }
 
+/* Positioned against the page, not the centered column, so it reaches the screen edges. */
 .game-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+body:has(#signed-in:not([hidden])) main {
+  padding-top: 6rem;
 }
 
 .level-ring {
