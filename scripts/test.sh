@@ -17,7 +17,7 @@ check_js_syntax() {
 
 check_local_imports() {
   local file target
-  for file in *.js lib/*.js; do
+  for file in *.js lib/*.js tools/*.js tools/*.mjs; do
     for target in $(grep -oE 'from "\./[^"]+"' "$file" | sed -E 's/from "(.*)"/\1/'); do
       test -f "$(dirname "$file")/$target" || { echo "$file imports missing $target"; return 1; }
     done
@@ -58,6 +58,12 @@ check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
 check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.html'
 check "ui.js has valid syntax" check_js_syntax ui.js
+check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
+check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
+check "tools/firebase-admin.js has valid syntax" check_js_syntax tools/firebase-admin.js
+check "service account key is gitignored" git check-ignore -q tools/service-account.json
+check "local content folder is gitignored" git check-ignore -q content/door-1.json
+check "website never imports the admin SDK" bash -c '! grep -l "firebase-admin" *.js lib/*.js'
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
 check "all local imports exist" check_local_imports

@@ -1,0 +1,9 @@
+{
+  "name": "julkalender-tools",
+  "private": true,
+  "type": "module",
+  "description": "Terminal tools for managing calendar content in Firestore",
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

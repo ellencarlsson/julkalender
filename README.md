@@ -14,6 +14,52 @@ Live: https://ellencarlsson.github.io/julkalender/
 Door N opens December N, 2026 at 07:00 Swedish time, enforced by Google's server
 clock in the rules. The admin account sees all doors.
 
+## Managing content from the terminal
+
+There is no admin page; content and progress are managed with scripts in `tools/`
+(run by Claude from the terminal).
+
+**One-time setup**
+
+1. Firebase console → Project settings → **Service accounts** → **Generate new private key**.
+   Save the file as `tools/service-account.json` (gitignored — never commit it; it gives full
+   database access).
+2. `cd tools && npm install`
+
+**Upload doors and the final message**
+
+```sh
+node tools/upload-content.mjs content/*.json
+```
+
+Write one JSON file per door plus `final.json` in the gitignored `content/` folder. All files
+are validated first; if any is invalid nothing is uploaded. Uploading a door again replaces it.
+
+> ⚠️ `content/` exists only on this machine and has no remote backup.
+
+```json
+{
+  "door": 1,
+  "title": "Harry Potter",
+  "tasks": [
+    { "id": "uggla", "type": "quiz", "question": "Vad heter Harrys uggla?", "answers": ["Hedwig", "Hedvig"], "clue": "Ledtråd till korsordet" },
+    { "id": "baka", "type": "challenge", "description": "Baka chokladbollar" },
+    { "id": "korsord", "type": "crossword", "weight": 2, "grid": ["JUL", "A#U", "GÅS"],
+      "clues": [{ "number": 1, "direction": "across", "row": 0, "col": 0, "text": "Högtid i december" }] }
+  ]
+}
+```
+
+`final.json`: `{ "message": "..." }`. Task `id` must be unique within the door; `weight`
+(default 1) splits the door's 100 XP; `clue` is optional. In a crossword `grid`, `#` is a
+black square and clue `row`/`col` are the 0-based start cell.
+
+**Reset someone's progress**
+
+```sh
+node tools/reset-progress.mjs carlssonellen@live.se   # or a uid
+```
+
 ## Tests
 
 ```sh
