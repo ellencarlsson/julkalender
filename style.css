@@ -233,20 +233,29 @@ button.small {
   font-weight: bold;
 }
 
-.honor {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem 0;
-  cursor: pointer;
+.task-instruction {
+  font-style: italic;
 }
 
-.honor input {
-  flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
-  margin: 0;
-  accent-color: var(--cream);
+.photo-sent {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-weight: bold;
+}
+
+.photo-sent:disabled {
+  opacity: 0.6;
+}
+
+/* Challenges show "✅ Klart!" themselves, so they skip the corner marker. */
+.task--done:has(.task-done-state)::after {
+  content: none;
+}
+
+.task-done-state {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .task-status {

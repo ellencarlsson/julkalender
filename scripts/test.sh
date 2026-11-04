@@ -66,6 +66,7 @@ check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.
 check "ui.js has valid syntax" check_js_syntax ui.js
 check "doors.js has valid syntax" check_js_syntax doors.js
 check "door-view.js has valid syntax" check_js_syntax door-view.js
+check "no honor checkbox left anywhere" bash -c '! grep -rqiE "heder och samvete|honor" *.js lib style.css'
 check "progress.js has valid syntax" check_js_syntax progress.js
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
