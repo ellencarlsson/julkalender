@@ -68,6 +68,19 @@ black square and clue `row`/`col` are the 0-based start cell.
 node tools/reset-progress.mjs carlssonellen@live.se   # or a uid
 ```
 
+## Version stamps (cache busting)
+
+GitHub Pages lets browsers cache files for 10 minutes. To stop a browser from mixing old and
+new files after a deploy, every local JS module and `style.css` is loaded through a
+content-hashed URL from the import map in `index.html`. After changing any `.js` or `.css` file:
+
+```sh
+node scripts/stamp-versions.mjs
+```
+
+`scripts/test.sh` fails if the stamps are out of date. If the app still fails to load, the page
+shows "Något gick fel när sidan laddades" with a reload button instead of going blank.
+
 ## Tests
 
 ```sh

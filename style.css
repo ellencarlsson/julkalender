@@ -442,3 +442,7 @@ button.small {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
+.load-error {
+  margin-top: 2rem;
+}
