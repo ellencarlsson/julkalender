@@ -118,3 +118,6 @@ onAuthStateChanged(auth, (user) => {
   showShell();
   if (user) loadDoorStates();
 });
+
+// Lets the load-error fallback in index.html know the app started; errors after this point are not load failures.
+document.documentElement.dataset.appReady = "true";

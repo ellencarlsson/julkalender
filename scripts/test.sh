@@ -33,10 +33,15 @@ check "index.html exists" test -f index.html
 check "page shows the Haris Julkalender heading" bash -c '[ "$(sed -nE "s/.*(<h1[^>]*>.*<\/h1>).*/\1/p" index.html | sed -E "s/<[^>]+>//g")" = "Haris Julkalender" ]'
 check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
 check "title has no Santa hats" bash -c '! grep -q "class=\"hat\"" index.html && ! grep -q "\.hat" style.css'
-check "stylesheet is linked" grep -q 'href="style.css"' index.html
+check "stylesheet is linked" grep -q 'rel="stylesheet" href="./style.css' index.html
 check "style.css exists" test -f style.css
 check "viewport meta for mobile" grep -q 'name="viewport"' index.html
-check "app.js loaded as module" grep -q '<script type="module" src="app.js">' index.html
+check "app.js loaded as module" grep -qE '<script type="module" src="\./app\.js\?v=[0-9a-f]{10}">' index.html
+check "every local module has a versioned import map entry" bash -c 'for f in *.js lib/*.js; do grep -qE "\"\./$f\": \"\./$f\?v=[0-9a-f]{10}\"" index.html || { echo "missing $f"; exit 1; }; done'
+check "stylesheet is versioned" grep -qE 'href="\./style\.css\?v=[0-9a-f]{10}"' index.html
+check "version stamps are up to date" node scripts/stamp-versions.mjs --check
+check "load-error fallback exists" grep -q 'id="load-error"' index.html
+check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
 check "sign-out button exists" grep -q 'id="sign-out-button"' index.html
 check "sign-out button sits in the footer" check_sign_out_in_footer

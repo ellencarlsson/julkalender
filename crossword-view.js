@@ -130,9 +130,10 @@ function toggleDirection(ctx, row, col) {
   highlight(ctx, row, col);
 }
 
-function typeLetter(ctx, input, row, col) {
+/** Uses the typed text, not the field value: Safari may keep the old letter and put the caret before it. */
+function typeLetter(ctx, input, row, col, event) {
   if (ctx.solved) return;
-  const letter = normalizeLetter(input.value);
+  const letter = normalizeLetter(event.data ?? input.value);
   input.value = letter;
   ctx.entries = setEntry(ctx.entries, row, col, letter);
   if (letter) moveFocus(ctx, stepCell(ctx.cells, row, col, ctx.direction));
@@ -163,7 +164,7 @@ function wireInput(ctx, input, row, col) {
   input.addEventListener("pointerdown", () => (ctx.wasActive = ctx.activeKey === cellKey(row, col)));
   input.addEventListener("click", () => ctx.wasActive && toggleDirection(ctx, row, col));
   input.addEventListener("focus", () => focusCell(ctx, input, row, col));
-  input.addEventListener("input", () => typeLetter(ctx, input, row, col));
+  input.addEventListener("input", (event) => typeLetter(ctx, input, row, col, event));
   input.addEventListener("keydown", (event) => handleKey(ctx, event, row, col));
 }
 

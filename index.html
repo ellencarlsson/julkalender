@@ -4,8 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Haris Julkalender</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js"></script>
+  <link rel="stylesheet" href="./style.css?v=22ca78b7c9">
+  <script>
+    // Shows a reload message if the app fails to load or crashes before it is ready.
+    window.addEventListener("error", () => {
+      if (document.documentElement.dataset.appReady) return;
+      document.getElementById("load-error")?.removeAttribute("hidden");
+    }, true);
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "./app.js": "./app.js?v=05cc9cf914",
+      "./crossword-view.js": "./crossword-view.js?v=13f7e71940",
+      "./door-view.js": "./door-view.js?v=0ba14d32ce",
+      "./doors.js": "./doors.js?v=2b6119d4d8",
+      "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
+      "./level-tracker.js": "./level-tracker.js?v=d33b8cb813",
+      "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
+      "./lib/door-state.js": "./lib/door-state.js?v=43cb2196ec",
+      "./lib/level.js": "./lib/level.js?v=d9796187a6",
+      "./lib/progress.js": "./lib/progress.js?v=7b7919443b",
+      "./lib/router.js": "./lib/router.js?v=aee6021235",
+      "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
+      "./lib/test-reset.js": "./lib/test-reset.js?v=8a63eeb741",
+      "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
+      "./progress.js": "./progress.js?v=3263f99402",
+      "./ui.js": "./ui.js?v=3604cf190d"
+    }
+  }
+  </script>
+  <script type="module" src="./app.js?v=05cc9cf914"></script>
 </head>
 <body>
   <main>
@@ -61,6 +90,11 @@
     </div>
 
     <p id="auth-error" role="alert" hidden></p>
+
+    <div id="load-error" class="load-error" role="alert" hidden>
+      <p>Något gick fel när sidan laddades.</p>
+      <button type="button" onclick="location.reload()">Ladda om</button>
+    </div>
   </main>
 </body>
 </html>
