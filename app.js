@@ -11,6 +11,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase
 import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
 import { createDoorReader } from "./doors.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { parseRoute } from "./lib/router.js";
 import { loadProgress } from "./progress.js";
@@ -21,14 +22,26 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const doors = createDoorReader(db);
 let progressReady = null;
+const levels = createLevelTracker();
 const showShell = createShell({ onDoorOpen: openDoor });
 const element = (id) => document.getElementById(id);
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
 function startProgressLoad(uid) {
   const loading = loadProgress(db, uid);
-  loading.catch(() => {});
+  loading.then(levels.setProgress, () => {});
   return loading;
+}
+
+/** Wraps progress so completing a task updates the level ring and can celebrate a level-up. */
+function withLevelUpdates(progress) {
+  return {
+    ...progress,
+    async complete(key) {
+      await progress.complete(key);
+      levels.refresh({ celebrate: true });
+    },
+  };
 }
 
 /** Re-reads the door on every open so a door that unlocked since page load shows up. */
@@ -39,7 +52,8 @@ async function openDoor(number) {
   try {
     const [result, progress] = await Promise.all([doors.readDoor(number), progressReady]);
     markDoor(number, result.state);
-    if (parseRoute(location.hash).door === number) showDoorContent(number, result, progress);
+    levels.setDoor(number, result);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, result, withLevelUpdates(progress));
   } catch {
     progressReady = startProgressLoad(user.uid);
     if (parseRoute(location.hash).door === number) showDoorContent(number, { state: DOOR_STATE.ERROR });
@@ -49,6 +63,7 @@ async function openDoor(number) {
 async function loadDoorStates() {
   const results = await doors.readAllDoors();
   results.forEach((result, index) => markDoor(index + 1, result.state));
+  levels.setAllDoors(results);
 }
 
 function showUser(user) {
@@ -78,6 +93,7 @@ element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
+  levels.reset();
   progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
   if (user) loadDoorStates();
