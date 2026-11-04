@@ -11,7 +11,7 @@ export function createLevelTracker() {
   /** Celebrates only after a task is completed, never when data merely finishes loading. */
   function refresh({ celebrate = false } = {}) {
     if (!progress) return;
-    const { level, xpInLevel } = levelFromXp(totalXp([...doors.entries()], progress.isCompleted));
+    const { level, xpInLevel } = levelFromXp(totalXp([...doors.entries()], progress));
     if (celebrate && level > shownLevel) showLevelUp(level);
     shownLevel = level;
     showLevel(level, xpInLevel);

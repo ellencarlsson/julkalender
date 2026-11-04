@@ -23,7 +23,7 @@ test("missing XP gives an empty ring", () => {
   assert.equal(xpRingPercent(NaN), 0);
 });
 
-const done = (...keys) => (key) => keys.includes(key);
+const done = (...keys) => ({ isCompleted: (key) => keys.includes(key), isWordCorrect: (key) => keys.includes(key) });
 const door = (...tasks) => ({ tasks });
 
 test("a door is worth 100 XP split equally by default", () => {
@@ -78,10 +78,46 @@ test("level 24 is the max and shows a full ring", () => {
 
 test("all 24 doors completed reaches exactly level 24", () => {
   const doors = Array.from({ length: 24 }, (_, i) => [i + 1, door({ id: "a" }, { id: "b", weight: 2 })]);
-  assert.equal(levelFromXp(totalXp(doors, () => true)).level, 24);
+  assert.equal(levelFromXp(totalXp(doors, { isCompleted: () => true })).level, 24);
 });
 
 test("bad totals give level 0", () => {
   assert.deepEqual(levelFromXp(-5), { level: 0, xpInLevel: 0 });
   assert.deepEqual(levelFromXp(NaN), { level: 0, xpInLevel: 0 });
+});
+
+const clue = (direction, row, col) => ({ number: 1, direction, row, col, text: "x" });
+const crosswordDoor = (...extra) => door({ id: "kors", type: "crossword", clues: [clue("across", 0, 0), clue("down", 0, 0), clue("across", 2, 0), clue("down", 0, 2)] }, ...extra);
+
+test("each correct crossword word gives its share of the crossword's XP", () => {
+  assert.equal(doorXp(5, crosswordDoor(), done("5-kors|across-0-0")), 25);
+  assert.equal(doorXp(5, crosswordDoor(), done("5-kors|across-0-0", "5-kors|down-0-2")), 50);
+});
+
+test("all words correct gives exactly the crossword's full XP", () => {
+  const words = ["across-0-0", "down-0-0", "across-2-0", "down-0-2"].map((id) => `5-kors|${id}`);
+  assert.equal(doorXp(5, crosswordDoor(), done(...words)), 100);
+});
+
+test("a completed crossword gives full XP even without saved words", () => {
+  assert.equal(doorXp(5, crosswordDoor(), done("5-kors")), 100);
+});
+
+test("completed crossword plus saved words is not counted twice", () => {
+  assert.equal(doorXp(5, crosswordDoor(), done("5-kors", "5-kors|across-0-0")), 100);
+});
+
+test("crossword words share the crossword's weight with other tasks", () => {
+  const d = crosswordDoor({ id: "baka", type: "challenge" });
+  assert.equal(doorXp(5, d, done("5-kors|across-0-0")), 12.5);
+});
+
+test("a word from another door or crossword does not count", () => {
+  assert.equal(doorXp(5, crosswordDoor(), done("6-kors|across-0-0", "5-other|across-0-0")), 0);
+});
+
+test("one word of a 12-word crossword gives 1/12 of a level", () => {
+  const clues = Array.from({ length: 12 }, (_, i) => clue("across", i, 0));
+  const xp = doorXp(5, door({ id: "kors", type: "crossword", clues }), done("5-kors|across-3-0"));
+  assert.ok(Math.abs(xp - 100 / 12) < 1e-9);
 });

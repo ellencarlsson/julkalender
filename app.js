@@ -42,6 +42,10 @@ function withLevelUpdates(progress) {
       await progress.complete(key);
       levels.refresh({ celebrate: true });
     },
+    async markWordsCorrect(keys) {
+      await progress.markWordsCorrect(keys);
+      levels.refresh({ celebrate: true });
+    },
   };
 }
 

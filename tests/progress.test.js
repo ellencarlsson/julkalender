@@ -1,7 +1,7 @@
 /** Tests for progress keys and parsing the users/{uid} document. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HONOR_PLEDGE, completedTaskSet, savedCrosswords, taskKey } from "../lib/progress.js";
+import { HONOR_PLEDGE, completedTaskSet, correctWordSet, savedCrosswords, taskKey, wordKey } from "../lib/progress.js";
 
 test("task keys include the door so equal task ids in different doors differ", () => {
   assert.equal(taskKey(3, "baka"), "3-baka");
@@ -32,4 +32,14 @@ test("malformed crossword saves are ignored", () => {
   assert.equal(savedCrosswords(null).size, 0);
   assert.equal(savedCrosswords({ crosswords: ["x"] }).size, 0);
   assert.equal(savedCrosswords({ crosswords: { "5-k": "JUL", "6-k": [1, 2] } }).size, 0);
+});
+
+test("word keys combine the task key and the word id", () => {
+  assert.equal(wordKey("5-kors", "across-0-0"), "5-kors|across-0-0");
+});
+
+test("correct words are read from correctWords and malformed entries ignored", () => {
+  assert.deepEqual([...correctWordSet({ correctWords: ["5-kors|across-0-0", 3] })], ["5-kors|across-0-0"]);
+  assert.equal(correctWordSet(null).size, 0);
+  assert.equal(correctWordSet({ correctWords: "x" }).size, 0);
 });
