@@ -8,6 +8,7 @@ import {
   EMPTY,
   SPACE,
   clueNumbers,
+  correctWordIds,
   directionFor,
   emptyEntries,
   entryAt,
@@ -21,6 +22,7 @@ import {
   solvedEntries,
   stepCell,
   wordAt,
+  wordId,
 } from "../lib/crossword.js";
 
 const GRID = ["JUL", "A#U", "GÅS"];
@@ -141,4 +143,31 @@ test("solving ignores the gap and needs only letters", () => {
 
 test("restored entries keep gaps fixed", () => {
   assert.deepEqual(restoreEntries([SPACED[0]], ["STUPIDXSONG"]), ["STUPID_SONG"]);
+});
+
+const CLUES = [
+  { number: 1, direction: ACROSS, row: 0, col: 0 },
+  { number: 1, direction: DOWN, row: 0, col: 0 },
+  { number: 2, direction: DOWN, row: 0, col: 2 },
+  { number: 3, direction: ACROSS, row: 2, col: 0 },
+];
+
+test("wordId is stable per clue", () => {
+  assert.equal(wordId(CLUES[2]), "down-0-2");
+});
+
+test("correctWordIds finds only fully correct words", () => {
+  const partial = fill(emptyEntries(cells), ["JUL", "A#U", "G  "]);
+  assert.deepEqual(correctWordIds(cells, partial, CLUES), ["across-0-0", "down-0-0"]);
+});
+
+test("a wrong letter makes a word incorrect", () => {
+  const wrong = fill(emptyEntries(cells), ["JUL", "A#U", "GAS"]);
+  assert.deepEqual(correctWordIds(cells, wrong, CLUES), ["across-0-0", "down-0-0", "down-0-2"]);
+});
+
+test("words through gaps are correct when all letters are", () => {
+  const spaced = solutionCells(["STUPID SONG"]);
+  const entries = [..."STUPIDSONG"].reduce((e, letter, i) => setEntry(e, 0, i < 6 ? i : i + 1, letter), emptyEntries(spaced));
+  assert.deepEqual(correctWordIds(spaced, entries, [{ direction: ACROSS, row: 0, col: 0 }]), ["across-0-0"]);
 });

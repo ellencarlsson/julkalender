@@ -4,6 +4,7 @@ import {
   DOWN,
   SPACE,
   clueNumbers,
+  correctWordIds,
   directionFor,
   entryAt,
   isFilled,
@@ -17,6 +18,7 @@ import {
   stepCell,
   wordAt,
 } from "./lib/crossword.js";
+import { wordKey } from "./lib/progress.js";
 
 const SAVE_DELAY_MS = 800;
 const DIRECTION_LABELS = { [ACROSS]: "Vågrätt", [DOWN]: "Lodrätt" };
@@ -68,7 +70,24 @@ async function finish(ctx) {
   }
 }
 
+/** Awards XP for newly correct words; a failed save is simply retried on the next change. */
+async function awardCorrectWords(ctx) {
+  const fresh = correctWordIds(ctx.cells, ctx.entries, ctx.task.clues)
+    .map((id) => wordKey(ctx.key, id))
+    .filter((key) => !ctx.progress.isWordCorrect(key) && !ctx.pendingWords.has(key));
+  if (fresh.length === 0) return;
+  fresh.forEach((key) => ctx.pendingWords.add(key));
+  try {
+    await ctx.progress.markWordsCorrect(fresh);
+  } catch {
+    // Not fatal: the words are offered again after the next letter.
+  } finally {
+    fresh.forEach((key) => ctx.pendingWords.delete(key));
+  }
+}
+
 function afterChange(ctx) {
+  awardCorrectWords(ctx);
   if (isSolved(ctx.cells, ctx.entries)) return finish(ctx);
   ctx.status.textContent = isFilled(ctx.cells, ctx.entries) ? "Alla rutor är ifyllda, men något stämmer inte än." : "";
   scheduleSave(ctx);
@@ -217,7 +236,13 @@ function createContext({ task, key, progress, card }) {
   const solved = progress.isCompleted(key);
   const entries = solved ? solvedEntries(cells) : restoreEntries(cells, progress.crosswordEntries(key));
   const numbers = clueNumbers(task.clues);
-  return { task, key, progress, card, cells, solved, entries, numbers, inputs: new Map(), clueButtons: [], direction: ACROSS };
+  return {
+    task, key, progress, card, cells, solved, entries, numbers,
+    inputs: new Map(),
+    clueButtons: [],
+    pendingWords: new Set(),
+    direction: ACROSS,
+  };
 }
 
 /**
