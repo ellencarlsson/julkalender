@@ -1,7 +1,7 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { createCrossword } from "./crossword-view.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
-import { HONOR_PLEDGE, taskKey } from "./lib/progress.js";
+import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, PHOTO_SENT_LABEL, taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 
@@ -19,33 +19,42 @@ function taskPrompt(task) {
   return null;
 }
 
-async function completeTask(card, box, status, save) {
-  box.disabled = true;
+function paragraph(className, text) {
+  return Object.assign(document.createElement("p"), { className, textContent: text });
+}
+
+function doneState() {
+  const done = paragraph("task-done-state", CHALLENGE_DONE_LABEL);
+  done.setAttribute("role", "status");
+  return done;
+}
+
+async function completeChallenge(card, button, status, save) {
+  button.disabled = true;
+  status.textContent = "Sparar…";
   try {
     await save();
     card.classList.add("task--done");
-    status.textContent = "Klart! Bra jobbat.";
+    card.querySelector(".task-instruction")?.remove();
+    status.remove();
+    button.replaceWith(doneState());
   } catch {
-    box.checked = false;
-    box.disabled = false;
+    button.disabled = false;
     status.textContent = "Kunde inte spara. Försök igen.";
   }
 }
 
-/** Honor checkbox for real-life challenges; once ticked it stays ticked. */
-function honorCheckbox(card, key, progress) {
-  const box = document.createElement("input");
-  box.type = "checkbox";
-  box.checked = box.disabled = progress.isCompleted(key);
-  const label = document.createElement("label");
-  label.className = "honor";
-  label.append(box, ` ${HONOR_PLEDGE}`);
-  const status = document.createElement("p");
-  status.className = "task-status";
+/** Real-life challenges are completed once the player says the photo has been sent. */
+function photoSentButton(card, key, progress) {
+  if (progress.isCompleted(key)) return [doneState()];
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "photo-sent";
+  button.textContent = PHOTO_SENT_LABEL;
+  const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
-  if (box.checked) status.textContent = "Klart!";
-  box.addEventListener("change", () => completeTask(card, box, status, () => progress.complete(key)));
-  return [label, status];
+  button.addEventListener("click", () => completeChallenge(card, button, status, () => progress.complete(key)));
+  return [paragraph("task-instruction", PHOTO_INSTRUCTION), button, status];
 }
 
 function taskCard(task, door, progress) {
@@ -54,7 +63,7 @@ function taskCard(task, door, progress) {
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   const key = taskKey(door, task.id);
-  if (task.type === "challenge") card.append(...honorCheckbox(card, key, progress));
+  if (task.type === "challenge") card.append(...photoSentButton(card, key, progress));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;

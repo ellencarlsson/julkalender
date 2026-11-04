@@ -1,7 +1,7 @@
 /** Tests for progress keys and parsing the users/{uid} document. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HONOR_PLEDGE, completedTaskSet, savedCrosswords, taskKey } from "../lib/progress.js";
+import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, PHOTO_SENT_LABEL, completedTaskSet, savedCrosswords, taskKey } from "../lib/progress.js";
 
 test("task keys include the door so equal task ids in different doors differ", () => {
   assert.equal(taskKey(3, "baka"), "3-baka");
@@ -19,8 +19,10 @@ test("missing or malformed progress means nothing completed", () => {
   assert.deepEqual([...completedTaskSet({ completedTasks: ["1-a", 7, null] })], ["1-a"]);
 });
 
-test("honor pledge text matches the agreed wording", () => {
-  assert.equal(HONOR_PLEDGE, "Jag lovar på heder och samvete att jag har gjort det");
+test("challenge texts match the agreed wording", () => {
+  assert.equal(PHOTO_INSTRUCTION, "Skicka en bild till spelledaren och tryck sedan på knappen.");
+  assert.equal(PHOTO_SENT_LABEL, "📸 Jag har skickat bilden till spelledaren!");
+  assert.equal(CHALLENGE_DONE_LABEL, "✅ Klart!");
 });
 
 test("saved crosswords are read per task key", () => {
