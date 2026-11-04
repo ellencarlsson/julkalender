@@ -178,6 +178,17 @@ button.small {
   text-align: left;
 }
 
+.locked-title {
+  margin-bottom: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.locked-title + p {
+  text-align: center;
+}
+
 .task {
   padding: 1rem;
   border-radius: 1rem;
