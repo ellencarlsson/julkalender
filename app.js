@@ -11,22 +11,39 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase
 import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
 import { createDoorReader } from "./doors.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { DOOR_STATE } from "./lib/door-state.js";
 import { parseRoute } from "./lib/router.js";
+import { loadProgress } from "./progress.js";
 import { createShell } from "./ui.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const doors = createDoorReader(getFirestore(app));
+const db = getFirestore(app);
+const doors = createDoorReader(db);
+let progressReady = null;
 const showShell = createShell({ onDoorOpen: openDoor });
 const element = (id) => document.getElementById(id);
 
+/** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
+function startProgressLoad(uid) {
+  const loading = loadProgress(db, uid);
+  loading.catch(() => {});
+  return loading;
+}
+
 /** Re-reads the door on every open so a door that unlocked since page load shows up. */
 async function openDoor(number) {
-  if (!auth.currentUser) return;
+  const user = auth.currentUser;
+  if (!user || !progressReady) return;
   showDoorLoading();
-  const result = await doors.readDoor(number);
-  markDoor(number, result.state);
-  if (parseRoute(location.hash).door === number) showDoorContent(result);
+  try {
+    const [result, progress] = await Promise.all([doors.readDoor(number), progressReady]);
+    markDoor(number, result.state);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, result, progress);
+  } catch {
+    progressReady = startProgressLoad(user.uid);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, { state: DOOR_STATE.ERROR });
+  }
 }
 
 async function loadDoorStates() {
@@ -61,6 +78,7 @@ element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
+  progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
   if (user) loadDoorStates();
 });

@@ -60,6 +60,7 @@ check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.
 check "ui.js has valid syntax" check_js_syntax ui.js
 check "doors.js has valid syntax" check_js_syntax doors.js
 check "door-view.js has valid syntax" check_js_syntax door-view.js
+check "progress.js has valid syntax" check_js_syntax progress.js
 check "door subtitle placeholder exists" grep -q 'id="door-subtitle"' index.html
 check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
