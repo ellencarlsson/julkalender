@@ -44,9 +44,12 @@ check "app.js uses Google provider" grep -q "GoogleAuthProvider" app.js
 check "app.js listens for auth state" grep -q "onAuthStateChanged" app.js
 check "app.js has valid syntax" check_js_syntax app.js
 check "firebase-config.js has valid syntax" check_js_syntax firebase-config.js
-check "header shows level" grep -q 'id="level"' index.html
-check "header shows XP progress bar" grep -q 'id="xp-fill"' index.html
-check "header shows hint points" grep -q 'id="hint-points"' index.html
+check "header shows level number" grep -q 'id="level"' index.html
+check "level ring is a progressbar" grep -qE 'id="level-ring"[^>]*role="progressbar"' index.html
+check "doors icon button in nav" grep -qE '<a href="#/"[^>]*class="icon-button"[^>]*aria-label="Luckor"' index.html
+check "no greeting in header" bash -c '! sed -n "/<header/,/<\/header>/p" index.html | grep -q "Hej,"'
+check "signed-in name in footer" bash -c 'sed -n "/<footer/,/<\/footer>/p" index.html | grep -q "Inloggad som: <span id=\"user-name\">"'
+check "hint points shown in backpack" grep -q 'id="backpack-hint-points"' index.html
 check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has back link" grep -q 'class="back-link"' index.html

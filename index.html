@@ -17,21 +17,14 @@
 
     <div id="signed-in" hidden>
       <header class="game-header">
-        <p class="greeting">Hej, <span id="user-name"></span>!</p>
-
-        <div class="stats">
-          <span>Nivå <strong id="level">0</strong></span>
-          <div class="xp-bar" role="progressbar" aria-label="XP mot nästa nivå" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div id="xp-fill" class="xp-fill"></div>
-          </div>
-          <span id="xp-text">0 / 100 XP</span>
-          <span><strong id="hint-points">0</strong> ledtrådspoäng</span>
-        </div>
-
         <nav class="main-nav">
-          <a href="#/" data-nav="overview">Luckor</a>
           <a href="#/backpack" data-nav="backpack" class="icon-button" aria-label="Ryggsäck" title="Ryggsäck"><span aria-hidden="true">🎒</span></a>
+          <a href="#/" data-nav="overview" class="icon-button" aria-label="Luckor" title="Luckor"><span aria-hidden="true">📅</span></a>
         </nav>
+
+        <div id="level-ring" class="level-ring" role="progressbar" aria-label="Nivå 0, 0 av 100 XP mot nästa nivå" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span id="level" class="level-number">0</span>
+        </div>
       </header>
 
       <section id="view-overview" data-view="overview">
@@ -61,6 +54,7 @@
       </section>
 
       <footer class="app-footer">
+        <p>Inloggad som: <span id="user-name"></span></p>
         <button id="sign-out-button" class="small" type="button">Logga ut</button>
       </footer>
     </div>
