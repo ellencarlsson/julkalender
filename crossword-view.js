@@ -192,7 +192,7 @@ function createClueButton(ctx, clue) {
 function createClueGroup(ctx, direction) {
   const clues = ctx.task.clues.filter((clue) => clue.direction === direction).sort((a, b) => a.number - b.number);
   if (clues.length === 0) return [];
-  const group = createElement("div", "cw-clue-group");
+  const group = createElement("div", `cw-clue-group cw-clue-group--${direction}`);
   const list = createElement("ol", "cw-clue-list");
   for (const clue of clues) {
     const item = createElement("li");
