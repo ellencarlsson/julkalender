@@ -29,6 +29,11 @@ check "app.js uses Google provider" grep -q "GoogleAuthProvider" app.js
 check "app.js listens for auth state" grep -q "onAuthStateChanged" app.js
 check "app.js has valid syntax" check_js_syntax app.js
 check "firebase-config.js has valid syntax" check_js_syntax firebase-config.js
+check "admin panel is hidden by default" grep -q '<section id="admin" hidden>' index.html
+check "content upload input exists" grep -q 'id="content-files"' index.html
+check "reset progress button exists" grep -q 'id="reset-button"' index.html
+check "admin.js has valid syntax" check_js_syntax admin.js
+check "local content folder is gitignored" git check-ignore -q content/door-1.json
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
 check "unit tests pass" node --test "tests/*.test.js"

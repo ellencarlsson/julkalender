@@ -1,0 +1,11 @@
+{
+  "door": 2,
+  "title": "Exempel: utmaning",
+  "tasks": [
+    {
+      "id": "chokladbollar",
+      "type": "challenge",
+      "description": "Baka chokladbollar och skicka en bild till Ellen."
+    }
+  ]
+}

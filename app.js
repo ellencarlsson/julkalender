@@ -1,4 +1,4 @@
-/** Google sign-in for the advent calendar page. */
+/** Google sign-in and page setup for the advent calendar. */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 import {
   getAuth,
@@ -7,9 +7,13 @@ import {
   signInWithPopup,
   signOut,
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { createAdminPanel } from "./admin.js";
 import { firebaseConfig } from "./firebase-config.js";
 
-const auth = getAuth(initializeApp(firebaseConfig));
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const showAdmin = createAdminPanel(getFirestore(app));
 const element = (id) => document.getElementById(id);
 
 function showUser(user) {
@@ -37,4 +41,7 @@ async function signIn() {
 
 element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
-onAuthStateChanged(auth, showUser);
+onAuthStateChanged(auth, (user) => {
+  showUser(user);
+  showAdmin(user);
+});
