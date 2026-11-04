@@ -1,4 +1,5 @@
 /** Signed-in app shell: door grid and hash-based switching between views. */
+import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 
@@ -28,6 +29,16 @@ function showRoute(route) {
   }
   if (route.view === "door") element("door-title").textContent = `Lucka ${route.door}`;
   window.scrollTo(0, 0);
+}
+
+/** Shows the level number and fills the ring by XP earned toward the next level. */
+export function showLevel(level, xpInLevel) {
+  const percent = xpRingPercent(xpInLevel);
+  const ring = element("level-ring");
+  ring.style.setProperty("--progress", percent);
+  ring.setAttribute("aria-valuenow", percent);
+  ring.setAttribute("aria-label", `Nivå ${level}, ${percent} av 100 XP mot nästa nivå`);
+  element("level").textContent = level;
 }
 
 /** Builds the shell once and returns a function that shows the view for the current hash. */
