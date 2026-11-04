@@ -178,6 +178,25 @@ button.small {
   background: var(--surface-raised);
 }
 
+.door[data-completed="true"] {
+  position: relative;
+  border-color: var(--gold);
+  background: var(--solved);
+}
+
+/* Square checkmark in the corner of completed doors. */
+.door[data-completed="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: var(--gold);
+  -webkit-mask: var(--check-mask) center / contain no-repeat;
+  mask: var(--check-mask) center / contain no-repeat;
+}
+
 .door-header {
   display: flex;
   align-items: baseline;

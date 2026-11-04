@@ -40,3 +40,8 @@ test("door state never looks at the device clock", () => {
   const source = readFileSync(new URL("../lib/door-state.js", import.meta.url), "utf8");
   assert.doesNotMatch(source, /Date|unlock-time/);
 });
+
+test("completed doors are announced as klar", () => {
+  assert.equal(doorLabel(2, DOOR_STATE.OPEN, true), "Lucka 2, klar");
+  assert.equal(doorLabel(2, DOOR_STATE.OPEN, false), "Lucka 2, öppen");
+});

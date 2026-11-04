@@ -94,10 +94,20 @@ function showLocked(number) {
   element("task-area").firstChild.className = "locked-title";
 }
 
+const doorLink = (number) => document.querySelector(`.door[data-door="${number}"]`);
+
 export function markDoor(number, state) {
-  const link = document.querySelector(`.door[data-door="${number}"]`);
+  const link = doorLink(number);
   link.dataset.state = state;
-  link.setAttribute("aria-label", doorLabel(number, state));
+  link.setAttribute("aria-label", doorLabel(number, state, link.dataset.completed === "true"));
+}
+
+export function markDoorCompleted(number, completed) {
+  const link = doorLink(number);
+  if (!link) return;
+  if (completed) link.dataset.completed = "true";
+  else delete link.dataset.completed;
+  link.setAttribute("aria-label", doorLabel(number, link.dataset.state, completed));
 }
 
 export function showDoorLoading() {

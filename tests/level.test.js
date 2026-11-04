@@ -1,7 +1,7 @@
 /** Tests for XP per door, levels and the level ring fill. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { doorXp, levelFromXp, totalXp, xpRingPercent } from "../lib/level.js";
+import { doorXp, isDoorCompleted, levelFromXp, totalXp, xpRingPercent } from "../lib/level.js";
 
 test("ring is empty at 0 XP, half at 50 and full at 100", () => {
   assert.equal(xpRingPercent(0), 0);
@@ -120,4 +120,21 @@ test("one word of a 12-word crossword gives 1/12 of a level", () => {
   const clues = Array.from({ length: 12 }, (_, i) => clue("across", i, 0));
   const xp = doorXp(5, door({ id: "kors", type: "crossword", clues }), done("5-kors|across-3-0"));
   assert.ok(Math.abs(xp - 100 / 12) < 1e-9);
+});
+
+test("a door is completed only when every task is", () => {
+  const d = door({ id: "a" }, { id: "b" });
+  assert.equal(isDoorCompleted(2, d, done("2-a", "2-b")), true);
+  assert.equal(isDoorCompleted(2, d, done("2-a")), false);
+  assert.equal(isDoorCompleted(2, d, done()), false);
+});
+
+test("partly correct crossword words do not complete a door", () => {
+  assert.equal(isDoorCompleted(5, crosswordDoor(), done("5-kors|across-0-0", "5-kors|down-0-0")), false);
+  assert.equal(isDoorCompleted(5, crosswordDoor(), done("5-kors")), true);
+});
+
+test("a door without tasks or content is never completed", () => {
+  assert.equal(isDoorCompleted(3, door(), done()), false);
+  assert.equal(isDoorCompleted(3, undefined, done("3-a")), false);
 });
