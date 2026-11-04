@@ -1,6 +1,8 @@
 /** Keeps the header level ring in sync with loaded doors and completed tasks. */
 import { DOOR_STATE } from "./lib/door-state.js";
-import { levelFromXp, totalXp } from "./lib/level.js";
+import { markDoorCompleted } from "./door-view.js";
+import { isDoorCompleted, levelFromXp, totalXp } from "./lib/level.js";
+import { DOOR_COUNT } from "./lib/unlock-time.js";
 import { showLevel, showLevelUp } from "./ui.js";
 
 export function createLevelTracker() {
@@ -8,8 +10,15 @@ export function createLevelTracker() {
   let progress = null;
   let shownLevel = 0;
 
+  function markCompletedDoors() {
+    for (let number = 1; number <= DOOR_COUNT; number++) {
+      markDoorCompleted(number, Boolean(progress) && isDoorCompleted(number, doors.get(number), progress));
+    }
+  }
+
   /** Celebrates only after a task is completed, never when data merely finishes loading. */
   function refresh({ celebrate = false } = {}) {
+    markCompletedDoors();
     if (!progress) return;
     const { level, xpInLevel } = levelFromXp(totalXp([...doors.entries()], progress));
     if (celebrate && level > shownLevel) showLevelUp(level);
@@ -41,6 +50,7 @@ export function createLevelTracker() {
       progress = null;
       shownLevel = 0;
       showLevel(0, 0);
+      markCompletedDoors();
     },
   };
 }
