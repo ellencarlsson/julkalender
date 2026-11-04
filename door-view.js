@@ -1,4 +1,5 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
+import { createCrossword } from "./crossword-view.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { HONOR_PLEDGE, taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
@@ -17,7 +18,7 @@ const TASK_TYPE_LABELS = { quiz: "Fråga", challenge: "Utmaning", crossword: "Ko
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
-  return "Korsordet visas här snart.";
+  return null;
 }
 
 async function completeTask(card, box, status, save) {
@@ -54,11 +55,12 @@ function taskCard(task, door, progress) {
   card.className = "task";
   const heading = document.createElement("h3");
   heading.textContent = TASK_TYPE_LABELS[task.type] ?? "Uppgift";
-  const prompt = document.createElement("p");
-  prompt.textContent = taskPrompt(task);
-  card.append(heading, prompt);
+  card.append(heading);
+  const promptText = taskPrompt(task);
+  if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   const key = taskKey(door, task.id);
   if (task.type === "challenge") card.append(...honorCheckbox(card, key, progress));
+  if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
