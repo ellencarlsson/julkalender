@@ -1,0 +1,43 @@
+rules_version = '2';
+
+// Door N opens December N, 2026 at 07:00 Europe/Stockholm (06:00 UTC).
+// request.time is Google's server clock, so changing the device clock opens nothing.
+// Keep the schedule in sync with lib/unlock-time.js.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.email == "carlssonellen@live.se"
+        && request.auth.token.email_verified == true;
+    }
+
+    function isValidDoor(door) {
+      return door.matches('^([1-9]|1[0-9]|2[0-4])$');
+    }
+
+    function unlockTime(day) {
+      return timestamp.date(2026, 12, day) + duration.value(6, 'h');
+    }
+
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /doors/{door} {
+      allow read: if isAdmin()
+        || (isSignedIn() && isValidDoor(door) && request.time >= unlockTime(int(door)));
+      allow write: if isAdmin();
+    }
+
+    match /final/{doc} {
+      allow read: if isAdmin()
+        || (isSignedIn() && doc == "message" && request.time >= unlockTime(24));
+      allow write: if isAdmin();
+    }
+  }
+}
