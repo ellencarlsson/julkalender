@@ -13,8 +13,6 @@ const STATE_MESSAGES = {
   [DOOR_STATE.ERROR]: "Kunde inte ladda luckan. Kontrollera anslutningen och försök igen.",
 };
 
-const TASK_TYPE_LABELS = { quiz: "Fråga", challenge: "Utmaning", crossword: "Korsord" };
-
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
@@ -53,9 +51,6 @@ function honorCheckbox(card, key, progress) {
 function taskCard(task, door, progress) {
   const card = document.createElement("article");
   card.className = "task";
-  const heading = document.createElement("h3");
-  heading.textContent = TASK_TYPE_LABELS[task.type] ?? "Uppgift";
-  card.append(heading);
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   const key = taskKey(door, task.id);

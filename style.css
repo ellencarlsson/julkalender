@@ -166,9 +166,23 @@ button.small {
   color: var(--red);
 }
 
+.door-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+
+.door-header h2 {
+  margin: 0;
+}
+
 .door-subtitle {
-  margin-top: -0.5rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-style: italic;
+  text-align: right;
 }
 
 .task-area {
@@ -190,17 +204,24 @@ button.small {
 }
 
 .task {
+  position: relative;
   padding: 1rem;
   border-radius: 1rem;
   background: var(--red-dark);
 }
 
-.task h3 {
-  margin: 0 0 0.5rem;
+.task > p:first-child {
+  margin-top: 0;
 }
 
-.task--done h3::after {
-  content: " ✓";
+/* Without a task type heading, the done marker sits in the card's corner. */
+.task--done::after {
+  content: "✓";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 .honor {
@@ -381,11 +402,6 @@ button.small {
     grid-area: status;
     text-align: center;
   }
-}
-
-.back-link {
-  display: inline-block;
-  margin-bottom: 0.5rem;
 }
 
 .panel {

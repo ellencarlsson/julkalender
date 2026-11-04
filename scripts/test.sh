@@ -55,7 +55,9 @@ check "header is not pulled out of the page flow" bash -c '! sed -n "/^\.game-he
 check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "no Luckor heading above the doors" bash -c '! grep -q "<h2>Luckor</h2>" index.html'
 check "door view has task area" grep -q 'id="task-area"' index.html
-check "door view has back link" grep -q 'class="back-link"' index.html
+check "door view has no back link" bash -c '! grep -q "back-link" index.html'
+check "door number and title share the door header" bash -c 'sed -n "/class=\"door-header\"/,/<\/div>/p" index.html | grep -q "id=\"door-subtitle\""'
+check "no task type labels in the door view" bash -c '! grep -nE "TASK_TYPE_LABELS|\"Utmaning\"|\"Fråga\"" door-view.js'
 check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
 check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.html'
