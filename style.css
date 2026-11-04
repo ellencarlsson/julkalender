@@ -462,6 +462,32 @@ button.small {
   }
 }
 
+/* Desktop: bigger doors, and the header controls move in from the window edges to the content width. */
+@media (min-width: 64rem) {
+  #signed-in > .game-header,
+  #signed-in > #view-overview {
+    width: 100%;
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  .door-grid {
+    gap: 1rem;
+  }
+
+  .door {
+    border-radius: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .door[data-completed="true"]::after {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
 /* Desktop: across clues left of the grid, down clues right; only crossword doors get the wider column. */
 @media (min-width: 64rem) {
   #signed-in > #view-door:has(.cw) {
