@@ -29,5 +29,8 @@ check "app.js uses Google provider" grep -q "GoogleAuthProvider" app.js
 check "app.js listens for auth state" grep -q "onAuthStateChanged" app.js
 check "app.js has valid syntax" check_js_syntax app.js
 check "firebase-config.js has valid syntax" check_js_syntax firebase-config.js
+check "firestore.rules exists" test -f firestore.rules
+check "firestore.rules uses server time" grep -q "request.time" firestore.rules
+check "unit tests pass" node --test "tests/*.test.js"
 
 echo "All $passed tests passed"
