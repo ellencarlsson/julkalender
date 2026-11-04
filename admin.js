@@ -57,6 +57,6 @@ export function createAdminPanel(db) {
   element("reset-button").addEventListener("click", () => resetProgress(db, currentUser));
   return (user) => {
     currentUser = user;
-    element("admin").hidden = !isAdmin(user);
+    element("admin-link").hidden = !isAdmin(user);
   };
 }
