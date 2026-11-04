@@ -101,33 +101,42 @@ decide that later.
 - **Answer checking:** answers compared after normalization (trim, lowercase,
   collapse whitespace; å/ä/ö kept as-is). Content may list several accepted
   answers.
-- **Spoiler protection:** the content file stores SHA-256 hashes of normalized
-  answers instead of plain answers. Crossword solutions are stored per cell as
-  hashes or similarly obfuscated. Clue texts and the final message are lightly
-  obfuscated (not plain text in the source). True cryptographic secrecy is not
-  a goal — the friend is not expected to reverse-engineer the code.
-- **Time source:** the device clock is used for unlocking. Changing the phone's
-  clock to cheat is accepted.
+- **Spoiler protection:** door content is not in the repo (see "Door content
+  lives in Firestore"). Answers are stored only as SHA-256 hashes of the
+  normalized answer, so even an opened door never reveals its solution.
+  Crossword solutions are stored as per-cell hashes or similar.
+- **Time source — server-enforced, not the device clock (decided by Ellen:
+  changing the phone clock must not open doors).** Firestore security rules
+  compare `request.time` (Google's server clock) with each door's unlock time
+  (December N, 07:00 Europe/Stockholm = 06:00 UTC). Before that the read is
+  denied. The client treats "permission denied" as locked; the device clock
+  may only be used for cosmetic things like a countdown. The admin email can
+  always read.
 - **Who can sign in:** any Google account can sign in and gets its own
   separate progress. Only the admin email gets the all-doors preview.
 - **Admin tools:** the admin view also gets a "reset my progress" button so
   Ellen can replay doors while testing. The admin's own progress is separate
   from the friend's.
-- **Firestore layout:** one document per user, `users/{uid}`, holding
-  completed task ids and collected clue ids. Security rules: a user can only
+- **User progress layout:** one document per user, `users/{uid}`, holding
+  completed task ids, collected clue ids and partial crossword grids. Security rules: a user can only
   read/write their own document. Ellen enables Firestore in the Firebase
   console (production mode, EU location); Claude provides the rules.
-- **Content authoring pipeline:** readable door content (questions, answers,
-  clues, final message) is written in a **gitignored** source folder on Ellen's
-  machine. A Node script (`scripts/build-content.mjs`, run by hand, not part of
-  deploy) turns it into the committed, served content file: answers become
-  hashes and all other door text is obfuscated. Claude does the content edits
-  and runs the script; Ellen approves. Risk accepted: the readable source
-  exists only locally (no remote backup) — the builder should note this in the
-  README.
-- **Hide future doors:** because the whole door is obfuscated by the script,
-  questions and challenges of unopened doors are not readable at a glance in
-  the repo or browser either.
+- **Door content lives in Firestore:** one document per door, `doors/{n}`
+  (questions, tasks, answer hashes, clue texts), plus `final/message` for the
+  final message. Rules: `doors/{n}` readable by signed-in users only when
+  `request.time >= unlock time of door n`; `final/message` readable from
+  December 24 06:00 UTC and only shown by the client at level 24; admin email
+  can read and write everything; nobody else can write. This keeps unopened
+  doors and the final message out of the public repo and out of reach, so no
+  client-side obfuscation is needed.
+- **Content authoring pipeline:** readable content (one JSON file per door
+  plus the final message) lives in a **gitignored** folder on Ellen's machine.
+  The admin view has an "upload content" action: Ellen (or Claude, guiding her)
+  picks the files, the browser hashes the answers (`crypto.subtle`) and writes
+  the door documents to Firestore under her admin account. No service-account
+  keys and no npm dependencies. Claude drafts and edits the JSON; Ellen
+  approves and uploads. Risk accepted: the readable source exists only locally
+  (no remote backup) — note this in the README.
 - **Content format:** new doors are added by editing data, not code.
 - **Crossword progress is saved:** partially filled crossword grids are stored
   in the user's Firestore document (debounced writes) so a bigger crossword can
@@ -143,5 +152,4 @@ decide that later.
 - Exact module structure, file names, and content schema.
 - How the crossword grid is rendered and edited on mobile.
 - How locked/open/completed doors are shown in the placeholder UI.
-- Exact obfuscation method for clues and the final message.
 - How the level-up moment is shown (simple feedback is enough for now).
