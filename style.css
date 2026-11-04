@@ -139,6 +139,38 @@ body:has(#signed-in:not([hidden])) main {
   text-decoration: none;
 }
 
+.door[data-state="locked"] {
+  opacity: 0.45;
+}
+
+.door[data-state="open"],
+.door[data-state="empty"] {
+  background: var(--cream);
+  color: var(--red);
+}
+
+.door-subtitle {
+  margin-top: -0.5rem;
+  font-style: italic;
+}
+
+.task-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.task {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--red-dark);
+}
+
+.task h3 {
+  margin: 0 0 0.5rem;
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: 0.5rem;

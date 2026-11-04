@@ -58,6 +58,10 @@ check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
 check "no text Ryggsäck link in nav" bash -c '! grep -q ">Ryggsäck</a>" index.html'
 check "ui.js has valid syntax" check_js_syntax ui.js
+check "doors.js has valid syntax" check_js_syntax doors.js
+check "door-view.js has valid syntax" check_js_syntax door-view.js
+check "door subtitle placeholder exists" grep -q 'id="door-subtitle"' index.html
+check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
 check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
 check "tools/firebase-admin.js has valid syntax" check_js_syntax tools/firebase-admin.js
