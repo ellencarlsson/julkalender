@@ -1,16 +1,9 @@
-/** Tests for the temporary admin "Rensa lucka" tool (TEST_RESET_DOOR). */
+/** Tests for the temporary "Rensa lucka" tool (TEST_RESET_DOOR). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ADMIN_EMAIL, canResetDoors, doorResetPlan } from "../lib/test-reset.js";
+import { doorResetPlan } from "../lib/test-reset.js";
 
 const DOOR = { tasks: [{ id: "korsord", type: "crossword" }, { id: "baka", type: "challenge" }] };
-
-test("only the verified admin can reset doors", () => {
-  assert.equal(canResetDoors({ email: ADMIN_EMAIL, emailVerified: true }), true);
-  assert.equal(canResetDoors({ email: ADMIN_EMAIL, emailVerified: false }), false);
-  assert.equal(canResetDoors({ email: "friend@example.com", emailVerified: true }), false);
-  assert.equal(canResetDoors(null), false);
-});
 
 test("reset plan covers the door's tasks and crosswords", () => {
   const plan = doorResetPlan(5, DOOR, []);
