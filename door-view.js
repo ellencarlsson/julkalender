@@ -1,13 +1,13 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { HONOR_PLEDGE, taskKey } from "./lib/progress.js";
+import { unlockLabel } from "./lib/unlock-time.js";
 
 const element = (id) => document.getElementById(id);
 
 const STATE_MESSAGES = {
   loading: "Laddar luckan…",
   [DOOR_STATE.EMPTY]: "Luckan är öppen, men innehållet är inte klart än.",
-  [DOOR_STATE.LOCKED]: "Den här luckan är inte öppen än.",
   [DOOR_STATE.ERROR]: "Kunde inte ladda luckan. Kontrollera anslutningen och försök igen.",
 };
 
@@ -62,11 +62,19 @@ function taskCard(task, door, progress) {
   return card;
 }
 
-function showMessage(text) {
-  const paragraph = document.createElement("p");
-  paragraph.textContent = text;
-  element("task-area").replaceChildren(paragraph);
+function showMessage(...lines) {
+  const paragraphs = lines.map((text) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = text;
+    return paragraph;
+  });
+  element("task-area").replaceChildren(...paragraphs);
   element("door-subtitle").hidden = true;
+}
+
+function showLocked(number) {
+  showMessage("🔒 Denna lucka är låst", unlockLabel(number));
+  element("task-area").firstChild.className = "locked-title";
 }
 
 export function markDoor(number, state) {
@@ -88,6 +96,7 @@ export function showDoorLoading() {
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
  */
 export function showDoorContent(number, { state, door }, progress) {
+  if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   const subtitle = element("door-subtitle");
   subtitle.textContent = door.title ?? "";
