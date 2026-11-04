@@ -17,10 +17,7 @@
 
     <div id="signed-in" hidden>
       <header class="game-header">
-        <div class="user-row">
-          <p>Hej, <span id="user-name"></span>!</p>
-          <button id="sign-out-button" class="small" type="button">Logga ut</button>
-        </div>
+        <p class="greeting">Hej, <span id="user-name"></span>!</p>
 
         <div class="stats">
           <span>Nivå <strong id="level">0</strong></span>
@@ -62,6 +59,10 @@
           <p>Du har <strong id="backpack-hint-points">0</strong> ledtrådspoäng.</p>
         </div>
       </section>
+
+      <footer class="app-footer">
+        <button id="sign-out-button" class="small" type="button">Logga ut</button>
+      </footer>
     </div>
 
     <p id="auth-error" role="alert" hidden></p>

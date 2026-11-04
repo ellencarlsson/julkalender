@@ -24,6 +24,11 @@ check_local_imports() {
   done
 }
 
+check_sign_out_in_footer() {
+  sed -n '/<footer class="app-footer">/,/<\/footer>/p' index.html | grep -q 'id="sign-out-button"' \
+    && ! sed -n '/<header/,/<\/header>/p' index.html | grep -q 'id="sign-out-button"'
+}
+
 check "index.html exists" test -f index.html
 check "page shows Julkalender heading" grep -q "<h1>Julkalender</h1>" index.html
 check "stylesheet is linked" grep -q 'href="style.css"' index.html
@@ -32,6 +37,7 @@ check "viewport meta for mobile" grep -q 'name="viewport"' index.html
 check "app.js loaded as module" grep -q '<script type="module" src="app.js">' index.html
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
 check "sign-out button exists" grep -q 'id="sign-out-button"' index.html
+check "sign-out button sits in the footer" check_sign_out_in_footer
 check "user name placeholder exists" grep -q 'id="user-name"' index.html
 check "firebase config has project id" grep -q 'projectId: "julkalender-db633"' firebase-config.js
 check "app.js uses Google provider" grep -q "GoogleAuthProvider" app.js
