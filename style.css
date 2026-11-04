@@ -29,28 +29,9 @@ main > :not(#signed-in),
 }
 
 h1 {
-  /* Top margin in em leaves room for the Santa hats at every font size. */
-  margin: 0.6em 0 0.5em;
+  margin: 0.5em 0;
   font-size: clamp(1.5rem, 6.5vw, 3rem);
   white-space: nowrap;
-}
-
-/* Santa hat drawn in SVG so it looks the same on every device and scales with the letter. */
-.hat {
-  position: relative;
-  display: inline-block;
-}
-
-.hat::before {
-  content: "";
-  position: absolute;
-  bottom: 80%;
-  left: 50%;
-  width: 0.85em;
-  height: 0.7em;
-  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 52'><path d='M10 40 Q18 8 44 6 Q60 6 60 22 Q54 16 50 20 Q50 30 56 40 Z' fill='%23e0323c'/><circle cx='59' cy='23' r='5.5' fill='%23fdf6e3'/><rect x='4' y='36' width='56' height='12' rx='6' fill='%23fdf6e3'/></svg>") center / contain no-repeat;
-  transform: translateX(-42%) rotate(-14deg);
-  pointer-events: none;
 }
 
 a {
