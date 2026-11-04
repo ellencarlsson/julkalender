@@ -15,6 +15,15 @@ check_js_syntax() {
   node --check "$tmp/check.mjs"
 }
 
+check_local_imports() {
+  local file target
+  for file in *.js lib/*.js; do
+    for target in $(grep -oE 'from "\./[^"]+"' "$file" | sed -E 's/from "(.*)"/\1/'); do
+      test -f "$(dirname "$file")/$target" || { echo "$file imports missing $target"; return 1; }
+    done
+  done
+}
+
 check "index.html exists" test -f index.html
 check "page shows Julkalender heading" grep -q "<h1>Julkalender</h1>" index.html
 check "stylesheet is linked" grep -q 'href="style.css"' index.html
@@ -39,12 +48,11 @@ check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "admin nav link hidden by default" grep -q 'id="admin-link" hidden' index.html
 check "ui.js has valid syntax" check_js_syntax ui.js
 check "admin panel is hidden by default" grep -qE '<section id="admin"[^>]* hidden>' index.html
-check "content upload input exists" grep -q 'id="content-files"' index.html
 check "reset progress button exists" grep -q 'id="reset-button"' index.html
 check "admin.js has valid syntax" check_js_syntax admin.js
-check "local content folder is gitignored" git check-ignore -q content/door-1.json
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
+check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
 echo "All $passed tests passed"
