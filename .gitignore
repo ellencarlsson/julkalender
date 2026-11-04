@@ -1,1 +1,4 @@
 .DS_Store
+content/
+tools/node_modules/
+tools/service-account.json
