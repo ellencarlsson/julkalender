@@ -40,6 +40,8 @@ check "app.js loaded as module" grep -qE '<script type="module" src="\./app\.js\
 check "every local module has a versioned import map entry" bash -c 'for f in *.js lib/*.js; do grep -qE "\"\./$f\": \"\./$f\?v=[0-9a-f]{10}\"" index.html || { echo "missing $f"; exit 1; }; done'
 check "stylesheet is versioned" grep -qE 'href="\./style\.css\?v=[0-9a-f]{10}"' index.html
 check "version stamps are up to date" node scripts/stamp-versions.mjs --check
+check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --surface-raised --cell --gold --cream; do grep -q "^  $v:" style.css || exit 1; done'
+check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
