@@ -442,3 +442,12 @@ button.small {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
+.task-image {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 0.75rem;
+}
