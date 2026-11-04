@@ -334,6 +334,55 @@ button.small {
   }
 }
 
+/* Desktop: across clues left of the grid, down clues right; only crossword doors get the wider column. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.cw) {
+    max-width: 76rem;
+  }
+
+  .cw {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) auto minmax(12rem, 1fr);
+    grid-template-areas:
+      "current current current"
+      "across grid down"
+      "status status status";
+    column-gap: 2rem;
+    align-items: start;
+  }
+
+  .cw-current-clue {
+    grid-area: current;
+    text-align: center;
+  }
+
+  .cw-grid {
+    grid-area: grid;
+    grid-template-columns: repeat(var(--cols), 2.75rem);
+  }
+
+  .cw-clues {
+    display: contents;
+  }
+
+  .cw-clue-group--across {
+    grid-area: across;
+  }
+
+  .cw-clue-group--down {
+    grid-area: down;
+  }
+
+  .cw-clue-group h4 {
+    margin-top: 0;
+  }
+
+  .cw .task-status {
+    grid-area: status;
+    text-align: center;
+  }
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: 0.5rem;
