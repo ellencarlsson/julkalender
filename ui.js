@@ -47,6 +47,11 @@ export function showLevel(level, xpInLevel) {
 const LEVEL_UP_VISIBLE_MS = 4000;
 let levelUpTimer = null;
 
+export function hideLevelUp() {
+  clearTimeout(levelUpTimer);
+  element("level-up").hidden = true;
+}
+
 export function showLevelUp(level) {
   const toast = element("level-up");
   toast.textContent = `Nivå upp! Du är nu på nivå ${level} 🎉`;

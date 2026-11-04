@@ -252,6 +252,13 @@ button.small {
   content: none;
 }
 
+/* TEST_RESET_DOOR */
+.reset-door {
+  align-self: center;
+  margin-top: 1rem;
+  border: 2px dashed var(--red);
+}
+
 .task-done-state {
   margin: 0.5rem 0 0;
   font-size: 1.2rem;
