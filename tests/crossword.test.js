@@ -6,11 +6,13 @@ import {
   BLOCK,
   DOWN,
   EMPTY,
+  SPACE,
   clueNumbers,
   directionFor,
   emptyEntries,
   entryAt,
   isFilled,
+  isLetterCell,
   isSolved,
   normalizeLetter,
   restoreEntries,
@@ -107,4 +109,36 @@ test("clue numbers are keyed by start cell", () => {
   assert.equal(numbers.get("0,0"), 1);
   assert.equal(numbers.get("0,2"), 2);
   assert.equal(numbers.get("1,1"), undefined);
+});
+
+const SPACED = solutionCells(["STUPID SONG", "###########"]);
+
+test("a space in the grid becomes a gap cell", () => {
+  assert.equal(SPACED[0][6], SPACE);
+  assert.equal(isLetterCell(SPACED, 0, 6), false);
+  assert.deepEqual(emptyEntries([SPACED[0]]), ["      _    "]);
+});
+
+test("typing skips over the gap", () => {
+  assert.deepEqual(stepCell(SPACED, 0, 5, ACROSS), [0, 7]);
+  assert.deepEqual(stepCell(SPACED, 0, 7, ACROSS, -1), [0, 5]);
+});
+
+test("the whole multi-word answer is one word, gap included", () => {
+  const word = wordAt(SPACED, 0, 9, ACROSS);
+  assert.equal(word.length, 11);
+  assert.deepEqual(word[0], [0, 0]);
+  assert.deepEqual(word[6], [0, 6]);
+});
+
+test("solving ignores the gap and needs only letters", () => {
+  const cells = [SPACED[0]];
+  const typed = [..."STUPIDSONG"].reduce((entries, letter, i) => setEntry(entries, 0, i < 6 ? i : i + 1, letter), emptyEntries(cells));
+  assert.deepEqual(typed, ["STUPID_SONG"]);
+  assert.equal(isSolved(cells, typed), true);
+  assert.deepEqual(solvedEntries(cells), ["STUPID_SONG"]);
+});
+
+test("restored entries keep gaps fixed", () => {
+  assert.deepEqual(restoreEntries([SPACED[0]], ["STUPIDXSONG"]), ["STUPID_SONG"]);
 });

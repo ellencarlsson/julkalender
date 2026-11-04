@@ -2,6 +2,7 @@
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
 
 const BLOCK = "#";
+const SPACE = " ";
 const DIRECTIONS = ["across", "down"];
 
 const isPlainObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
@@ -10,6 +11,18 @@ const isNonEmptyStringList = (value) => Array.isArray(value) && value.length > 0
 
 function gridCells(grid) {
   return grid.map((row) => [...row.normalize("NFC")]);
+}
+
+const isLetter = (cells, r, c) => /^\p{L}$/u.test(cells[r]?.[c] ?? "");
+
+/** A gap is only valid inside a word: letters (or further gaps leading to letters) on both sides. */
+function isInsideWord(cells, r, c) {
+  const reaches = (dr, dc) => {
+    let [rr, cc] = [r + dr, c + dc];
+    while (cells[rr]?.[cc] === SPACE) [rr, cc] = [rr + dr, cc + dc];
+    return isLetter(cells, rr, cc);
+  };
+  return (reaches(0, -1) && reaches(0, 1)) || (reaches(-1, 0) && reaches(1, 0));
 }
 
 function validateQuiz(task) {
@@ -28,8 +41,11 @@ function validateGrid(grid) {
   const cells = gridCells(grid);
   const errors = [];
   if (cells.some((row) => row.length !== cells[0].length)) errors.push("grid rows must all have the same length");
-  if (cells.flat().some((cell) => cell !== BLOCK && !/^\p{L}$/u.test(cell))) {
-    errors.push(`grid may only contain letters and ${BLOCK}`);
+  if (cells.flat().some((cell) => cell !== BLOCK && cell !== SPACE && !/^\p{L}$/u.test(cell))) {
+    errors.push(`grid may only contain letters, spaces and ${BLOCK}`);
+  }
+  if (errors.length === 0 && cells.some((row, r) => row.some((cell, c) => cell === SPACE && !isInsideWord(cells, r, c)))) {
+    errors.push("a space must sit between two letters of the same word");
   }
   return errors;
 }
@@ -42,7 +58,7 @@ function validateClue(clue, index, cells) {
   if (!DIRECTIONS.includes(clue.direction)) errors.push(`${where}.direction must be "across" or "down"`);
   if (!isNonEmptyString(clue.text)) errors.push(`${where}.text must be a non-empty string`);
   const cell = cells[clue.row]?.[clue.col];
-  if (!Number.isInteger(clue.row) || !Number.isInteger(clue.col) || cell === undefined || cell === BLOCK) {
+  if (!Number.isInteger(clue.row) || !Number.isInteger(clue.col) || cell === undefined || cell === BLOCK || cell === SPACE) {
     errors.push(`${where}: row/col must point at a letter cell in grid`);
   }
   return errors;

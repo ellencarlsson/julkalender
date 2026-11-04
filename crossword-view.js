@@ -2,6 +2,7 @@
 import {
   ACROSS,
   DOWN,
+  SPACE,
   clueNumbers,
   directionFor,
   entryAt,
@@ -160,6 +161,7 @@ function createInput(ctx, row, col, number) {
 }
 
 function createCell(ctx, row, col) {
+  if (ctx.cells[row][col] === SPACE) return createElement("div", "cw-space");
   if (!isLetterCell(ctx.cells, row, col)) return createElement("div", "cw-block");
   const cell = createElement("div", "cw-cell");
   const number = ctx.numbers.get(cellKey(row, col));

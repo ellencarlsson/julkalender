@@ -98,3 +98,19 @@ test("parseContentFiles rejects two final messages", () => {
   const { errors } = parseContentFiles([file("a.json", { message: "A" }), file("b.json", { message: "B" })]);
   assert.deepEqual(errors, ["more than one file contains a final message"]);
 });
+
+test("crossword grids may contain spaces inside multi-word answers", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 0, text: "Låt" };
+  assert.deepEqual(validateDoor(crosswordDoor(["STUPID SONG"], [clue])), []);
+});
+
+test("a space at the edge or next to a black square is rejected", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 1, text: "x" };
+  assert.match(validateDoor(crosswordDoor([" AB"], [clue])).join(), /space must sit between/);
+  assert.match(validateDoor(crosswordDoor(["A #B"], [{ ...clue, col: 0 }])).join(), /space must sit between/);
+});
+
+test("a clue cannot start on a space", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 1, text: "x" };
+  assert.match(validateDoor(crosswordDoor(["A B"], [clue])).join(), /letter cell/);
+});

@@ -248,7 +248,8 @@ button.small {
 }
 
 .cw-cell,
-.cw-block {
+.cw-block,
+.cw-space {
   position: relative;
   aspect-ratio: 1;
 }
@@ -266,6 +267,12 @@ button.small {
   text-align: center;
   text-transform: uppercase;
   caret-color: transparent;
+}
+
+/* A gap inside a multi-word answer: visibly part of the word, but nothing to type. */
+.cw-space {
+  border: 2px dashed rgba(253, 246, 227, 0.45);
+  border-radius: 4px;
 }
 
 .cw-active-word input {
