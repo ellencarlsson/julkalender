@@ -30,7 +30,9 @@ check_sign_out_in_footer() {
 }
 
 check "index.html exists" test -f index.html
-check "page shows Julkalender heading" grep -q "<h1>Julkalender</h1>" index.html
+check "page shows the Haris Julkalender heading" bash -c '[ "$(sed -nE "s/.*(<h1[^>]*>.*<\/h1>).*/\1/p" index.html | sed -E "s/<[^>]+>//g")" = "Haris Julkalender" ]'
+check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
+check "title letters wear Santa hats" bash -c '[ "$(grep -o "class=\"hat\"" index.html | wc -l)" -ge 2 ]'
 check "stylesheet is linked" grep -q 'href="style.css"' index.html
 check "style.css exists" test -f style.css
 check "viewport meta for mobile" grep -q 'name="viewport"' index.html
@@ -50,7 +52,7 @@ check "doors icon button in nav" grep -qE '<a href="#/"[^>]*class="icon-button"[
 check "no greeting in header" bash -c '! sed -n "/<header/,/<\/header>/p" index.html | grep -q "Hej,"'
 check "signed-in name in footer" bash -c 'sed -n "/<footer/,/<\/footer>/p" index.html | grep -q "Inloggad som: <span id=\"user-name\">"'
 check "hint points shown in backpack" grep -q 'id="backpack-hint-points"' index.html
-check "title comes before the header controls" bash -c '[ "$(grep -n "<h1>Julkalender</h1>" index.html | cut -d: -f1)" -lt "$(grep -n "<header" index.html | cut -d: -f1)" ]'
+check "title comes before the header controls" bash -c '[ "$(grep -n "<h1" index.html | cut -d: -f1)" -lt "$(grep -n "<header" index.html | cut -d: -f1)" ]'
 check "header is not pulled out of the page flow" bash -c '! sed -n "/^\.game-header {/,/}/p" style.css | grep -q "position: absolute"'
 check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "no Luckor heading above the doors" bash -c '! grep -q "<h2>Luckor</h2>" index.html'
