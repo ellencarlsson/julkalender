@@ -1,4 +1,6 @@
 :root {
+  /* Square checkmark used as a mask, so it takes the theme color and looks the same everywhere. */
+  --check-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='3.5'/><path d='M7.5 12.5l3 3 6-6.5'/></svg>");
   /* Night-friendly palette: dark surfaces, cream only for text and accents. */
   --bg: #5c1622;
   --surface: #43101a;
@@ -233,13 +235,23 @@ button.small {
 }
 
 /* Without a task type heading, the done marker sits in the card's corner. */
+.check-icon,
 .task--done::after {
-  content: "✓";
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+  background: var(--gold);
+  -webkit-mask: var(--check-mask) center / contain no-repeat;
+  mask: var(--check-mask) center / contain no-repeat;
+}
+
+.task--done::after {
+  content: "";
   position: absolute;
-  top: 0.5rem;
+  top: 0.6rem;
   right: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: bold;
+  font-size: 1.4rem;
 }
 
 .task-instruction {
@@ -256,7 +268,7 @@ button.small {
   opacity: 0.6;
 }
 
-/* Challenges show "✅ Klart!" themselves, so they skip the corner marker. */
+/* Challenges show their own "Klart!" with a checkmark, so they skip the corner marker. */
 .task--done:has(.task-done-state)::after {
   content: none;
 }

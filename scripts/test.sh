@@ -42,6 +42,8 @@ check "stylesheet is versioned" grep -qE 'href="\./style\.css\?v=[0-9a-f]{10}"' 
 check "version stamps are up to date" node scripts/stamp-versions.mjs --check
 check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --surface-raised --cell --gold --cream; do grep -q "^  $v:" style.css || exit 1; done'
 check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
+check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js style.css index.html'
+check "square checkmark icon defined" grep -q "check-mask" style.css
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
