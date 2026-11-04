@@ -16,7 +16,7 @@ import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
-import { canResetDoors, doorResetPlan } from "./lib/test-reset.js";
+import { doorResetPlan } from "./lib/test-reset.js";
 import { loadProgress } from "./progress.js";
 import { createShell, hideLevelUp } from "./ui.js";
 
@@ -51,9 +51,8 @@ function withLevelUpdates(progress) {
   };
 }
 
-/** TEST_RESET_DOOR: clears the admin's progress in one door and shows it fresh. */
+/** TEST_RESET_DOOR: clears the signed-in user's own progress in one door and shows it fresh. */
 function resetHandler(number, door, progress) {
-  if (!canResetDoors(auth.currentUser)) return undefined;
   return async () => {
     doorResetPlan(number, door, []).crosswords.forEach(discardPendingCrossword);
     await progress.resetDoor(number, door);

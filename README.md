@@ -18,7 +18,7 @@ clock in the rules. The admin account sees all doors.
 checked while building. Remove it before giving the calendar away: search for
 `TEST_LOCKED_DOOR` (`lib/test-door.js` and its uses).
 
-**Temporary "Rensa lucka" button** (admin only) clears the admin's own progress in one door
+**Temporary "Rensa lucka" button** clears the signed-in user's own progress in one door
 while testing. Remove it before giving the calendar away: search for `TEST_RESET_DOOR`
 (`lib/test-reset.js` and its uses).
 

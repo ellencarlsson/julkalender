@@ -95,7 +95,7 @@ export function showDoorLoading() {
   showMessage(STATE_MESSAGES.loading);
 }
 
-/** TEST_RESET_DOOR: admin-only button that clears this door's progress after a confirm. */
+/** TEST_RESET_DOOR: button that clears the player's own progress in this door after a confirm. */
 function resetButton(number, onReset) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: "reset-door small" });
   button.textContent = "🧹 Rensa lucka";
@@ -119,7 +119,7 @@ function resetButton(number, onReset) {
  *   number: the door number, used to build progress keys.
  *   result: { state, door } from the door reader.
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
- *   onReset: TEST_RESET_DOOR callback for the admin's "Rensa lucka" button; omitted for everyone else.
+ *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
  */
 export function showDoorContent(number, { state, door }, progress, onReset) {
   if (state === DOOR_STATE.LOCKED) return showLocked(number);

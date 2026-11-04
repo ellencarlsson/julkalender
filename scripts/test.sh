@@ -68,7 +68,7 @@ check "doors.js has valid syntax" check_js_syntax doors.js
 check "door-view.js has valid syntax" check_js_syntax door-view.js
 check "no honor checkbox left anywhere" bash -c '! grep -rqiE "heder och samvete|honor" *.js lib style.css'
 check "progress.js has valid syntax" check_js_syntax progress.js
-check "reset button is admin-only" grep -q "canResetDoors(auth.currentUser)" app.js
+check "reset button is wired into the door view" grep -q "resetHandler(number, result.door, progress)" app.js
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
 check "level-up message element exists" grep -q 'id="level-up"' index.html
