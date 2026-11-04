@@ -14,11 +14,6 @@ Live: https://ellencarlsson.github.io/julkalender/
 Door N opens December N, 2026 at 07:00 Swedish time, enforced by Google's server
 clock in the rules. The admin account sees all doors.
 
-## Admin
-
-Signed in as the admin account, the **Admin** view has **Nollställ min progress**,
-which deletes the admin's own progress so doors can be replayed.
-
 ## Tests
 
 ```sh

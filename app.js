@@ -7,14 +7,11 @@ import {
   signInWithPopup,
   signOut,
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-import { createAdminPanel } from "./admin.js";
 import { firebaseConfig } from "./firebase-config.js";
 import { createShell } from "./ui.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const showAdmin = createAdminPanel(getFirestore(app));
 const showShell = createShell();
 const element = (id) => document.getElementById(id);
 
@@ -45,6 +42,5 @@ element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
-  showAdmin(user);
-  showShell(user);
+  showShell();
 });
