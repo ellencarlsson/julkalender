@@ -21,6 +21,8 @@ import {
 import { wordKey } from "./lib/progress.js";
 
 const SAVE_DELAY_MS = 800;
+/** The crossword view currently shown for each task, so a re-render or reset can deal with its pending save. */
+const liveViews = new Map();
 const DIRECTION_LABELS = { [ACROSS]: "Vågrätt", [DOWN]: "Lodrätt" };
 const ARROWS = { ArrowRight: [ACROSS, 1], ArrowLeft: [ACROSS, -1], ArrowDown: [DOWN, 1], ArrowUp: [DOWN, -1] };
 const cellKey = (row, col) => `${row},${col}`;
@@ -255,7 +257,9 @@ function createContext({ task, key, progress, card }) {
  *   The crossword element.
  */
 export function createCrossword(options) {
+  if (liveViews.has(options.key)) flushSave(liveViews.get(options.key));
   const ctx = createContext(options);
+  liveViews.set(options.key, ctx);
   ctx.root = createElement("div", "cw");
   ctx.currentClue = createElement("p", "cw-current-clue");
   ctx.status = createElement("p", "task-status", ctx.solved ? "Korsordet är löst!" : "");
@@ -266,4 +270,12 @@ export function createCrossword(options) {
   ctx.root.classList.toggle("cw--solved", ctx.solved);
   flushWhenHidden(ctx);
   return ctx.root;
+}
+
+/** TEST_RESET_DOOR: drops a pending save so letters typed just before a reset are not written back. */
+export function discardPendingCrossword(key) {
+  const ctx = liveViews.get(key);
+  if (!ctx) return;
+  clearTimeout(ctx.saveTimer);
+  ctx.dirty = false;
 }

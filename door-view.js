@@ -95,6 +95,23 @@ export function showDoorLoading() {
   showMessage(STATE_MESSAGES.loading);
 }
 
+/** TEST_RESET_DOOR: admin-only button that clears this door's progress after a confirm. */
+function resetButton(number, onReset) {
+  const button = Object.assign(document.createElement("button"), { type: "button", className: "reset-door small" });
+  button.textContent = "🧹 Rensa lucka";
+  button.addEventListener("click", async () => {
+    if (!confirm(`Rensa din progress i lucka ${number}? Bara för testning.`)) return;
+    button.disabled = true;
+    try {
+      await onReset();
+    } catch {
+      button.disabled = false;
+      button.textContent = "Kunde inte rensa. Försök igen.";
+    }
+  });
+  return button;
+}
+
 /**
  * Shows an open door's title and tasks, or a message for any other state.
  *
@@ -102,12 +119,14 @@ export function showDoorLoading() {
  *   number: the door number, used to build progress keys.
  *   result: { state, door } from the door reader.
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
+ *   onReset: TEST_RESET_DOOR callback for the admin's "Rensa lucka" button; omitted for everyone else.
  */
-export function showDoorContent(number, { state, door }, progress) {
+export function showDoorContent(number, { state, door }, progress, onReset) {
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   const subtitle = element("door-subtitle");
   subtitle.textContent = door.title ?? "";
   subtitle.hidden = !door.title;
   element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
+  if (onReset) element("task-area").append(resetButton(number, onReset));
 }
