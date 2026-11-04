@@ -11,6 +11,7 @@ function renderDoorGrid() {
     const link = document.createElement("a");
     link.href = doorHash(door);
     link.className = "door";
+    link.dataset.door = door;
     link.textContent = door;
     link.setAttribute("aria-label", `Lucka ${door}`);
     const item = document.createElement("li");
@@ -41,10 +42,19 @@ export function showLevel(level, xpInLevel) {
   element("level").textContent = level;
 }
 
-/** Builds the shell once and returns a function that shows the view for the current hash. */
-export function createShell() {
+/**
+ * Builds the shell once and returns a function that shows the view for the current hash.
+ *
+ * Args:
+ *   onDoorOpen: called with the door number whenever the door view is shown.
+ */
+export function createShell({ onDoorOpen }) {
   renderDoorGrid();
-  const render = () => showRoute(parseRoute(location.hash));
+  const render = () => {
+    const route = parseRoute(location.hash);
+    showRoute(route);
+    if (route.view === "door") onDoorOpen(route.door);
+  };
   window.addEventListener("hashchange", render);
   return render;
 }
