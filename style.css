@@ -27,13 +27,54 @@ body {
 }
 
 main {
-  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1rem 1rem 0.75rem;
   text-align: center;
+}
+
+/* Grows to fill the page so the footer sits at the bottom even when a view is short. */
+#signed-in:not([hidden]) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.app-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 2rem;
+  color: var(--cream-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.app-footer p {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-footer button {
+  flex: none;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  text-decoration: underline;
 }
 
 /* Everything except the header stays in a centered column; the header spans the page edges. */
 main > :not(#signed-in),
 #signed-in > :not(.game-header) {
+  width: 100%;
   max-width: 40rem;
   margin-inline: auto;
 }
