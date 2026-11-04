@@ -14,6 +14,7 @@ import { firebaseConfig } from "./firebase-config.js";
 import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { parseRoute } from "./lib/router.js";
+import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { loadProgress } from "./progress.js";
 import { createShell } from "./ui.js";
 
@@ -61,8 +62,9 @@ async function openDoor(number) {
 }
 
 async function loadDoorStates() {
-  const results = await doors.readAllDoors();
+  const [results, testDoor] = await Promise.all([doors.readAllDoors(), doors.readDoor(TEST_LOCKED_DOOR)]);
   results.forEach((result, index) => markDoor(index + 1, result.state));
+  markDoor(TEST_LOCKED_DOOR, testDoor.state);
   levels.setAllDoors(results);
 }
 

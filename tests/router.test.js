@@ -14,9 +14,13 @@ test("door hash opens that door", () => {
 });
 
 test("invalid door numbers fall back to the overview", () => {
-  for (const hash of ["#/door/0", "#/door/25", "#/door/abc", "#/door/", "#/door/01", "#/door/1.0", "#/door"]) {
+  for (const hash of ["#/door/0", "#/door/26", "#/door/abc", "#/door/", "#/door/01", "#/door/1.0", "#/door"]) {
     assert.deepEqual(parseRoute(hash), { view: "overview" }, hash);
   }
+});
+
+test("temporary test door 25 can be opened", () => {
+  assert.deepEqual(parseRoute("#/door/25"), { view: "door", door: 25 });
 });
 
 test("backpack route", () => {

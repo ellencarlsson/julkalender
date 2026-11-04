@@ -1,13 +1,15 @@
 /** Signed-in app shell: door grid and hash-based switching between views. */
 import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
+import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 
 const element = (id) => document.getElementById(id);
+const GRID_DOORS = [...Array.from({ length: DOOR_COUNT }, (_, index) => index + 1), TEST_LOCKED_DOOR];
 
 function renderDoorGrid() {
   const grid = element("door-grid");
-  for (let door = 1; door <= DOOR_COUNT; door++) {
+  for (const door of GRID_DOORS) {
     const link = document.createElement("a");
     link.href = doorHash(door);
     link.className = "door";
