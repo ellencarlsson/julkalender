@@ -340,6 +340,33 @@ button.small {
   border: 2px dashed var(--line);
 }
 
+.quiz-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quiz-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--cell);
+  color: var(--cream);
+  /* 16px minimum stops iOS Safari from zooming in on focus. */
+  font: max(16px, 1rem) Georgia, serif;
+}
+
+.quiz-input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.quiz-form .task-status {
+  flex-basis: 100%;
+}
+
 .task-done-state {
   margin: 0.5rem 0 0;
   font-size: 1.2rem;
