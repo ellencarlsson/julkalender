@@ -227,6 +227,13 @@ test("exam must be true or false", () => {
   assert.match(validateDoor(quizDoor({ exam: "yes" })).join(), /exam must be/);
 });
 
+test("a typing race needs a non-empty list of sentences", () => {
+  const typingDoor = (sentences) => ({ door: 4, tasks: [{ id: "t", type: "typing", sentences }] });
+  assert.deepEqual(validateDoor(typingDoor(["God jul!"])), []);
+  assert.match(validateDoor(typingDoor([])).join(), /sentences must be/);
+  assert.match(validateDoor(typingDoor(["ok", ""])).join(), /sentences must be/);
+});
+
 test("svg images are accepted", () => {
   assert.deepEqual(validateDoor(quizDoor({ image: "images/door-22/butan.svg", alt: "Butan" })), []);
 });

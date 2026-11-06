@@ -22,6 +22,7 @@ import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { doorResetPlan } from "./lib/test-reset.js";
 import { loadProgress } from "./progress.js";
+import { createLeaderboard } from "./leaderboard.js";
 import { renderSideQuests } from "./sidequest-view.js";
 import { readSideQuests } from "./sidequests.js";
 import { createShell, hideLevelUp } from "./ui.js";
@@ -124,7 +125,7 @@ async function openDoor(number) {
     markDoor(number, result.state);
     levels.setDoor(number, result);
     const onReset = result.door && resetHandler(number, result.door, progress);
-    if (parseRoute(location.hash).door === number) showDoorContent(number, result, withLevelUpdates(progress), onReset);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, result, { ...withLevelUpdates(progress), leaderboard: createLeaderboard(db, user) }, onReset);
   } catch {
     progressReady = startProgressLoad(user.uid);
     if (parseRoute(location.hash).door === number) showDoorContent(number, { state: DOOR_STATE.ERROR });

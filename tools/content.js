@@ -146,12 +146,17 @@ function validateSudoku(task) {
   return clash ? ["puzzle digits must match the solution"] : [];
 }
 
+function validateTyping(task) {
+  return isNonEmptyStringList(task.sentences) ? [] : ["sentences must be a non-empty list of sentences"];
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
   crossword: validateCrossword,
   matching: validateMatching,
   sudoku: validateSudoku,
+  typing: validateTyping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 

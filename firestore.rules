@@ -41,6 +41,24 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Typing race attempts: every player sees all of them, adds only attempts in their own name, can
+    // only mark one as Ellen's when signed in as Ellen, and nothing is ever changed or deleted.
+    function isValidAttempt() {
+      let attempt = request.resource.data;
+      return isSignedIn()
+        && attempt.keys().hasOnly(['uid', 'name', 'timeMs', 'ellen', 'createdAt'])
+        && attempt.uid == request.auth.uid
+        && attempt.name is string && attempt.name.size() <= 60
+        && attempt.timeMs is int && attempt.timeMs > 0
+        && attempt.ellen == isAdmin()
+        && attempt.createdAt == request.time;
+    }
+
+    match /leaderboards/{door}/results/{attempt} {
+      allow read: if isSignedIn() && isValidDoor(door);
+      allow create: if isValidDoor(door) && isValidAttempt();
+    }
+
     match /final/{doc} {
       allow read: if isAdmin()
         || (isSignedIn() && doc == "message" && request.time >= unlockTime(24));
