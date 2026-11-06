@@ -2020,7 +2020,19 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 
   .examples-layout > .task-examples {
     grid-area: examples;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
     margin-bottom: 0;
+  }
+
+  /* Same height for every formula keeps them at one scale; the widest (propan) still fits its cell. */
+  .examples-layout .example-image {
+    height: 6rem;
+  }
+
+  .examples-layout .examples-note {
+    grid-column: 1 / -1;
   }
 }
 
