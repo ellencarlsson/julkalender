@@ -41,12 +41,11 @@ function resultMessage(ctx, timeMs) {
   return `${formatTime(timeMs)} – försök igen, slå Ellens tid ${formatTime(best)}`;
 }
 
-/** Only a new personal best is saved; the leaderboard keeps one row per player. */
-async function saveIfBest(ctx, timeMs) {
-  const mine = ctx.results.find((result) => result.uid === ctx.board.uid);
-  if (mine && mine.timeMs <= timeMs) return;
+/** Every attempt is saved, so the same player can show up several times on the leaderboard. */
+async function saveAttempt(ctx, timeMs) {
   await ctx.board.save(ctx.door, timeMs);
-  ctx.results = [...ctx.results.filter((result) => result !== mine), { uid: ctx.board.uid, name: ctx.board.name, timeMs, ellen: ctx.board.isEllen }];
+  ctx.latest = { uid: ctx.board.uid, name: ctx.board.name, timeMs, ellen: ctx.board.isEllen };
+  ctx.results = [...ctx.results, ctx.latest];
 }
 
 async function finish(ctx, timeMs) {
@@ -54,7 +53,7 @@ async function finish(ctx, timeMs) {
   ctx.input.disabled = true;
   ctx.clock.textContent = formatTime(timeMs);
   try {
-    await saveIfBest(ctx, timeMs);
+    await saveAttempt(ctx, timeMs);
     ctx.status.textContent = resultMessage(ctx, timeMs);
     renderLeaderboard(ctx);
     if (ctx.board.isEllen || beatsEllen(timeMs, ellenBest(ctx.results))) await pass(ctx);
@@ -84,7 +83,7 @@ function restart(ctx) {
 
 function renderLeaderboard(ctx) {
   const rows = topResults(ctx.results).map((result) => {
-    const row = element("li", result.uid === ctx.board.uid ? "typing-me" : "");
+    const row = element("li", result === ctx.latest ? "typing-me" : "");
     row.append(element("span", "typing-name", result.ellen ? `${result.name} 👑` : result.name), element("span", "typing-time", formatTime(result.timeMs)));
     return row;
   });

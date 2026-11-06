@@ -41,22 +41,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Typing race results: every player sees the leaderboard, but only writes their own row, only a
-    // faster time, and can only mark it as Ellen's when signed in as Ellen.
-    function isValidResult(uid) {
-      let result = request.resource.data;
-      return isSignedIn() && request.auth.uid == uid
-        && result.keys().hasOnly(['name', 'timeMs', 'ellen', 'updatedAt'])
-        && result.name is string && result.name.size() <= 60
-        && result.timeMs is int && result.timeMs > 0
-        && result.ellen == isAdmin()
-        && result.updatedAt == request.time;
+    // Typing race attempts: every player sees all of them, adds only attempts in their own name, can
+    // only mark one as Ellen's when signed in as Ellen, and nothing is ever changed or deleted.
+    function isValidAttempt() {
+      let attempt = request.resource.data;
+      return isSignedIn()
+        && attempt.keys().hasOnly(['uid', 'name', 'timeMs', 'ellen', 'createdAt'])
+        && attempt.uid == request.auth.uid
+        && attempt.name is string && attempt.name.size() <= 60
+        && attempt.timeMs is int && attempt.timeMs > 0
+        && attempt.ellen == isAdmin()
+        && attempt.createdAt == request.time;
     }
 
-    match /leaderboards/{door}/results/{uid} {
+    match /leaderboards/{door}/results/{attempt} {
       allow read: if isSignedIn() && isValidDoor(door);
-      allow create: if isValidDoor(door) && isValidResult(uid);
-      allow update: if isValidDoor(door) && isValidResult(uid) && request.resource.data.timeMs < resource.data.timeMs;
+      allow create: if isValidDoor(door) && isValidAttempt();
     }
 
     match /final/{doc} {

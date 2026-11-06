@@ -118,7 +118,7 @@ check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) 
 check "backpack has the Items section with the chokladboll first" grep -q "<h3>Items</h3>" index.html
 check "typing-view.js has valid syntax" check_js_syntax typing-view.js
 check "leaderboard.js has valid syntax" check_js_syntax leaderboard.js
-check "leaderboard rules only accept a faster own time" grep -q "request.resource.data.timeMs < resource.data.timeMs" firestore.rules
+check "leaderboard rules only accept attempts in the player's own name" grep -q "attempt.uid == request.auth.uid" firestore.rules
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
