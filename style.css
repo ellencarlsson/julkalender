@@ -1130,8 +1130,13 @@ body:has(#view-door:not([hidden]))::before {
   font-size: max(16px, 42cqi);
 }
 
+/* No box while typing: the tile keeps its category colour; the caret shows where you type. */
+.pt-input,
 .pt-input:focus {
-  background: rgba(255, 255, 255, 0.45);
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  caret-color: #1d1d1d;
 }
 
 .pt-result-image {
