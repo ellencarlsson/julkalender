@@ -11,6 +11,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase
 import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
 import { discardPendingCrossword } from "./crossword-view.js";
 import { createDoorReader } from "./doors.js";
+import { hideFinalMessage, readFinalMessage, showFinalMessage } from "./final-message.js";
 import { firebaseConfig } from "./firebase-config.js";
 import { createHintTracker } from "./hint-tracker.js";
 import { createLevelTracker } from "./level-tracker.js";
@@ -28,7 +29,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const doors = createDoorReader(db);
 let progressReady = null;
-const levels = createLevelTracker();
+const levels = createLevelTracker({ onMaxLevel: () => readFinalMessage(db).then(showFinalMessage) });
 const hints = createHintTracker();
 const showShell = createShell({ onDoorOpen: openDoor, onSideQuestsOpen: openSideQuests });
 const element = (id) => document.getElementById(id);
@@ -147,6 +148,7 @@ element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
+  hideFinalMessage();
   levels.reset();
   hints.reset();
   loadedProgress = null;
