@@ -38,7 +38,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background: var(--bg) url("./images/theme/winter-desktop.jpg") center bottom / cover no-repeat;
+  background: var(--bg) url("./images/theme/winter-desktop-v2.jpg") center bottom / cover no-repeat;
 }
 
 @media (max-aspect-ratio: 4/5) {
