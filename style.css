@@ -1410,3 +1410,40 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   border: 2px solid rgba(58, 39, 22, 0.6);
   background: rgba(255, 250, 238, 0.6);
 }
+
+/* One hint button for every door: the chokladboll sits in the same top-right spot on the title
+   line, whether it opens a quiz hint or the crossword lamp. */
+#view-door:not([hidden]) {
+  --hint-top: 0.3rem;
+  --hint-right: 0.5rem;
+}
+
+@media (min-width: 36rem) {
+  #view-door:not([hidden]) {
+    --hint-top: 1rem;
+    --hint-right: 1.25rem;
+  }
+}
+
+#view-door .quiz-hint:has(> .quiz-hint-icon:only-child),
+#view-door .cw-lamp {
+  position: absolute;
+  top: var(--hint-top);
+  right: var(--hint-right);
+  z-index: 1;
+  margin: 0;
+}
+
+#view-door .task:has(.cw-lamp) {
+  position: static;
+}
+
+#view-door .quiz-hint button.quiz-hint-icon,
+#view-door .cw-lamp {
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 2px solid rgba(58, 39, 22, 0.6);
+  border-radius: 50%;
+  background: rgba(255, 250, 238, 0.6);
+}
