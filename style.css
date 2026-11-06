@@ -860,3 +860,41 @@ button.small {
   color: var(--gold);
   font-style: italic;
 }
+
+/* Door view: the content sits on an old parchment. The 9-slice border image keeps the torn edges
+   intact while the middle stretches to any content height. */
+#view-door:not([hidden]) {
+  --cream: #3a2716;
+  --cream-muted: rgba(58, 39, 22, 0.72);
+  --line: rgba(90, 60, 30, 0.4);
+  --surface: rgba(255, 246, 225, 0.35);
+  --surface-raised: rgba(140, 95, 45, 0.18);
+  --cell: rgba(255, 250, 238, 0.8);
+  --word: rgba(214, 168, 96, 0.5);
+  --solved: rgba(132, 168, 112, 0.55);
+  --gold: #8b4f1d;
+  border: 1.6rem solid transparent;
+  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  padding: 0.25rem 0.5rem 0.75rem;
+  color: var(--cream);
+  text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.45));
+}
+
+#view-door .task {
+  border: 1px solid var(--line);
+}
+
+/* Softens the winter scene behind the parchment so the task is in focus. */
+body:has(#view-door:not([hidden]))::before {
+  filter: blur(3px) brightness(0.8);
+  transform: scale(1.04);
+}
+
+@media (min-width: 36rem) {
+  #view-door:not([hidden]) {
+    border-width: 2.5rem;
+    border-image-width: 2.5rem;
+    padding: 0.5rem 1.25rem 1rem;
+  }
+}
