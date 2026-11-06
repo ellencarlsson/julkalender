@@ -80,6 +80,11 @@ function withLevelUpdates(progress) {
       await progress.markWordsCorrect(keys);
       levels.refresh({ celebrate: true });
     },
+    // A saved sudoku can finish a digit, which is worth XP of its own.
+    async saveCrossword(key, rows) {
+      await progress.saveCrossword(key, rows);
+      levels.refresh({ celebrate: true });
+    },
     hintBalance: () => hints.balance(),
     async revealWord(key) {
       await progress.revealWord(key);

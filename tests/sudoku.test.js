@@ -83,3 +83,11 @@ test("saves without a notes row give empty notes", () => {
   assert.ok(decodeNotes(encodeRows(parseGrid(PUZZLE), new Set())).every((cell) => cell.size === 0));
   assert.ok(decodeNotes(null).every((cell) => cell.size === 0));
 });
+
+test("digitProgress counts digits placed everywhere they belong, skipping fully given ones", async () => {
+  const { digitProgress, parseGrid } = await import("../lib/sudoku.js");
+  const solution = parseGrid("534678912672195348198342567859761423426853791713924856961537284287419635345286179");
+  const puzzle = solution.map((value) => (value === 1 ? 1 : 0));
+  const values = puzzle.map((given, index) => given || (solution[index] === 5 ? 5 : 0));
+  assert.deepEqual(digitProgress(puzzle, values, solution), { done: 1, total: 8 });
+});

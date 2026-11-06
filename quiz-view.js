@@ -1,4 +1,5 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
+import { XP_PER_LEVEL } from "./lib/level.js";
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
@@ -74,12 +75,18 @@ async function submitAnswer(ctx) {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
     ctx.card.querySelector(".quiz-hint")?.remove();
-    ctx.form.replaceWith(...solvedState(ctx.task, answer));
+    ctx.form.replaceWith(...solvedState(ctx.task, answer), ...earnedXp(ctx.xp));
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     if (ctx.button) ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
+}
+
+/** A question that is one of several in its door shows the XP it just gave; a whole door says +100 XP itself. */
+function earnedXp(xp) {
+  if (!xp || xp >= XP_PER_LEVEL) return [];
+  return [paragraph("task-done-state match-success quiz-xp", `+${xp} XP`)];
 }
 
 /** The answer stays on its line, with the teacher's red cursive R ("rätt") where the Rätta button was. */
@@ -139,11 +146,12 @@ function checkWhenFilled(ctx) {
  * Builds the answer form for a quiz task.
  *
  * Args:
- *   options: { task, key, progress, card } where card is the task card to mark as done.
+ *   options: { task, key, progress, card, xp } where card is the task card to mark as done and
+ *     xp the XP this question is worth, shown when it is answered.
  * Returns:
  *   The elements to append to the card.
  */
-export function createQuiz({ task, key, progress, card }) {
+export function createQuiz({ task, key, progress, card, xp }) {
   if (progress.isCompleted(key)) return solvedState(task);
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const field = answerField(task);
@@ -152,7 +160,7 @@ export function createQuiz({ task, key, progress, card }) {
   const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
   form.append(...[field, button, status].filter(Boolean));
-  const ctx = { task, key, progress, card, form, field, button, status };
+  const ctx = { task, key, progress, card, xp, form, field, button, status };
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     submitAnswer(ctx);

@@ -77,7 +77,7 @@ function taskCard(task, door, progress, xp) {
   const key = taskKey(door, task.id);
   if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
-  if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
+  if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card, xp }));
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
