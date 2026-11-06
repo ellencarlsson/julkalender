@@ -470,6 +470,52 @@ button.small {
   flex-basis: 100%;
 }
 
+.match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.match-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.match-card {
+  min-height: 3.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+.match-card img {
+  display: block;
+  width: 100%;
+  max-height: 7rem;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.match-card[aria-pressed="true"] {
+  border: 2px solid var(--gold);
+}
+
+.match-card.match-done {
+  border-color: var(--gold);
+  background: var(--solved);
+  cursor: default;
+}
+
+.match-card.match-wrong {
+  animation: match-shake 0.3s;
+}
+
+@keyframes match-shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
 .task-done-state {
   margin: 0.5rem 0 0;
   font-size: 1.2rem;
