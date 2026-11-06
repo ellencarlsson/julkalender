@@ -2353,7 +2353,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .backpack-items {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem 1.25rem;
   margin: 0;
   padding: 0;
@@ -2484,4 +2484,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   border-color: rgba(58, 39, 22, 0.9);
   outline: none;
   transform: rotate(-1.5deg) scale(1.04);
+}
+
+/* The Items heading lines up with the items below it. */
+#view-backpack h3:has(+ .backpack-items) {
+  text-align: left;
 }
