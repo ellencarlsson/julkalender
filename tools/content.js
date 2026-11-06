@@ -29,6 +29,16 @@ function isInsideWord(cells, r, c) {
 const isTile = (tile) => (Number.isInteger(tile) && tile >= 1 && tile <= 118) || (typeof tile === "string" && /^\p{L}$/u.test(tile));
 const validTiles = (tiles) => Array.isArray(tiles) && tiles.length > 0 && tiles.every(isTile);
 
+/** Pre-answered pictures shown above a quiz, so the player can work out the pattern. */
+function exampleErrors(examples) {
+  if (!Array.isArray(examples) || examples.length === 0) return ["examples must be a non-empty list"];
+  return examples.flatMap((example, index) =>
+    isPlainObject(example) && isNonEmptyString(example.name) && IMAGE_PATH.test(example.image ?? "")
+      ? []
+      : [`examples[${index}] must have a name and an image like images/name.svg`],
+  );
+}
+
 function validateQuiz(task) {
   const errors = [];
   // A tile sum is the question itself, so the question text may be left out then.
@@ -39,6 +49,7 @@ function validateQuiz(task) {
   if (task.letters !== undefined && typeof task.letters !== "boolean") errors.push("letters must be true or false");
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
   for (const field of ["hint", "submitLabel", "solvedAlt"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
@@ -85,12 +96,10 @@ function validateCrossword(task) {
   return task.clues.flatMap((clue, index) => validateClue(clue, index, cells));
 }
 
-const IMAGE_SIDE = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif)$/i;
-
 function validateSide(side, where) {
   if (!isPlainObject(side)) return [`${where} must be an object`];
   const hasText = isNonEmptyString(side.text);
-  const hasImage = isNonEmptyString(side.image) && IMAGE_SIDE.test(side.image);
+  const hasImage = isNonEmptyString(side.image) && IMAGE_PATH.test(side.image);
   if (hasText === hasImage) return [`${where} must have either text or an image like images/name.jpg`];
   return [];
 }
@@ -131,7 +140,7 @@ const TASK_VALIDATORS = {
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
 // Subfolders are allowed (images/door-1/x.png), parent references are not.
-const IMAGE_PATH = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif)$/i;
+const IMAGE_PATH = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif|svg)$/i;
 
 function validateImage(task) {
   if (task.image === undefined) return task.alt === undefined ? [] : ["alt requires image"];
