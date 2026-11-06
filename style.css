@@ -895,26 +895,6 @@ button.small {
   margin-inline: auto;
 }
 
-.quiz-hint {
-  margin-bottom: 0.75rem;
-}
-
-.quiz-hint-confirm {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid var(--gold);
-  border-radius: 0.75rem;
-  background: var(--surface-raised);
-}
-
-.quiz-hint-confirm p {
-  flex-basis: 100%;
-  margin: 0;
-}
-
 .quiz-hint-text {
   margin: 0;
   color: var(--gold);
@@ -1017,17 +997,6 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   box-shadow: 0 3px 0 #8a2219;
   color: #fff;
   font-weight: bold;
-}
-
-#view-door .quiz-hint button.small {
-  border: 1px dashed rgba(184, 52, 42, 0.6);
-  background: var(--surface-raised);
-  color: var(--gold);
-}
-
-#view-door .quiz-hint-confirm {
-  border-color: rgba(184, 52, 42, 0.5);
-  background: var(--surface-raised);
 }
 
 #view-door .quiz-input {
@@ -1270,10 +1239,6 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     top: 1rem;
     right: 1.25rem;
   }
-}
-
-.quiz-hint:has(> .quiz-hint-panel:empty) {
-  margin: 0;
 }
 
 .quiz-hint-icon {
@@ -1551,6 +1516,18 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   font-family: var(--hand-font);
   font-size: 1.15rem;
   text-align: left;
+}
+
+#view-door .quiz-hint-panel:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#view-door .quiz-hint-panel p {
+  flex-basis: 100%;
+  margin: 0;
 }
 
 #view-door .hint-popover[hidden] {
