@@ -3,7 +3,7 @@ import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
-import { doneState, paragraph } from "./task-ui.js";
+import { checkIcon, doneState, paragraph } from "./task-ui.js";
 
 function answerInput() {
   const input = document.createElement("input");
@@ -74,16 +74,27 @@ async function submitAnswer(ctx) {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
     ctx.card.querySelector(".quiz-hint")?.remove();
-    ctx.form.replaceWith(...solvedState(ctx.task));
+    ctx.form.replaceWith(...solvedState(ctx.task, answer));
+    ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     if (ctx.button) ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
 }
 
-/** A solved tile quiz shows the real symbols and its picture; any quiz shows "Rätt svar!". */
-function solvedState(task) {
-  if (!task.tiles) return [doneState(QUIZ_DONE_LABEL)];
+/** The answer stays visible with a check beside it; only completion is stored, so a reload shows the first accepted answer. */
+function solvedAnswer(task, typed) {
+  const text = typed?.trim() || task.answers[0];
+  const row = paragraph("task-done-state quiz-solved-answer", `${text} `);
+  row.append(checkIcon());
+  row.setAttribute("role", "status");
+  row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
+  return row;
+}
+
+/** A solved tile quiz shows the real symbols and its picture; any other quiz keeps the answer. */
+function solvedState(task, typed) {
+  if (!task.tiles) return [solvedAnswer(task, typed)];
   const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
   return [createPeriodicTiles(task.tiles, { mode: "solved", result }), doneState(QUIZ_DONE_LABEL)];
 }

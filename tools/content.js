@@ -39,6 +39,11 @@ function exampleErrors(examples) {
   );
 }
 
+function exampleNoteErrors(task) {
+  if (task.examples === undefined) return ["examplesNote requires examples"];
+  return isNonEmptyString(task.examplesNote) ? [] : ["examplesNote must be a non-empty string"];
+}
+
 function validateQuiz(task) {
   const errors = [];
   // A tile sum is the question itself, so the question text may be left out then.
@@ -50,6 +55,7 @@ function validateQuiz(task) {
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
+  if (task.examplesNote !== undefined) errors.push(...exampleNoteErrors(task));
   for (const field of ["hint", "submitLabel", "solvedAlt"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }

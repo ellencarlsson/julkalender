@@ -40,16 +40,16 @@ function exampleFigure({ image, name }) {
   return figure;
 }
 
-function exampleGallery(examples) {
+function exampleGallery(examples, note) {
   const gallery = Object.assign(document.createElement("div"), { className: "task-examples" });
   gallery.append(...examples.map(exampleFigure));
+  if (note) gallery.append(paragraph("examples-note", note));
   return gallery;
 }
 
 function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
   card.className = "task";
-  if (task.examples) card.append(exampleGallery(task.examples));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   if (task.image) card.append(taskImage(task));
@@ -63,7 +63,18 @@ function taskCard(task, door, progress, xp) {
   return card;
 }
 
+/** Examples beside (desktop) or below (mobile) a pager that shows one task at a time. */
+function examplesLayout(tasks, examples, door, progress) {
+  const cards = tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
+  const layout = Object.assign(document.createElement("div"), { className: "examples-layout" });
+  const note = tasks.find((task) => task.examplesNote)?.examplesNote;
+  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples, note));
+  return layout;
+}
+
 function taskElements(tasks, door, progress) {
+  const examples = tasks.flatMap((task) => task.examples ?? []);
+  if (examples.length > 0) return [examplesLayout(tasks, examples, door, progress)];
   if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   // The block title above the cards already names each task, so its prompt is not repeated in the card.
   const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));

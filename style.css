@@ -1981,3 +1981,49 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     font-size: 1.4rem;
   }
 }
+
+/* Example door: one task at a time on top, the named examples underneath on mobile. */
+.examples-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Desktop: the examples on the left, the task pager on the right. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.examples-layout) {
+    max-width: 64rem;
+  }
+
+  .examples-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-areas: "examples pager";
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .examples-layout > .block-pager {
+    grid-area: pager;
+  }
+
+  .examples-layout > .task-examples {
+    grid-area: examples;
+    margin-bottom: 0;
+  }
+}
+
+.examples-note {
+  flex-basis: 100%;
+  margin: 0.5rem 0 0;
+  white-space: pre-line;
+  text-align: center;
+  font-family: var(--hand-font);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+/* A solved quiz keeps the answer in ink, with the green check beside it. */
+#view-door .quiz-solved-answer {
+  color: var(--cream);
+}
