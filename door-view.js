@@ -1,4 +1,5 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
+import { blockPager, isPagedDoor } from "./block-pager.js";
 import { createCrossword } from "./crossword-view.js";
 import { createMatching } from "./matching-view.js";
 import { createQuiz } from "./quiz-view.js";
@@ -42,6 +43,13 @@ function taskCard(task, door, progress) {
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
+}
+
+function taskElements(tasks, door, progress) {
+  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress));
+  // The block title above the cards already names each task, so its prompt is not repeated in the card.
+  const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress));
+  return [blockPager(cards, tasks.map((task) => task.prompt ?? ""))];
 }
 
 function showMessage(...lines) {
@@ -109,7 +117,7 @@ export function showDoorContent(number, { state, door }, progress, onReset) {
   element("door-tools").replaceChildren();
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
-  element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
+  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress));
   // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
   if (onReset) element("door-tools").append(resetButton(number, onReset));
 }
