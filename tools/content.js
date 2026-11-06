@@ -164,8 +164,17 @@ function validateImage(task) {
   return errors;
 }
 
-function validateTaskCommon(task) {
+/** Optional school-assignment touches any task may have. */
+function validateWorksheet(task) {
   const errors = [];
+  if (task.worksheet !== undefined && !isNonEmptyString(task.worksheet)) errors.push("worksheet must be a non-empty string");
+  const lines = task.envelope;
+  if (lines !== undefined && !(isNonEmptyStringList(lines) && lines.length <= 5)) errors.push("envelope must be 1-5 address lines");
+  return errors;
+}
+
+function validateTaskCommon(task) {
+  const errors = [...validateWorksheet(task)];
   if (!isNonEmptyString(task.id)) errors.push("id must be a non-empty string");
   if (task.weight !== undefined && !(Number.isFinite(task.weight) && task.weight > 0)) {
     errors.push("weight must be a positive number");

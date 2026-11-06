@@ -10,6 +10,7 @@ import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 import { taskXp } from "./lib/level.js";
 import { createSudoku } from "./sudoku-view.js";
+import { envelope, worksheetHeader } from "./worksheet-view.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -65,7 +66,8 @@ function exampleGallery(examples, table) {
 
 function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
-  card.className = "task";
+  card.className = task.worksheet ? "task task--worksheet" : "task";
+  if (task.worksheet) card.append(worksheetHeader(task.worksheet));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   if (task.image) card.append(taskImage(task));
@@ -75,6 +77,7 @@ function taskCard(task, door, progress, xp) {
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
+  if (task.envelope) card.append(envelope(task.envelope));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
