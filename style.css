@@ -2538,3 +2538,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 #view-backpack:has(.backpack-item--reward, .backpack-item--chokladboll:not([data-count="0"])) .backpack-empty {
   display: none;
 }
+
+/* A solved periodic table sum needs no corner tick: the symbols and the picture are the answer. */
+.task--done:has(.pt-row)::after {
+  content: none;
+}
