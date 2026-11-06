@@ -1515,3 +1515,48 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   border-radius: 50%;
   background: rgba(255, 250, 238, 0.6);
 }
+
+/* Questions and messages about the chokladboll open right under it, on a slip of paper. */
+#view-door .hint-popover {
+  position: absolute;
+  top: calc(var(--hint-top) + 3rem);
+  right: var(--hint-right);
+  z-index: 2;
+  width: min(18rem, calc(100% - 2 * var(--hint-right)));
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid rgba(58, 39, 22, 0.45);
+  border-radius: 0.6rem;
+  background: rgba(255, 250, 238, 0.97);
+  box-shadow: 0 6px 16px rgba(58, 39, 22, 0.25);
+  color: var(--cream);
+  font-family: var(--hand-font);
+  font-size: 1.15rem;
+  text-align: left;
+}
+
+#view-door .hint-popover[hidden] {
+  display: none;
+}
+
+#view-door .cw-confirm {
+  flex-basis: auto;
+}
+
+#view-door .hint-popover .small {
+  padding: 0.35rem 1.1rem;
+  font-family: var(--hand-font);
+  font-size: 1.1rem;
+}
+
+#view-door .hint-yes {
+  border: none;
+  background: var(--knit-red);
+  color: #fff;
+}
+
+#view-door .hint-no {
+  border: 1.5px solid rgba(58, 39, 22, 0.5);
+  background: transparent;
+  color: var(--cream);
+}
