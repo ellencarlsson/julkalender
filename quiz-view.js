@@ -1,7 +1,7 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
-import { createPeriodicTiles } from "./periodic-tiles.js";
+import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
 import { doneState, paragraph } from "./task-ui.js";
 
@@ -49,8 +49,11 @@ function letterBoxes(count) {
   return row;
 }
 
-const typedAnswer = (field) =>
-  field.matches("input") ? field.value : [...field.querySelectorAll("input")].map((box) => box.value).join("");
+function typedAnswer(field) {
+  if (field.matches("input")) return field.value;
+  if (field.classList.contains("pt-row")) return tilesAnswer(field);
+  return [...field.querySelectorAll("input")].map((box) => box.value).join("");
+}
 
 function retry(field) {
   if (field.matches("input")) return field.select();
@@ -77,6 +80,12 @@ async function submitAnswer(ctx) {
   }
 }
 
+/** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
+function answerField(task) {
+  if (task.tiles) return createPeriodicTiles(task.tiles, { editable: true });
+  return task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
+}
+
 /**
  * Builds the answer form for a quiz task.
  *
@@ -90,7 +99,7 @@ export function createQuiz({ task, key, progress, card }) {
     return task.tiles ? [createPeriodicTiles(task.tiles), doneState(QUIZ_DONE_LABEL)] : [doneState(QUIZ_DONE_LABEL)];
   }
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
-  const field = task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
+  const field = answerField(task);
   const button = Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
   const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
@@ -100,6 +109,6 @@ export function createQuiz({ task, key, progress, card }) {
     event.preventDefault();
     submitAnswer(ctx);
   });
-  const extras = [task.tiles ? createPeriodicTiles(task.tiles) : null, createQuizHint({ task, key, progress })];
-  return [...extras.filter(Boolean), form];
+  const hint = createQuizHint({ task, key, progress });
+  return hint ? [hint, form] : [form];
 }

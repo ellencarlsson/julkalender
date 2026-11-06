@@ -1,7 +1,7 @@
 /** Tests for the periodic table category lookup. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { elementCategory } from "../lib/periodic.js";
+import { elementCategory, formatSymbol } from "../lib/periodic.js";
 
 test("the CHOKLADBOLLAR elements get their real periodic table categories", () => {
   assert.equal(elementCategory(6), "reactive-nonmetal");
@@ -20,4 +20,12 @@ test("other categories and numbers outside the table", () => {
   assert.equal(elementCategory(0), null);
   assert.equal(elementCategory(119), null);
   assert.equal(elementCategory(2.5), null);
+});
+
+test("typed symbols are written like in the periodic table", () => {
+  assert.equal(formatSymbol("la"), "La");
+  assert.equal(formatSymbol("DB"), "Db");
+  assert.equal(formatSymbol("c"), "C");
+  assert.equal(formatSymbol("a1r"), "Ar");
+  assert.equal(formatSymbol(""), "");
 });
