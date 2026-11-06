@@ -35,6 +35,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Side quests are not tied to a door; they become visible together with door 1.
+    match /sidequests/{quest} {
+      allow read: if isAdmin() || (isSignedIn() && request.time >= unlockTime(1));
+      allow write: if isAdmin();
+    }
+
     match /final/{doc} {
       allow read: if isAdmin()
         || (isSignedIn() && doc == "message" && request.time >= unlockTime(24));

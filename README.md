@@ -58,7 +58,17 @@ are validated first; if any is invalid nothing is uploaded. Uploading a door aga
 }
 ```
 
-`final.json`: `{ "message": "..." }`. Task `id` must be unique within the door; `weight`
+`final.json`: `{ "message": "..." }`.
+
+`sidequests.json` holds **all** side quests (not tied to a door; visible from December 1 07:00).
+Uploading it replaces the list, so a quest left out of the file is removed. Each completed side
+quest gives `reward` hint points (default 1); revealing a crossword word costs one.
+
+```json
+{ "sidequests": [ { "id": "lol-stats", "text": "Få stats 10/0/5", "reward": 1 } ] }
+```
+
+ Task `id` must be unique within the door; `weight`
 (default 1) splits the door's 100 XP; `clue` is optional. In a crossword `grid`, `#` is a
 black square and clue `row`/`col` are the 0-based start cell.
 

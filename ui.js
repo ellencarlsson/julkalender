@@ -47,6 +47,10 @@ export function showLevel(level, xpInLevel) {
 const LEVEL_UP_VISIBLE_MS = 4000;
 let levelUpTimer = null;
 
+export function showHintPoints(points) {
+  element("backpack-hint-points").textContent = points;
+}
+
 export function hideLevelUp() {
   clearTimeout(levelUpTimer);
   element("level-up").hidden = true;

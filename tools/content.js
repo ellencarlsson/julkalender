@@ -123,6 +123,32 @@ export function validateFinal(source) {
   return isPlainObject(source) && isNonEmptyString(source.message) ? [] : ["message must be a non-empty string"];
 }
 
+const SIDE_QUEST_ID = /^[a-z0-9-]+$/;
+
+function validateSideQuest(quest, index) {
+  const where = `sidequests[${index}]`;
+  if (!isPlainObject(quest)) return [`${where} must be an object`];
+  const errors = [];
+  if (!isNonEmptyString(quest.id) || !SIDE_QUEST_ID.test(quest.id)) errors.push(`${where}.id must use only a-z, 0-9 and -`);
+  if (!isNonEmptyString(quest.text)) errors.push(`${where}.text must be a non-empty string`);
+  if (quest.reward !== undefined && !(Number.isInteger(quest.reward) && quest.reward > 0)) {
+    errors.push(`${where}.reward must be a positive whole number`);
+  }
+  return errors;
+}
+
+export function validateSideQuests(source) {
+  if (!Array.isArray(source?.sidequests)) return ["sidequests must be a list"];
+  const errors = source.sidequests.flatMap(validateSideQuest);
+  const ids = source.sidequests.map((quest) => quest?.id);
+  const duplicates = [...new Set(ids.filter((id, index) => id && ids.indexOf(id) !== index))];
+  return [...errors, ...duplicates.map((id) => `side quest id "${id}" is used more than once`)];
+}
+
+export function toSideQuestDocument(quest, order) {
+  return { id: quest.id, text: quest.text, reward: quest.reward ?? 1, order };
+}
+
 function parseEntry({ name, text }) {
   try {
     return { name, source: JSON.parse(text) };
@@ -131,19 +157,30 @@ function parseEntry({ name, text }) {
   }
 }
 
+function entryKind(source) {
+  if (isPlainObject(source) && "message" in source) return "final";
+  if (isPlainObject(source) && "sidequests" in source) return "sidequests";
+  return "door";
+}
+
+const VALIDATORS = { final: validateFinal, sidequests: validateSideQuests, door: validateDoor };
+
 function addEntry(content, { name, source }) {
-  const isFinal = isPlainObject(source) && "message" in source;
-  const errors = (isFinal ? validateFinal(source) : validateDoor(source)).map((error) => `${name}: ${error}`);
+  const kind = entryKind(source);
+  const errors = VALIDATORS[kind](source).map((error) => `${name}: ${error}`);
   content.errors.push(...errors);
-  if (isFinal) content.finals.push(source);
+  if (kind === "final") content.finals.push(source);
+  else if (kind === "sidequests") content.sideQuestFiles.push(source);
   else if (errors.length === 0) content.doors.push(source);
 }
 
-function batchErrors({ doors, finals }) {
+function batchErrors({ doors, finals, sideQuestFiles }) {
   const numbers = doors.map((source) => source.door);
   const duplicates = [...new Set(numbers.filter((number, index) => numbers.indexOf(number) !== index))];
   const errors = duplicates.map((number) => `door ${number} is in more than one file`);
-  return finals.length > 1 ? [...errors, "more than one file contains a final message"] : errors;
+  if (finals.length > 1) errors.push("more than one file contains a final message");
+  if (sideQuestFiles.length > 1) errors.push("more than one file contains side quests");
+  return errors;
 }
 
 /**
@@ -152,16 +189,18 @@ function batchErrors({ doors, finals }) {
  * Args:
  *   files: list of { name, text } with the raw file contents.
  * Returns:
- *   { errors, doors, final } where doors are valid door objects and final is the final-message object or null.
+ *   { errors, doors, final, sideQuests } where doors are valid door objects, final is the final-message
+ *   object or null, and sideQuests is the list from a sidequests file or null when none was given.
  */
 export function parseContentFiles(files) {
-  const content = { errors: [], doors: [], finals: [] };
+  const content = { errors: [], doors: [], finals: [], sideQuestFiles: [] };
   for (const entry of files.map(parseEntry)) {
     if (entry.error) content.errors.push(entry.error);
     else addEntry(content, entry);
   }
   content.errors.push(...batchErrors(content));
-  return { errors: content.errors, doors: content.doors, final: content.finals[0] ?? null };
+  const sideQuests = content.sideQuestFiles[0]?.sidequests ?? null;
+  return { errors: content.errors, doors: content.doors, final: content.finals[0] ?? null, sideQuests };
 }
 
 export function toDoorDocument(source) {
