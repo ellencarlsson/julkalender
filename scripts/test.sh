@@ -103,6 +103,7 @@ check "local content folder is gitignored" git check-ignore -q content/door-1.js
 check "website never imports the admin SDK" bash -c '! grep -l "firebase-admin" *.js lib/*.js'
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
+check "task images have a renderer (regression #101)" grep -q "^function taskImage" door-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

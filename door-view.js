@@ -23,6 +23,12 @@ function taskPrompt(task) {
   return null;
 }
 
+function taskImage(task) {
+  const image = Object.assign(document.createElement("img"), { src: task.image, alt: task.alt ?? "", className: "task-image" });
+  image.loading = "lazy";
+  return image;
+}
+
 function taskCard(task, door, progress) {
   const card = document.createElement("article");
   card.className = "task";
