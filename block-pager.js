@@ -18,7 +18,7 @@ function arrowButton(text, label) {
  *
  * Args:
  *   cards: the task card elements, in door order.
- *   titles: one heading per card, shown between the arrows.
+ *   titles: one heading per card, shown between the arrows with the counter; "" shows only the counter.
  * Returns:
  *   The pager element.
  */
@@ -32,7 +32,8 @@ export function blockPager(cards, titles) {
   const show = (to) => {
     index = to;
     cards.forEach((card, i) => (card.hidden = i !== index));
-    title.textContent = `${titles[index]} (${index + 1}/${cards.length})`;
+    const count = `${index + 1}/${cards.length}`;
+    title.textContent = titles[index] ? `${titles[index]} (${count})` : count;
     prev.disabled = index === 0;
     next.disabled = index === cards.length - 1;
   };

@@ -75,6 +75,7 @@ async function submitAnswer(ctx) {
     ctx.card.classList.add("task--done");
     ctx.card.querySelector(".quiz-hint")?.remove();
     ctx.form.replaceWith(...solvedState(ctx.task));
+    ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     if (ctx.button) ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";

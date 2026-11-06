@@ -107,6 +107,8 @@ check "task images have a renderer (regression #101)" grep -q "^function taskIma
 check "door view has prev/next arrows" grep -q "id=\"next-door\"" index.html
 check "block-pager.js has valid syntax" check_js_syntax block-pager.js
 check "final-message.js has valid syntax" check_js_syntax final-message.js
+check "doors with examples page their tasks beside the examples" grep -q "^function examplesLayout" door-view.js
+check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

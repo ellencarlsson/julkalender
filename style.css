@@ -1966,3 +1966,34 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   height: auto;
   margin: 0 auto 0.25rem;
 }
+
+/* Example door: one task at a time on top, the named examples underneath on mobile. */
+.examples-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Desktop: the examples on the left, the task pager on the right. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.examples-layout) {
+    max-width: 64rem;
+  }
+
+  .examples-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-areas: "examples pager";
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .examples-layout > .block-pager {
+    grid-area: pager;
+  }
+
+  .examples-layout > .task-examples {
+    grid-area: examples;
+    margin-bottom: 0;
+  }
+}
