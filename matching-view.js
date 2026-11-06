@@ -36,13 +36,19 @@ function bounce(ctx, item, target) {
   setTimeout(() => [item, target].forEach((button) => button.classList.remove("match-wrong")), WRONG_MS);
 }
 
+const successLabel = (xp) => (xp ? `Alla rätt! 🎉 +${xp} XP` : CHALLENGE_DONE_LABEL);
+
 async function completeIfSolved(ctx) {
   if (!isMatchingSolved(ctx.task.pairs, ctx.matched)) return;
   ctx.status.textContent = "Sparar…";
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
-    ctx.status.replaceWith(doneState(CHALLENGE_DONE_LABEL));
+    const success = doneState(successLabel(ctx.xp));
+    success.classList.add("match-success");
+    ctx.status.replaceWith(success);
+    // Lets a paged door move on to the next block.
+    ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     ctx.status.textContent = "Kunde inte spara. Försök igen genom att ladda om sidan.";
   }
@@ -79,13 +85,14 @@ function column(ctx, sides, role, onTap) {
  * Builds a matching task.
  *
  * Args:
- *   options: { task, key, progress, card } where card is the task card to mark as done.
+ *   options: { task, key, progress, card, xp } where card is the task card to mark as done and
+ *     xp the XP this task is worth, shown when it is solved.
  * Returns:
  *   The elements to append to the card.
  */
-export function createMatching({ task, key, progress, card }) {
+export function createMatching({ task, key, progress, card, xp }) {
   const { items, targets } = matchingBoard(task.pairs);
-  const ctx = { task, key, progress, card, matched: new Set(), selected: null };
+  const ctx = { task, key, progress, card, xp, matched: new Set(), selected: null };
   ctx.root = Object.assign(document.createElement("div"), { className: "match-board" });
   ctx.root.append(column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
   ctx.status = paragraph("task-status", "");

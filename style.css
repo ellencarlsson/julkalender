@@ -1575,3 +1575,26 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   background: transparent;
   color: var(--cream);
 }
+
+/* A solved matching block says so clearly, with the XP it gave. */
+.match-success {
+  margin-top: 0.75rem;
+  color: #2c6a3f;
+  font-family: var(--hand-font);
+  font-size: 1.6rem;
+  text-align: center;
+  animation: match-success-pop 0.4s ease-out;
+}
+
+@keyframes match-success-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-success {
+    animation: none;
+  }
+}

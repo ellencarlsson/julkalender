@@ -8,6 +8,7 @@ import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
+import { taskXp } from "./lib/level.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -30,7 +31,7 @@ function taskImage(task) {
   return image;
 }
 
-function taskCard(task, door, progress) {
+function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
   card.className = "task";
   if (task.image) card.append(taskImage(task));
@@ -40,15 +41,15 @@ function taskCard(task, door, progress) {
   if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
-  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card }));
+  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
 
 function taskElements(tasks, door, progress) {
-  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress));
+  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   // The block title above the cards already names each task, so its prompt is not repeated in the card.
-  const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress));
+  const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));
   return [blockPager(cards, tasks.map((task) => task.prompt ?? ""))];
 }
 
