@@ -10,6 +10,7 @@ import {
   finalMessageUnlockTime,
   isDoorUnlocked,
   isValidDoor,
+  unlockLabel,
 } from "../lib/unlock-time.js";
 
 const ONE_MS = 1;
@@ -70,4 +71,14 @@ test("firestore.rules uses the same unlock schedule", () => {
   assert.match(rules, new RegExp(`duration\\.value\\(${UNLOCK_HOUR_UTC}, 'h'\\)`));
   assert.match(rules, /unlockTime\(24\)/);
   assert.match(rules, /\^\(\[1-9\]\|1\[0-9\]\|2\[0-4\]\)\$/);
+});
+
+test("unlock label shows the Swedish date and 07:00", () => {
+  assert.equal(unlockLabel(5), "Öppnas 5 december kl. 07:00");
+  assert.equal(unlockLabel(1), "Öppnas 1 december kl. 07:00");
+  assert.equal(unlockLabel(24), "Öppnas 24 december kl. 07:00");
+});
+
+test("unlock label rejects invalid doors", () => {
+  assert.throws(() => unlockLabel(25), RangeError);
 });

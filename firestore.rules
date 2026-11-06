@@ -29,8 +29,15 @@ service cloud.firestore {
     }
 
     match /doors/{door} {
-      allow read: if isAdmin()
-        || (isSignedIn() && isValidDoor(door) && request.time >= unlockTime(int(door)));
+      // Only doors 1-24 are readable, also for the admin, so the temporary test door 25 is always locked.
+      allow read: if isValidDoor(door)
+        && (isAdmin() || (isSignedIn() && request.time >= unlockTime(int(door))));
+      allow write: if isAdmin();
+    }
+
+    // Side quests are not tied to a door; they become visible together with door 1.
+    match /sidequests/{quest} {
+      allow read: if isAdmin() || (isSignedIn() && request.time >= unlockTime(1));
       allow write: if isAdmin();
     }
 

@@ -3,13 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Julkalender</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js"></script>
+  <title>Haris Julkalender</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
+  <link rel="stylesheet" href="./style.css?v=8f8984effb">
+  <script>
+    // Shows a reload message if the app fails to load or crashes before it is ready.
+    window.addEventListener("error", () => {
+      if (document.documentElement.dataset.appReady) return;
+      document.getElementById("load-error")?.removeAttribute("hidden");
+    }, true);
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "./app.js": "./app.js?v=726a79ca6d",
+      "./crossword-view.js": "./crossword-view.js?v=47b8c48c48",
+      "./door-view.js": "./door-view.js?v=ec91026c71",
+      "./doors.js": "./doors.js?v=2b6119d4d8",
+      "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
+      "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
+      "./level-tracker.js": "./level-tracker.js?v=30b63112f7",
+      "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
+      "./lib/door-state.js": "./lib/door-state.js?v=91df6ae122",
+      "./lib/hints.js": "./lib/hints.js?v=43e3f72143",
+      "./lib/level.js": "./lib/level.js?v=6038e01c2e",
+      "./lib/matching.js": "./lib/matching.js?v=85ee8623d3",
+      "./lib/progress.js": "./lib/progress.js?v=ca9606c422",
+      "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
+      "./lib/router.js": "./lib/router.js?v=d520c19738",
+      "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
+      "./lib/test-reset.js": "./lib/test-reset.js?v=8a63eeb741",
+      "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
+      "./matching-view.js": "./matching-view.js?v=fe36a723ce",
+      "./progress.js": "./progress.js?v=bbe6e79699",
+      "./quiz-hint.js": "./quiz-hint.js?v=700dfa3839",
+      "./quiz-view.js": "./quiz-view.js?v=5bcd6e232c",
+      "./sidequest-view.js": "./sidequest-view.js?v=00eb195049",
+      "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
+      "./task-ui.js": "./task-ui.js?v=87b5e563a7",
+      "./ui.js": "./ui.js?v=7d111123f7"
+    }
+  }
+  </script>
+  <script type="module" src="./app.js?v=726a79ca6d"></script>
 </head>
 <body>
   <main>
-    <h1>Julkalender</h1>
+    <h1 class="site-title">
+      <picture>
+        <source media="(min-width: 48rem)" srcset="./images/theme/title-wide-v2.png" width="1400" height="388">
+        <img src="./images/theme/title.png" alt="Haris Julkalender" width="900" height="415">
+      </picture>
+    </h1>
 
     <section id="signed-out" hidden>
       <button id="sign-in-button" type="button">Logga in med Google</button>
@@ -17,6 +64,10 @@
 
     <div id="signed-in" hidden>
       <header class="game-header">
+        <a href="#/sidequests" id="hint-circle" class="hint-circle" data-nav="sidequests" aria-label="0 ledtrådspoäng. Visa sidouppdrag">
+          <span id="hint-points" class="hint-number">0</span><span class="hint-bulb" aria-hidden="true">💡</span>
+        </a>
+
         <nav class="main-nav">
           <a href="#/backpack" data-nav="backpack" class="icon-button" aria-label="Ryggsäck" title="Ryggsäck"><span aria-hidden="true">🎒</span></a>
           <a href="#/" data-nav="overview" class="icon-button" aria-label="Luckor" title="Luckor"><span aria-hidden="true">📅</span></a>
@@ -27,14 +78,17 @@
         </div>
       </header>
 
+      <p id="level-up" class="level-up" role="status" hidden></p>
+
       <section id="view-overview" data-view="overview">
         <ol id="door-grid" class="door-grid"></ol>
       </section>
 
       <section id="view-door" data-view="door" hidden>
-        <a href="#/" class="back-link">← Tillbaka till luckorna</a>
-        <h2 id="door-title">Lucka</h2>
-        <p id="door-subtitle" class="door-subtitle" hidden></p>
+        <div class="door-header">
+          <h2 id="door-title">Lucka</h2>
+          <p id="door-subtitle" class="door-subtitle" hidden></p>
+        </div>
         <div id="task-area" class="task-area"></div>
       </section>
 
@@ -45,19 +99,26 @@
           <ul id="clue-list"></ul>
           <p id="clues-empty">Inga ledtrådar än.</p>
         </div>
-        <div class="panel">
-          <h3>Ledtrådspoäng</h3>
-          <p>Du har <strong id="backpack-hint-points">0</strong> ledtrådspoäng.</p>
-        </div>
+      </section>
+
+      <section id="view-sidequests" data-view="sidequests" hidden>
+        <h2>Sidouppdrag</h2>
+        <p class="sidequests-intro">Sidouppdrag ger ledtrådspoäng som du kan använda för att få hjälp i korsorden.</p>
+        <div id="sidequest-list" class="task-area"></div>
       </section>
 
       <footer class="app-footer">
         <p>Inloggad som: <span id="user-name"></span></p>
-        <button id="sign-out-button" class="small" type="button">Logga ut</button>
+        <button id="sign-out-button" type="button">Logga ut</button>
       </footer>
     </div>
 
     <p id="auth-error" role="alert" hidden></p>
+
+    <div id="load-error" class="load-error" role="alert" hidden>
+      <p>Något gick fel när sidan laddades.</p>
+      <button type="button" onclick="location.reload()">Ladda om</button>
+    </div>
   </main>
 </body>
 </html>

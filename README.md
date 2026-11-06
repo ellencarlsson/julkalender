@@ -14,6 +14,14 @@ Live: https://ellencarlsson.github.io/julkalender/
 Door N opens December N, 2026 at 07:00 Swedish time, enforced by Google's server
 clock in the rules. The admin account sees all doors.
 
+**Temporary test door 25** is always locked, also for the admin, so the locked view can be
+checked while building. Remove it before giving the calendar away: search for
+`TEST_LOCKED_DOOR` (`lib/test-door.js` and its uses).
+
+**Temporary "Rensa lucka" button** clears the signed-in user's own progress in one door
+while testing. Remove it before giving the calendar away: search for `TEST_RESET_DOOR`
+(`lib/test-reset.js` and its uses).
+
 ## Managing content from the terminal
 
 There is no admin page; content and progress are managed with scripts in `tools/`
@@ -50,7 +58,17 @@ are validated first; if any is invalid nothing is uploaded. Uploading a door aga
 }
 ```
 
-`final.json`: `{ "message": "..." }`. Task `id` must be unique within the door; `weight`
+`final.json`: `{ "message": "..." }`.
+
+`sidequests.json` holds **all** side quests (not tied to a door; visible from December 1 07:00).
+Uploading it replaces the list, so a quest left out of the file is removed. Each completed side
+quest gives `reward` hint points (default 1); revealing a crossword word costs one.
+
+```json
+{ "sidequests": [ { "id": "lol-stats", "text": "Få stats 10/0/5", "reward": 1 } ] }
+```
+
+ Task `id` must be unique within the door; `weight`
 (default 1) splits the door's 100 XP; `clue` is optional. In a crossword `grid`, `#` is a
 black square and clue `row`/`col` are the 0-based start cell.
 
@@ -59,6 +77,19 @@ black square and clue `row`/`col` are the 0-based start cell.
 ```sh
 node tools/reset-progress.mjs carlssonellen@live.se   # or a uid
 ```
+
+## Version stamps (cache busting)
+
+GitHub Pages lets browsers cache files for 10 minutes. To stop a browser from mixing old and
+new files after a deploy, every local JS module and `style.css` is loaded through a
+content-hashed URL from the import map in `index.html`. After changing any `.js` or `.css` file:
+
+```sh
+node scripts/stamp-versions.mjs
+```
+
+`scripts/test.sh` fails if the stamps are out of date. If the app still fails to load, the page
+shows "Något gick fel när sidan laddades" with a reload button instead of going blank.
 
 ## Tests
 

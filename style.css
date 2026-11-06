@@ -1,7 +1,22 @@
 :root {
-  --red: #8b1e2d;
-  --red-dark: #6e1623;
+  /* Square checkmark used as a mask, so it takes the theme color and looks the same everywhere. */
+  --check-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='3.5'/><path d='M7.5 12.5l3 3 6-6.5'/></svg>");
+  /* Winter-evening palette from the background art: dusk blue surfaces, knit red and pine green accents. */
+  --bg: #1f2c5c;
+  --surface: rgba(22, 32, 72, 0.72);
+  --surface-raised: rgba(52, 70, 128, 0.8);
+  --cell: #18224a;
+  --word: #3a4c86;
+  --solved: #2c5a3c;
+  --knit-red: #c0392b;
+  --frost: rgba(228, 236, 250, 0.68);
+  --frost-strong: rgba(240, 245, 255, 0.82);
+  --ink: #2a3150;
+  --hand-font: "Patrick Hand", "Comic Sans MS", cursive;
+  --gold: #e8b96a;
   --cream: #fdf6e3;
+  --cream-muted: rgba(253, 246, 227, 0.7);
+  --line: rgba(253, 246, 227, 0.35);
 }
 
 * {
@@ -11,21 +26,131 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--red);
+  background: var(--bg);
   color: var(--cream);
   font-family: Georgia, serif;
+  text-shadow: 0 1px 3px rgba(10, 16, 40, 0.6);
+}
+
+/* Fixed layer instead of background-attachment: fixed, which iOS Safari ignores. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: var(--bg) url("./images/theme/winter-desktop-v2.jpg") center bottom / cover no-repeat;
+}
+
+@media (max-aspect-ratio: 4/5) {
+  body::before {
+    background-image: url("./images/theme/winter-mobile.jpg");
+  }
+}
+
+/* Gentle falling snow on top of the painted snow in the background. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -100vh 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(3px 3px at 70% 60%, rgba(255, 255, 255, 0.6) 50%, transparent 51%),
+    radial-gradient(2px 2px at 45% 80%, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(3px 3px at 90% 15%, rgba(255, 255, 255, 0.5) 50%, transparent 51%);
+  background-size: 260px 260px;
+  animation: snowfall 22s linear infinite;
+}
+
+@keyframes snowfall {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+  }
 }
 
 main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1rem 1rem 0.75rem;
   text-align: center;
 }
 
+/* Grows to fill the page so the footer sits at the bottom even when a view is short. */
+#signed-in:not([hidden]) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.app-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 2rem;
+  color: var(--cream-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.app-footer p {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-footer button {
+  flex: none;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+/* Everything except the header stays in a centered column; the header spans the page edges. */
+main > :not(#signed-in),
+#signed-in > :not(.game-header) {
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
 h1 {
-  margin: 0.5rem 0 1rem;
-  font-size: clamp(2.5rem, 10vw, 5rem);
+  margin: 0.5em 0;
+  font-size: clamp(1.5rem, 6.5vw, 3rem);
+  white-space: nowrap;
+}
+
+/* Painted title art with Santa hat and reindeer; the alt text keeps the real title for screen readers. */
+.site-title {
+  margin: 0 auto 0.5rem;
+  line-height: 0;
+}
+
+.site-title img {
+  width: min(88%, 26rem);
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(10, 16, 40, 0.45));
+}
+
+/* One-line title art from tablet width up, so the doors start higher on the page. */
+@media (min-width: 48rem) {
+  .site-title img {
+    width: min(100%, 44rem);
+  }
 }
 
 a {
@@ -34,10 +159,10 @@ a {
 
 button {
   padding: 0.75rem 1.5rem;
-  border: none;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--cream);
-  color: var(--red);
+  background: var(--surface-raised);
+  color: var(--cream);
   font: inherit;
   font-size: 1.1rem;
   cursor: pointer;
@@ -52,20 +177,48 @@ button.small {
   color: #ffd6d6;
 }
 
-/* Positioned against the page, not the centered column, so it reaches the screen edges. */
 .game-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-body:has(#signed-in:not([hidden])) main {
-  padding-top: 6rem;
+.hint-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: 4rem;
+  height: 4rem;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.hint-circle[aria-current="page"] {
+  background: var(--surface-raised);
+}
+
+.hint-number {
+  font-size: 1.35rem;
+  font-weight: bold;
+}
+
+.hint-bulb {
+  font-size: 1rem;
+}
+
+.sidequests-intro {
+  color: var(--cream-muted);
+}
+
+.sidequest-reward {
+  margin-top: 0;
+  color: var(--gold);
+  font-size: 0.95rem;
 }
 
 .level-ring {
@@ -75,7 +228,29 @@ body:has(#signed-in:not([hidden])) main {
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: conic-gradient(var(--cream) calc(var(--progress) * 1%), var(--red-dark) 0);
+  background: conic-gradient(var(--cream) calc(var(--progress) * 1%), var(--surface) 0);
+}
+
+/* Fixed so it is seen even when the completed task is far down the page. */
+.level-up {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 10;
+  max-width: 28rem;
+  margin: 0 auto;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  color: var(--cream);
+  font-weight: bold;
+}
+
+.level-up[hidden] {
+  display: none;
 }
 
 .level-number {
@@ -84,7 +259,7 @@ body:has(#signed-in:not([hidden])) main {
   width: 3.1rem;
   height: 3.1rem;
   border-radius: 50%;
-  background: var(--red);
+  background: var(--bg);
   font-size: 1.5rem;
   font-weight: bold;
 }
@@ -114,8 +289,8 @@ body:has(#signed-in:not([hidden])) main {
 }
 
 .main-nav a[aria-current="page"] {
-  background: var(--cream);
-  color: var(--red);
+  border-color: var(--gold);
+  background: var(--surface-raised);
 }
 
 .door-grid {
@@ -132,26 +307,72 @@ body:has(#signed-in:not([hidden])) main {
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
-  border: 2px solid var(--cream);
-  border-radius: 0.75rem;
-  background: var(--red-dark);
-  font-size: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 0.9rem;
+  background: var(--frost);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.6), 0 4px 10px rgba(10, 16, 40, 0.25);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  color: var(--ink);
+  font-family: var(--hand-font);
+  font-size: 1.8rem;
   text-decoration: none;
+  text-shadow: none;
 }
 
 .door[data-state="locked"] {
-  opacity: 0.45;
+  opacity: 0.55;
 }
 
 .door[data-state="open"],
 .door[data-state="empty"] {
-  background: var(--cream);
-  color: var(--red);
+  background: var(--frost-strong);
 }
 
+.door[data-completed="true"] {
+  position: relative;
+  border: 2px solid var(--knit-red);
+  background: var(--frost-strong);
+}
+
+/* Square checkmark in the corner of completed doors. */
+.door[data-completed="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: var(--knit-red);
+  -webkit-mask: var(--check-mask) center / contain no-repeat;
+  mask: var(--check-mask) center / contain no-repeat;
+}
+
+.door-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+
+.door-header h2 {
+  flex: none;
+  margin: 0;
+  font-size: clamp(1.25rem, 5.5vw, 1.5rem);
+  white-space: nowrap;
+}
+
+/* One line always; a title too long for the screen is shortened with an ellipsis. */
 .door-subtitle {
-  margin-top: -0.5rem;
+  min-width: 0;
+  overflow: hidden;
+  margin: 0;
+  font-size: clamp(1.05rem, 4.5vw, 1.25rem);
   font-style: italic;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-area {
@@ -161,31 +382,519 @@ body:has(#signed-in:not([hidden])) main {
   text-align: left;
 }
 
+.locked-title {
+  margin-bottom: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.locked-title + p {
+  text-align: center;
+}
+
 .task {
+  position: relative;
   padding: 1rem;
   border-radius: 1rem;
-  background: var(--red-dark);
+  background: var(--surface);
 }
 
-.task h3 {
-  margin: 0 0 0.5rem;
+.task > p:first-child {
+  margin-top: 0;
+  /* Keeps line breaks from the content, e.g. one equation or recipe step per line. */
+  white-space: pre-line;
 }
 
-.back-link {
+/* Without a task type heading, the done marker sits in the card's corner. */
+.check-icon,
+.task--done::after {
   display: inline-block;
-  margin-bottom: 0.5rem;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+  background: var(--gold);
+  -webkit-mask: var(--check-mask) center / contain no-repeat;
+  mask: var(--check-mask) center / contain no-repeat;
+}
+
+.task--done::after {
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  font-size: 1.4rem;
+}
+
+.task-instruction {
+  font-style: italic;
+}
+
+.photo-sent {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-weight: bold;
+}
+
+.photo-sent:disabled {
+  opacity: 0.6;
+}
+
+/* Challenges show their own "Klart!" with a checkmark, so they skip the corner marker. */
+.task--done:has(.task-done-state)::after {
+  content: none;
+}
+
+/* TEST_RESET_DOOR */
+.reset-door {
+  align-self: center;
+  margin-top: 1rem;
+  border: 2px dashed var(--line);
+}
+
+.quiz-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quiz-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--cell);
+  color: var(--cream);
+  /* 16px minimum stops iOS Safari from zooming in on focus. */
+  font: max(16px, 1rem) Georgia, serif;
+}
+
+.quiz-input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.quiz-form .task-status {
+  flex-basis: 100%;
+}
+
+.match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.match-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.match-card {
+  min-height: 3.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+.match-card img {
+  display: block;
+  width: 100%;
+  max-height: 7rem;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.match-card[aria-pressed="true"] {
+  border: 2px solid var(--gold);
+}
+
+.match-card.match-done {
+  border-color: var(--gold);
+  background: var(--solved);
+  cursor: default;
+}
+
+.match-card.match-wrong {
+  animation: match-shake 0.3s;
+}
+
+@keyframes match-shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.task-done-state {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.task-status {
+  margin: 0;
+  font-style: italic;
+}
+
+.task-status:empty {
+  display: none;
+}
+
+.cw {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.cw-toolbar .cw-current-clue {
+  flex: 1;
+}
+
+.cw-lamp {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 2px solid var(--gold);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.cw-confirm {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--gold);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+}
+
+.cw-confirm[hidden] {
+  display: none;
+}
+
+.cw-confirm p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.cw-cell.cw-revealed input {
+  color: var(--gold);
+}
+
+.cw-current-clue {
+  min-height: 1.5em;
+  margin: 0;
+  font-style: italic;
+}
+
+.cw-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 3rem));
+  gap: 2px;
+  justify-content: center;
+}
+
+.cw-cell,
+.cw-block,
+.cw-space {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.cw-cell input {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  background: var(--cell);
+  color: var(--cream);
+  /* 16px minimum stops iOS Safari from zooming in when a cell is tapped. */
+  font: bold max(16px, 1.25rem) Georgia, serif;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: transparent;
+}
+
+/* A gap inside a multi-word answer: visibly part of the word, but nothing to type. */
+.cw-space {
+  border: 2px dashed rgba(253, 246, 227, 0.45);
+  border-radius: 4px;
+}
+
+.cw-active-word input {
+  background: var(--word);
+}
+
+.cw-current input {
+  outline: 3px solid var(--gold);
+  outline-offset: -3px;
+}
+
+.cw--solved input {
+  background: var(--solved);
+}
+
+.cw-number {
+  position: absolute;
+  top: 1px;
+  left: 3px;
+  z-index: 1;
+  color: var(--cream-muted);
+  font-size: 0.6rem;
+  pointer-events: none;
+}
+
+.cw-clues {
+  display: grid;
+  gap: 0.5rem 1.5rem;
+}
+
+.cw-clue-group h4 {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.cw-clue-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cw-clue {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--cream);
+  font-size: 1rem;
+  text-align: left;
+}
+
+.cw-clue[aria-current] {
+  box-shadow: inset 3px 0 0 var(--gold);
+  background: var(--surface-raised);
+}
+
+@media (min-width: 36rem) {
+  .cw-clues {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Desktop: bigger doors, and the header controls move in from the window edges to the content width. */
+@media (min-width: 64rem) {
+  #signed-in > .game-header,
+  #signed-in > #view-overview {
+    width: 100%;
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  /* Keeps all 24 doors on screen and leaves room for the snowman and presents. */
+  #signed-in > #view-overview {
+    max-width: 44rem;
+  }
+
+  .door-grid {
+    gap: 1rem;
+  }
+
+  .door {
+    border-radius: 1.1rem;
+    font-size: 3rem;
+  }
+
+  .door[data-completed="true"]::after {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+/* Desktop: across clues left of the grid, down clues right; only crossword doors get the wider column. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.cw) {
+    max-width: 76rem;
+  }
+
+  .cw {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) auto minmax(12rem, 1fr);
+    grid-template-areas:
+      "current current current"
+      "across grid down"
+      "status status status";
+    column-gap: 2rem;
+    align-items: start;
+  }
+
+  .cw-toolbar {
+    grid-area: current;
+  }
+
+  .cw-current-clue {
+    text-align: center;
+  }
+
+  .cw-grid {
+    grid-area: grid;
+    grid-template-columns: repeat(var(--cols), 2.75rem);
+  }
+
+  .cw-clues {
+    display: contents;
+  }
+
+  .cw-clue-group--across {
+    grid-area: across;
+  }
+
+  .cw-clue-group--down {
+    grid-area: down;
+  }
+
+  .cw-clue-group h4 {
+    margin-top: 0;
+  }
+
+  .cw .task-status {
+    grid-area: status;
+    text-align: center;
+  }
 }
 
 .panel {
   margin-bottom: 1rem;
   padding: 1rem;
   border-radius: 1rem;
-  background: var(--red-dark);
+  background: var(--surface);
   text-align: left;
 }
 
 @media (min-width: 36rem) {
   .door-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.load-error {
+  margin-top: 2rem;
+}
+
+.task-image {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 0.75rem;
+}
+
+/* Code-word quiz: one box per letter. */
+.quiz-letters {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.quiz-letter {
+  width: 2.4rem;
+  height: 2.8rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--cell);
+  color: var(--cream);
+  /* 16px minimum stops iOS Safari from zooming in on focus. */
+  font: bold max(16px, 1.3rem) Georgia, serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.quiz-letter:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.quiz-letters + button {
+  margin-inline: auto;
+}
+
+.quiz-hint {
+  margin-bottom: 0.75rem;
+}
+
+.quiz-hint-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--gold);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+}
+
+.quiz-hint-confirm p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.quiz-hint-text {
+  margin: 0;
+  color: var(--gold);
+  font-style: italic;
+}
+
+/* Door view: the content sits on an old parchment. The 9-slice border image keeps the torn edges
+   intact while the middle stretches to any content height. */
+#view-door:not([hidden]) {
+  --cream: #3a2716;
+  --cream-muted: rgba(58, 39, 22, 0.72);
+  --line: rgba(90, 60, 30, 0.4);
+  --surface: rgba(255, 246, 225, 0.35);
+  --surface-raised: rgba(140, 95, 45, 0.18);
+  --cell: rgba(255, 250, 238, 0.8);
+  --word: rgba(214, 168, 96, 0.5);
+  --solved: rgba(132, 168, 112, 0.55);
+  --gold: #8b4f1d;
+  border: 1.6rem solid transparent;
+  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  padding: 0.25rem 0.5rem 0.75rem;
+  color: var(--cream);
+  text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.45));
+}
+
+#view-door .task {
+  border: 1px solid var(--line);
+}
+
+/* Softens the winter scene behind the parchment so the task is in focus. */
+body:has(#view-door:not([hidden]))::before {
+  filter: blur(3px) brightness(0.8);
+  transform: scale(1.04);
+}
+
+@media (min-width: 36rem) {
+  #view-door:not([hidden]) {
+    border-width: 2.5rem;
+    border-image-width: 2.5rem;
+    padding: 0.5rem 1.25rem 1rem;
   }
 }

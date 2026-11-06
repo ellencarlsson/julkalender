@@ -1,13 +1,15 @@
 /** Signed-in app shell: door grid and hash-based switching between views. */
 import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
+import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 
 const element = (id) => document.getElementById(id);
+const GRID_DOORS = [...Array.from({ length: DOOR_COUNT }, (_, index) => index + 1), TEST_LOCKED_DOOR];
 
 function renderDoorGrid() {
   const grid = element("door-grid");
-  for (let door = 1; door <= DOOR_COUNT; door++) {
+  for (const door of GRID_DOORS) {
     const link = document.createElement("a");
     link.href = doorHash(door);
     link.className = "door";
@@ -42,18 +44,41 @@ export function showLevel(level, xpInLevel) {
   element("level").textContent = level;
 }
 
+const LEVEL_UP_VISIBLE_MS = 4000;
+let levelUpTimer = null;
+
+export function showHintPoints(points) {
+  element("hint-points").textContent = points;
+  element("hint-circle").setAttribute("aria-label", `${points} ledtrådspoäng. Visa sidouppdrag`);
+}
+
+export function hideLevelUp() {
+  clearTimeout(levelUpTimer);
+  element("level-up").hidden = true;
+}
+
+export function showLevelUp(level) {
+  const toast = element("level-up");
+  toast.textContent = `Nivå upp! Du är nu på nivå ${level} 🎉`;
+  toast.hidden = false;
+  clearTimeout(levelUpTimer);
+  levelUpTimer = setTimeout(() => (toast.hidden = true), LEVEL_UP_VISIBLE_MS);
+}
+
 /**
  * Builds the shell once and returns a function that shows the view for the current hash.
  *
  * Args:
  *   onDoorOpen: called with the door number whenever the door view is shown.
+ *   onSideQuestsOpen: called whenever the side quests panel is shown.
  */
-export function createShell({ onDoorOpen }) {
+export function createShell({ onDoorOpen, onSideQuestsOpen }) {
   renderDoorGrid();
   const render = () => {
     const route = parseRoute(location.hash);
     showRoute(route);
     if (route.view === "door") onDoorOpen(route.door);
+    if (route.view === "sidequests") onSideQuestsOpen();
   };
   window.addEventListener("hashchange", render);
   return render;

@@ -1,7 +1,7 @@
 /** Tests for validating content before it is uploaded from the terminal. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseContentFiles, toDoorDocument, toFinalDocument, validateDoor, validateFinal } from "../tools/content.js";
+import { parseContentFiles, toDoorDocument, toFinalDocument, toSideQuestDocument, validateDoor, validateFinal } from "../tools/content.js";
 
 const quizDoor = (overrides = {}) => ({
   door: 1,
@@ -97,4 +97,95 @@ test("parseContentFiles rejects the same door in two files", () => {
 test("parseContentFiles rejects two final messages", () => {
   const { errors } = parseContentFiles([file("a.json", { message: "A" }), file("b.json", { message: "B" })]);
   assert.deepEqual(errors, ["more than one file contains a final message"]);
+});
+
+test("crossword grids may contain spaces inside multi-word answers", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 0, text: "Låt" };
+  assert.deepEqual(validateDoor(crosswordDoor(["STUPID SONG"], [clue])), []);
+});
+
+test("a space at the edge or next to a black square is rejected", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 1, text: "x" };
+  assert.match(validateDoor(crosswordDoor([" AB"], [clue])).join(), /space must sit between/);
+  assert.match(validateDoor(crosswordDoor(["A #B"], [{ ...clue, col: 0 }])).join(), /space must sit between/);
+});
+
+test("a clue cannot start on a space", () => {
+  const clue = { number: 1, direction: "across", row: 0, col: 1, text: "x" };
+  assert.match(validateDoor(crosswordDoor(["A B"], [clue])).join(), /letter cell/);
+});
+
+const challengeDoor = (overrides = {}) => ({
+  door: 2,
+  tasks: [{ id: "d", type: "challenge", description: "Hitta", ...overrides }],
+});
+
+test("task with an image in images/ and alt text is valid", () => {
+  assert.deepEqual(validateDoor(challengeDoor({ image: "images/door-2-dexter.jpg", alt: "Dexter" })), []);
+});
+
+test("image outside images/ or with unknown extension is rejected", () => {
+  assert.match(validateDoor(challengeDoor({ image: "https://example.com/x.jpg" })).join(), /image must be/);
+  assert.match(validateDoor(challengeDoor({ image: "images/x.txt" })).join(), /image must be/);
+});
+
+test("alt without image is rejected", () => {
+  assert.match(validateDoor(challengeDoor({ alt: "Dexter" })).join(), /alt requires image/);
+});
+
+const sideQuestFile = (sidequests) => file("sidequests.json", { sidequests });
+
+test("a side quests file is parsed and validated", () => {
+  const content = parseContentFiles([sideQuestFile([{ id: "lol", text: "Få stats 10/0/5" }, { id: "hjortar", text: "Hälsa", reward: 2 }])]);
+  assert.deepEqual(content.errors, []);
+  assert.equal(content.sideQuests.length, 2);
+  assert.deepEqual(toSideQuestDocument(content.sideQuests[0], 0), { id: "lol", text: "Få stats 10/0/5", reward: 1, order: 0 });
+});
+
+test("side quests need a simple id, text and a whole-number reward", () => {
+  const { errors } = parseContentFiles([sideQuestFile([{ id: "Bad Id", text: "" }, { id: "x", text: "t", reward: 1.5 }])]);
+  assert.match(errors.join(), /id must use only/);
+  assert.match(errors.join(), /text must be/);
+  assert.match(errors.join(), /reward must be/);
+});
+
+test("duplicate side quest ids are rejected", () => {
+  const { errors } = parseContentFiles([sideQuestFile([{ id: "lol", text: "a" }, { id: "lol", text: "b" }])]);
+  assert.match(errors.join(), /used more than once/);
+});
+
+test("no sidequests file means sideQuests is null, so existing side quests are left alone", () => {
+  assert.equal(parseContentFiles([file("door-1.json", quizDoor())]).sideQuests, null);
+});
+
+const matchingDoor = (pairs) => ({ door: 11, tasks: [{ id: "hattar", type: "matching", pairs }] });
+
+test("a matching task with text and image sides is valid", () => {
+  const pairs = [{ item: { text: "Sorteringshatten" }, target: { text: "Harry" } }, { item: { text: "Cowboyhatt" }, target: { image: "images/arthur.jpg" } }];
+  assert.deepEqual(validateDoor(matchingDoor(pairs)), []);
+});
+
+test("matching needs at least two pairs, each side either text or an image", () => {
+  assert.match(validateDoor(matchingDoor([{ item: { text: "a" }, target: { text: "b" } }])).join(), /at least 2 pairs/);
+  const bad = [{ item: { text: "a", image: "images/x.jpg" }, target: { text: "b" } }, { item: {}, target: { image: "https://x.se/y.jpg" } }];
+  assert.equal(validateDoor(matchingDoor(bad)).length, 3);
+});
+
+test("images may live in a subfolder of images/, but not outside it", () => {
+  const pairs = (image) => [{ item: { image }, target: { text: "Arthur" } }, { item: { text: "b" }, target: { text: "c" } }];
+  assert.deepEqual(validateDoor(matchingDoor(pairs("images/door-1/hatt-cowboy.png"))), []);
+  assert.match(validateDoor(matchingDoor(pairs("images/../secret.png"))).join(), /either text or an image/);
+});
+
+test("a matching task may have a prompt heading, but not an empty one", () => {
+  const pairs = [{ item: { text: "a" }, target: { text: "b" } }, { item: { text: "c" }, target: { text: "d" } }];
+  const withPrompt = (prompt) => ({ door: 7, tasks: [{ id: "marksman", type: "matching", prompt, pairs }] });
+  assert.deepEqual(validateDoor(withPrompt("Marksman")), []);
+  assert.match(validateDoor(withPrompt("")).join(), /prompt must be/);
+});
+
+test("a code-word quiz may use letter boxes, a hint and its own submit label", () => {
+  assert.deepEqual(validateDoor(quizDoor({ letters: true, hint: "Alfabetet", submitLabel: "Skicka" })), []);
+  assert.match(validateDoor(quizDoor({ letters: "yes" })).join(), /letters must be/);
+  assert.match(validateDoor(quizDoor({ hint: "" })).join(), /hint must be/);
 });
