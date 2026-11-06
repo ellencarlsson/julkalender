@@ -257,7 +257,7 @@ function revealedCells(cells, task, key, progress) {
 const LAMP_MESSAGES = {
   noWord: "Markera ett ord i korsordet först.",
   alreadyRight: "Det ordet är redan rätt, så ingen ledtråd behövs.",
-  noPoints: "Du har inga chokladbollar. Klara ett sidouppdrag för att få fler.",
+  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att få fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
