@@ -191,12 +191,15 @@ button.small {
 }
 
 .hint-number {
-  font-size: 1.35rem;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
-.hint-bulb {
-  width: 1.5rem;
+/* Big chokladboll next to the level, about the size of the level ring. */
+.hint-circle .hint-bulb {
+  width: 3.2rem;
+  height: auto;
+  vertical-align: middle;
 }
 
 /* The chokladboll picture stands in for hint points wherever they are earned or spent. */
