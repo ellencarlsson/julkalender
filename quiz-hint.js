@@ -4,7 +4,7 @@ import { chokladbollIcon, paragraph } from "./task-ui.js";
 
 const HINT_MESSAGES = {
   ask: "Vill du använda en ledtråd? Det kostar 1 chokladboll.",
-  noPoints: "Du har inga chokladbollar. Klara ett sidouppdrag för att få fler.",
+  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att få fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
