@@ -104,6 +104,7 @@ check "website never imports the admin SDK" bash -c '! grep -l "firebase-admin" 
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
 check "task images have a renderer (regression #101)" grep -q "^function taskImage" door-view.js
+check "door view has prev/next arrows" grep -q "id=\"next-door\"" index.html
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
