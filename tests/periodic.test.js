@@ -1,0 +1,23 @@
+/** Tests for the periodic table category lookup. */
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { elementCategory } from "../lib/periodic.js";
+
+test("the CHOKLADBOLLAR elements get their real periodic table categories", () => {
+  assert.equal(elementCategory(6), "reactive-nonmetal");
+  assert.equal(elementCategory(1), "reactive-nonmetal");
+  assert.equal(elementCategory(8), "reactive-nonmetal");
+  assert.equal(elementCategory(19), "alkali-metal");
+  assert.equal(elementCategory(57), "lanthanide");
+  assert.equal(elementCategory(105), "transition-metal");
+  assert.equal(elementCategory(18), "noble-gas");
+});
+
+test("other categories and numbers outside the table", () => {
+  assert.equal(elementCategory(26), "transition-metal");
+  assert.equal(elementCategory(92), "actinide");
+  assert.equal(elementCategory(17), "halogen");
+  assert.equal(elementCategory(0), null);
+  assert.equal(elementCategory(119), null);
+  assert.equal(elementCategory(2.5), null);
+});

@@ -189,3 +189,9 @@ test("a code-word quiz may use letter boxes, a hint and its own submit label", (
   assert.match(validateDoor(quizDoor({ letters: "yes" })).join(), /letters must be/);
   assert.match(validateDoor(quizDoor({ hint: "" })).join(), /hint must be/);
 });
+
+test("a quiz may show its sum as periodic table tiles", () => {
+  assert.deepEqual(validateDoor(quizDoor({ tiles: [6, 1, 8, "L", 18] })), []);
+  assert.match(validateDoor(quizDoor({ tiles: [6, 119] })).join(), /tiles must be/);
+  assert.match(validateDoor(quizDoor({ tiles: ["LL"] })).join(), /tiles must be/);
+});
