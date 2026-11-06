@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=8b9ea990a8">
+  <link rel="stylesheet" href="./style.css?v=5989ad5f03">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -50,7 +50,12 @@
 </head>
 <body>
   <main>
-    <h1 class="site-title"><img src="./images/theme/title.png" alt="Haris Julkalender" width="900" height="415"></h1>
+    <h1 class="site-title">
+      <picture>
+        <source media="(min-width: 48rem)" srcset="./images/theme/title-wide.png" width="1400" height="347">
+        <img src="./images/theme/title.png" alt="Haris Julkalender" width="900" height="415">
+      </picture>
+    </h1>
 
     <section id="signed-out" hidden>
       <button id="sign-in-button" type="button">Logga in med Google</button>
