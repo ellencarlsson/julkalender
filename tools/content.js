@@ -72,7 +72,7 @@ function validateCrossword(task) {
   return task.clues.flatMap((clue, index) => validateClue(clue, index, cells));
 }
 
-const IMAGE_SIDE = /^images\/[\w.-]+\.(jpe?g|png|webp|gif)$/i;
+const IMAGE_SIDE = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif)$/i;
 
 function validateSide(side, where) {
   if (!isPlainObject(side)) return [`${where} must be an object`];
@@ -94,7 +94,8 @@ function validateMatching(task) {
 const TASK_VALIDATORS = { quiz: validateQuiz, challenge: validateChallenge, crossword: validateCrossword, matching: validateMatching };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
-const IMAGE_PATH = /^images\/[\w.-]+\.(jpe?g|png|webp|gif)$/i;
+// Subfolders are allowed (images/door-1/x.png), parent references are not.
+const IMAGE_PATH = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif)$/i;
 
 function validateImage(task) {
   if (task.image === undefined) return task.alt === undefined ? [] : ["alt requires image"];
