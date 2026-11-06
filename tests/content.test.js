@@ -272,13 +272,17 @@ test("a task may look like a worksheet and carry an envelope", () => {
 
 test("door rewards: a code digit with its position and/or an item", () => {
   const door = (reward) => ({ ...quizDoor(), reward });
-  assert.deepEqual(validateDoor(door({ digit: "7", position: 3, item: "🍿 Popcorn" })), []);
-  assert.deepEqual(validateDoor(door({ item: "🥤 Dricka" })), []);
+  const popcorn = { name: "Popcorn", image: "images/items/popcorn.webp" };
+  assert.deepEqual(validateDoor(door({ digit: "7", position: 3, item: popcorn })), []);
+  assert.deepEqual(validateDoor(door({ item: popcorn })), []);
+  assert.deepEqual(validateDoor(door({ item: { name: "Popcorn", emoji: "🍿" } })), []);
+  assert.equal(validateDoor(door({ item: "Popcorn" })).length, 1);
+  assert.equal(validateDoor(door({ item: { name: "Popcorn", image: "popcorn.webp" } })).length, 1);
   assert.equal(validateDoor(door({ digit: "7" })).length, 1);
   assert.equal(validateDoor(door({ digit: "77", position: 3 })).length, 1);
   assert.equal(validateDoor(door({ digit: "7", position: 12 })).length, 1);
   assert.equal(validateDoor(door({})).length, 1);
-  assert.deepEqual(toDoorDocument(door({ item: "🥤 Dricka" })).reward, { item: "🥤 Dricka" });
+  assert.deepEqual(toDoorDocument(door({ item: popcorn })).reward, { item: popcorn });
   assert.equal("reward" in toDoorDocument(quizDoor()), false);
 });
 

@@ -2349,29 +2349,61 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: var(--cream-muted);
 }
 
+/* Items as pictures with the name below; the chokladboll shows how many there are. */
 .backpack-items {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem 1.25rem;
+  gap: 1rem 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: var(--hand-font);
-  font-size: 1.35rem;
 }
 
-.backpack-chokladbollar {
-  margin: 0;
+.backpack-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 5.5rem;
   font-family: var(--hand-font);
-  font-size: 1.35rem;
 }
 
-.backpack-empty {
-  margin: 0;
-  color: var(--cream-muted);
-  font-family: var(--hand-font);
+.backpack-item img {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(58, 39, 22, 0.35));
+}
+
+.backpack-item-emoji {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+
+.backpack-item-name {
   font-size: 1.15rem;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/* A small ink badge on the picture, like a stack count in a game inventory. */
+.backpack-item-count {
+  position: absolute;
+  top: 3rem;
+  right: 0.3rem;
+  min-width: 1.6rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #3a2716;
+  color: #fff8e8;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
 }
 
 @media (min-width: 36rem) {

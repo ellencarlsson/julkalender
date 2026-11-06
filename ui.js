@@ -65,7 +65,7 @@ let levelUpTimer = null;
 
 export function showHintPoints(points) {
   element("hint-points").textContent = points;
-  element("backpack-chokladbollar").textContent = chokladbollar(points);
+  element("backpack-chokladbollar").textContent = String(points);
   element("hint-circle").setAttribute("aria-label", `${chokladbollar(points)}. Visa sidouppdrag`);
 }
 
