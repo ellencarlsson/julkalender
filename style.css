@@ -2513,11 +2513,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   transform: rotate(-1.5deg) scale(1.04);
 }
 
-/* The Items heading lines up with the items below it. */
-#view-backpack h3:has(+ .backpack-items) {
-  text-align: left;
-}
-
 /* Backpack clues (#164): the code shows part by part as clues are found; empty until then. */
 #view-backpack:not(.has-code-title) .code-title,
 #view-backpack:not(.has-code-start, .has-code-end, .has-code-title) .code-part,
