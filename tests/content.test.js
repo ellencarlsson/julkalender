@@ -176,3 +176,10 @@ test("images may live in a subfolder of images/, but not outside it", () => {
   assert.deepEqual(validateDoor(matchingDoor(pairs("images/door-1/hatt-cowboy.png"))), []);
   assert.match(validateDoor(matchingDoor(pairs("images/../secret.png"))).join(), /either text or an image/);
 });
+
+test("a matching task may have a prompt heading, but not an empty one", () => {
+  const pairs = [{ item: { text: "a" }, target: { text: "b" } }, { item: { text: "c" }, target: { text: "d" } }];
+  const withPrompt = (prompt) => ({ door: 7, tasks: [{ id: "marksman", type: "matching", prompt, pairs }] });
+  assert.deepEqual(validateDoor(withPrompt("Marksman")), []);
+  assert.match(validateDoor(withPrompt("")).join(), /prompt must be/);
+});

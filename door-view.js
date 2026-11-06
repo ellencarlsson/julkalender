@@ -19,6 +19,7 @@ const STATE_MESSAGES = {
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
+  if (task.type === "matching") return task.prompt ?? null;
   return null;
 }
 
