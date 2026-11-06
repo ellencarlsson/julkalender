@@ -73,6 +73,10 @@ function withLevelUpdates(progress) {
       hints.refresh();
       levels.refresh({ celebrate: true });
     },
+    async useHint(key) {
+      await progress.useHint(key);
+      hints.refresh();
+    },
     async completeSideQuest(id) {
       await progress.completeSideQuest(id);
       hints.refresh();

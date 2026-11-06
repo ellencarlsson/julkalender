@@ -52,6 +52,11 @@ function hintMethods(ref, completedSideQuests, revealedWords, correctWords) {
     completedSideQuestIds: () => [...completedSideQuests],
     revealedWordKeys: () => [...revealedWords],
     isWordRevealed: (key) => revealedWords.has(key),
+    /** A used quiz hint costs one hint point like a revealed word, but gives no XP. */
+    async useHint(key) {
+      await addToList(ref, "revealedWords", [key]);
+      revealedWords.add(key);
+    },
     /** A revealed word costs one hint point and counts as a correct word for XP. */
     async revealWord(key) {
       await setDoc(ref, { revealedWords: arrayUnion(key), correctWords: arrayUnion(key) }, { merge: true });

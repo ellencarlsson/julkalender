@@ -29,6 +29,10 @@ function validateQuiz(task) {
   const errors = [];
   if (!isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
   if (!isNonEmptyStringList(task.answers)) errors.push("answers must be a non-empty list of strings");
+  if (task.letters !== undefined && typeof task.letters !== "boolean") errors.push("letters must be true or false");
+  for (const field of ["hint", "submitLabel"]) {
+    if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
+  }
   return errors;
 }
 

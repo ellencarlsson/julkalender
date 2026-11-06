@@ -1,6 +1,7 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
-import { isCorrectAnswer } from "./lib/quiz.js";
+import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
+import { createQuizHint } from "./quiz-hint.js";
 import { doneState, paragraph } from "./task-ui.js";
 
 function answerInput() {
@@ -14,11 +15,53 @@ function answerInput() {
   return input;
 }
 
+function letterBox(index, count) {
+  const box = answerInput();
+  box.className = "quiz-letter";
+  box.maxLength = 1;
+  box.setAttribute("aria-label", `Bokstav ${index + 1} av ${count}`);
+  box.setAttribute("autocapitalize", "characters");
+  return box;
+}
+
+function onLetterInput(boxes, index) {
+  const box = boxes[index];
+  box.value = box.value.slice(-1).toLocaleUpperCase("sv-SE");
+  if (box.value && index < boxes.length - 1) boxes[index + 1].focus();
+}
+
+function onLetterKey(event, boxes, index) {
+  if (event.key !== "Backspace" || boxes[index].value || index === 0) return;
+  boxes[index - 1].value = "";
+  boxes[index - 1].focus();
+}
+
+/** One box per letter; typing moves on to the next box and Backspace steps back. */
+function letterBoxes(count) {
+  const row = Object.assign(document.createElement("div"), { className: "quiz-letters" });
+  const boxes = Array.from({ length: count }, (_, index) => letterBox(index, count));
+  boxes.forEach((box, index) => {
+    box.addEventListener("input", () => onLetterInput(boxes, index));
+    box.addEventListener("keydown", (event) => onLetterKey(event, boxes, index));
+  });
+  row.append(...boxes);
+  return row;
+}
+
+const typedAnswer = (field) =>
+  field.matches("input") ? field.value : [...field.querySelectorAll("input")].map((box) => box.value).join("");
+
+function retry(field) {
+  if (field.matches("input")) return field.select();
+  field.querySelector("input")?.focus();
+}
+
 async function submitAnswer(ctx) {
-  if (!ctx.input.value.trim()) return;
-  if (!isCorrectAnswer(ctx.input.value, ctx.task.answers)) {
+  const answer = typedAnswer(ctx.field);
+  if (!answer.trim()) return;
+  if (!isCorrectAnswer(answer, ctx.task.answers)) {
     ctx.status.textContent = QUIZ_WRONG_LABEL;
-    ctx.input.select();
+    retry(ctx.field);
     return;
   }
   ctx.button.disabled = true;
@@ -44,15 +87,16 @@ async function submitAnswer(ctx) {
 export function createQuiz({ task, key, progress, card }) {
   if (progress.isCompleted(key)) return [doneState(QUIZ_DONE_LABEL)];
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
-  const input = answerInput();
-  const button = Object.assign(document.createElement("button"), { type: "submit", textContent: "Svara" });
+  const field = task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
+  const button = Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
   const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
-  form.append(input, button, status);
-  const ctx = { task, key, progress, card, form, input, button, status };
+  form.append(field, button, status);
+  const ctx = { task, key, progress, card, form, field, button, status };
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     submitAnswer(ctx);
   });
-  return [form];
+  const hint = createQuizHint({ task, key, progress });
+  return hint ? [hint, form] : [form];
 }
