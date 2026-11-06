@@ -183,3 +183,8 @@ test("a matching task may have a prompt heading, but not an empty one", () => {
   assert.deepEqual(validateDoor(withPrompt("Marksman")), []);
   assert.match(validateDoor(withPrompt("")).join(), /prompt must be/);
 });
+
+test("a quiz may have a hint text", () => {
+  assert.deepEqual(validateDoor(quizDoor({ hint: "Periodiska systemet" })), []);
+  assert.match(validateDoor(quizDoor({ hint: " " })).join(), /hint must be/);
+});

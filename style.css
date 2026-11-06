@@ -523,6 +523,18 @@ button.small {
   75% { transform: translateX(6px); }
 }
 
+.quiz-hint-button {
+  margin-bottom: 0.75rem;
+  border-color: var(--gold);
+}
+
+.quiz-hint {
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--gold);
+  background: var(--surface-raised);
+  font-style: italic;
+}
+
 .task-done-state {
   margin: 0.5rem 0 0;
   font-size: 1.2rem;

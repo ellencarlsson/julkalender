@@ -35,3 +35,9 @@ test("invalid rewards fall back to 1", () => {
   assert.equal(sideQuestReward({ reward: "3" }), 1);
   assert.equal(sideQuestReward({ reward: 3 }), 3);
 });
+
+test("each bought quiz hint spends one hint point, once per task", () => {
+  assert.equal(hintBalance(QUESTS, ["lol", "hjortar"], [], ["2-kodord"]), 2);
+  assert.equal(hintBalance(QUESTS, ["lol", "hjortar"], ["5-k|a"], ["2-kodord", "2-kodord"]), 1);
+  assert.equal(hintBalance(QUESTS, [], [], ["2-kodord"]), 0);
+});

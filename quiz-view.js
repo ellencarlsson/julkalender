@@ -33,6 +33,38 @@ async function submitAnswer(ctx) {
   }
 }
 
+const NO_HINT_POINTS = "Du har inga ledtrådspoäng. Klara ett sidouppdrag för att få fler.";
+
+function hintText(task) {
+  return paragraph("quiz-hint", `Ledtråd: ${task.hint}`);
+}
+
+async function buyHint(ctx, button) {
+  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return (ctx.hintStatus.textContent = NO_HINT_POINTS);
+  button.disabled = true;
+  try {
+    await ctx.progress.useHint(ctx.key);
+    button.replaceWith(hintText(ctx.task));
+    ctx.hintStatus.textContent = "";
+  } catch {
+    button.disabled = false;
+    ctx.hintStatus.textContent = "Kunde inte använda ledtråden. Försök igen.";
+  }
+}
+
+/** A bought hint stays visible; otherwise a button offers it for one hint point. */
+function hintControls(ctx) {
+  if (!ctx.task.hint) return [];
+  if (ctx.progress.isHintUsed?.(ctx.key)) return [hintText(ctx.task)];
+  if (ctx.progress.isCompleted(ctx.key)) return [];
+  const button = Object.assign(document.createElement("button"), { type: "button", className: "small quiz-hint-button" });
+  button.textContent = "Använd ledtråd (1 💡)";
+  ctx.hintStatus = paragraph("task-status", "");
+  ctx.hintStatus.setAttribute("role", "status");
+  button.addEventListener("click", () => buyHint(ctx, button));
+  return [button, ctx.hintStatus];
+}
+
 /**
  * Builds the answer form for a quiz task.
  *
@@ -42,7 +74,8 @@ async function submitAnswer(ctx) {
  *   The elements to append to the card.
  */
 export function createQuiz({ task, key, progress, card }) {
-  if (progress.isCompleted(key)) return [doneState(QUIZ_DONE_LABEL)];
+  const hints = hintControls({ task, key, progress });
+  if (progress.isCompleted(key)) return [...hints, doneState(QUIZ_DONE_LABEL)];
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const input = answerInput();
   const button = Object.assign(document.createElement("button"), { type: "submit", textContent: "Svara" });
@@ -54,5 +87,5 @@ export function createQuiz({ task, key, progress, card }) {
     event.preventDefault();
     submitAnswer(ctx);
   });
-  return [form];
+  return [...hints, form];
 }

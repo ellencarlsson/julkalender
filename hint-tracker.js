@@ -6,7 +6,7 @@ export function createHintTracker() {
   let sideQuests = [];
   let progress = null;
   const balance = () =>
-    progress ? hintBalance(sideQuests, progress.completedSideQuestIds(), progress.revealedWordKeys()) : 0;
+    progress ? hintBalance(sideQuests, progress.completedSideQuestIds(), progress.revealedWordKeys(), progress.usedHintKeys()) : 0;
   const refresh = () => showHintPoints(balance());
   return {
     balance,
