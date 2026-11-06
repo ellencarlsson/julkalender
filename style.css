@@ -44,7 +44,7 @@ body::before {
 
 @media (max-aspect-ratio: 4/5) {
   body::before {
-    background-image: url("./images/theme/winter-mobile.jpg");
+    background-image: url("./images/theme/winter-mobile-v2.jpg");
   }
 }
 
