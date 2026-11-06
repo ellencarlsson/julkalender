@@ -97,6 +97,7 @@ check "level-up message element exists" grep -q 'id="level-up"' index.html
 check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
 check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
+check "tools/remove-door.mjs has valid syntax" check_js_syntax tools/remove-door.mjs
 check "tools/firebase-admin.js has valid syntax" check_js_syntax tools/firebase-admin.js
 check "service account key is gitignored" git check-ignore -q tools/service-account.json
 check "local content folder is gitignored" git check-ignore -q content/door-1.json

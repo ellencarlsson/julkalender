@@ -43,6 +43,13 @@ node tools/upload-content.mjs content/*.json
 Write one JSON file per door plus `final.json` in the gitignored `content/` folder. All files
 are validated first; if any is invalid nothing is uploaded. Uploading a door again replaces it.
 
+To move a door, change `"door"` in its file (and the file name), upload it, then remove the old
+number so it shows as not ready yet:
+
+```sh
+node tools/remove-door.mjs 8
+```
+
 > ⚠️ `content/` exists only on this machine and has no remote backup.
 
 ```json
