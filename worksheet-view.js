@@ -12,7 +12,7 @@ export function worksheetHeader(title, studentName) {
 }
 
 /**
- * An envelope with a stamp, a postmark and a handwritten address.
+ * An envelope (a picture with Christmas stamps) with a handwritten address.
  *
  * Args:
  *   lines: the address lines, e.g. ["Till eleven", "Alfabetsvägen 1–26", "123 45 Bokstavsby"].
@@ -24,11 +24,9 @@ export function envelope(lines, sentText) {
   const letter = element("div", "envelope");
   letter.setAttribute("role", "img");
   letter.setAttribute("aria-label", `Ett brev adresserat till ${lines.join(", ")}`);
-  const stamp = element("span", "envelope-stamp", "🎄");
-  const postmark = element("span", "envelope-postmark", "JUL");
   const address = element("div", "envelope-address");
   address.append(...lines.map((line) => element("p", "", line)));
-  letter.append(stamp, postmark, address, element("span", "envelope-sent-stamp", "SKICKAT"));
+  letter.append(address, element("span", "envelope-sent-stamp", "SKICKAT"));
   if (!sentText) return [letter];
   const sent = element("p", "envelope-sent", sentText);
   sent.setAttribute("role", "status");
