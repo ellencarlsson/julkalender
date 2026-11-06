@@ -3,6 +3,7 @@ import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
+import { chokladbollar } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
 const GRID_DOORS = [...Array.from({ length: DOOR_COUNT }, (_, index) => index + 1), TEST_LOCKED_DOOR];
@@ -64,7 +65,7 @@ let levelUpTimer = null;
 
 export function showHintPoints(points) {
   element("hint-points").textContent = points;
-  element("hint-circle").setAttribute("aria-label", `${points} ledtrådspoäng. Visa sidouppdrag`);
+  element("hint-circle").setAttribute("aria-label", `${chokladbollar(points)}. Visa sidouppdrag`);
 }
 
 export function hideLevelUp() {

@@ -20,6 +20,7 @@ import {
   wordId,
 } from "./lib/crossword.js";
 import { wordKey } from "./lib/progress.js";
+import { chokladbollIcon } from "./task-ui.js";
 
 const SAVE_DELAY_MS = 800;
 /** The crossword view currently shown for each task, so a re-render or reset can deal with its pending save. */
@@ -256,7 +257,7 @@ function revealedCells(cells, task, key, progress) {
 const LAMP_MESSAGES = {
   noWord: "Markera ett ord i korsordet först.",
   alreadyRight: "Det ordet är redan rätt, så ingen ledtråd behövs.",
-  noPoints: "Du har inga ledtrådspoäng. Klara ett sidouppdrag för att få fler.",
+  noPoints: "Du har inga chokladbollar. Klara ett sidouppdrag för att få fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
@@ -312,9 +313,10 @@ function confirmButton(text, onClick) {
 }
 
 function createLamp(ctx) {
-  const lamp = createElement("button", "cw-lamp", "💡");
+  const lamp = createElement("button", "cw-lamp");
   lamp.type = "button";
-  lamp.setAttribute("aria-label", "Använd en ledtråd för det markerade ordet");
+  lamp.append(chokladbollIcon());
+  lamp.setAttribute("aria-label", "Använd en ledtråd för det markerade ordet (kostar 1 chokladboll)");
   lamp.addEventListener("click", () => onLamp(ctx));
   ctx.confirm = createElement("div", "cw-confirm");
   ctx.confirm.hidden = true;
