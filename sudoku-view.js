@@ -10,7 +10,7 @@ const SAVE_DELAY_MS = 600;
 const HINT_CELLS = 3;
 const MESSAGES = {
   ask: `Vill du använda en chokladboll för att fylla i ${HINT_CELLS} rutor?`,
-  noPoints: "Du har inga chokladbollar. Klara ett sidouppdrag för att få fler.",
+  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att samla fler.",
   full: "Alla rutor är redan ifyllda.",
   failed: "Kunde inte använda chokladbollen. Försök igen.",
   notYet: "Något stämmer inte än – kolla de röda siffrorna.",
