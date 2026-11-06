@@ -183,3 +183,9 @@ test("a matching task may have a prompt heading, but not an empty one", () => {
   assert.deepEqual(validateDoor(withPrompt("Marksman")), []);
   assert.match(validateDoor(withPrompt("")).join(), /prompt must be/);
 });
+
+test("a code-word quiz may use letter boxes, a hint and its own submit label", () => {
+  assert.deepEqual(validateDoor(quizDoor({ letters: true, hint: "Alfabetet", submitLabel: "Skicka" })), []);
+  assert.match(validateDoor(quizDoor({ letters: "yes" })).join(), /letters must be/);
+  assert.match(validateDoor(quizDoor({ hint: "" })).join(), /hint must be/);
+});
