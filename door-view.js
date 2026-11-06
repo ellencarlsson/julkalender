@@ -100,8 +100,10 @@ function resetButton(number, onReset) {
  *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
  */
 export function showDoorContent(number, { state, door }, progress, onReset) {
+  element("door-tools").replaceChildren();
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
-  if (onReset) element("task-area").append(resetButton(number, onReset));
+  // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
+  if (onReset) element("door-tools").append(resetButton(number, onReset));
 }

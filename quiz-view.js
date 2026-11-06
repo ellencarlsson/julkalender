@@ -68,14 +68,15 @@ async function submitAnswer(ctx) {
     retry(ctx.field);
     return;
   }
-  ctx.button.disabled = true;
+  if (ctx.button) ctx.button.disabled = true;
   ctx.status.textContent = "Sparar…";
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
+    ctx.card.querySelector(".quiz-hint")?.remove();
     ctx.form.replaceWith(...solvedState(ctx.task));
   } catch {
-    ctx.button.disabled = false;
+    if (ctx.button) ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
 }
@@ -93,6 +94,20 @@ function answerField(task) {
   return task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
 }
 
+const AUTO_CHECK_DELAY_MS = 700;
+
+/** Checks the answer a moment after the last keystroke, once every tile has something in it. */
+function checkWhenFilled(ctx) {
+  let timer;
+  ctx.form.addEventListener("input", () => {
+    clearTimeout(timer);
+    ctx.status.textContent = "";
+    const inputs = [...ctx.field.querySelectorAll("input")];
+    if (inputs.some((input) => !input.value)) return;
+    timer = setTimeout(() => submitAnswer(ctx), AUTO_CHECK_DELAY_MS);
+  });
+}
+
 /**
  * Builds the answer form for a quiz task.
  *
@@ -105,15 +120,17 @@ export function createQuiz({ task, key, progress, card }) {
   if (progress.isCompleted(key)) return solvedState(task);
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const field = answerField(task);
-  const button = Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
+  // Tile sums check themselves once every tile is filled, so they need no submit button.
+  const button = task.tiles ? null : Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
   const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
-  form.append(field, button, status);
+  form.append(...[field, button, status].filter(Boolean));
   const ctx = { task, key, progress, card, form, field, button, status };
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     submitAnswer(ctx);
   });
+  if (task.tiles) checkWhenFilled(ctx);
   const hint = createQuizHint({ task, key, progress });
   return hint ? [hint, form] : [form];
 }

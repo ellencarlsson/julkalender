@@ -1022,7 +1022,6 @@ body:has(#view-door:not([hidden]))::before {
   margin-top: 0.4rem;
   padding: 0;
   border: none;
-  border-bottom: 2px dashed rgba(0, 0, 0, 0.35);
   background: transparent;
   color: #1d1d1d;
   font: bold max(16px, 1.4rem) Arial, Helvetica, sans-serif;
@@ -1035,7 +1034,6 @@ body:has(#view-door:not([hidden]))::before {
 
 .pt-input:focus {
   outline: none;
-  border-bottom-color: var(--gold);
 }
 
 /* The tiles are the answer, so they span the whole form row. */
@@ -1127,7 +1125,13 @@ body:has(#view-door:not([hidden]))::before {
 .pt-input {
   width: 100%;
   margin-top: 4cqi;
+  border: none;
+  border-radius: 0.2rem;
   font-size: max(16px, 42cqi);
+}
+
+.pt-input:focus {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 .pt-result-image {
@@ -1139,4 +1143,42 @@ body:has(#view-door:not([hidden]))::before {
   #signed-in > #view-door:has(.pt-row) {
     max-width: 60rem;
   }
+}
+
+.pt-unknown {
+  font-size: clamp(1.6rem, 7vw, 3.6rem);
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* The hint is just a lamp in the task's top-right corner until it is opened. */
+.quiz-hint:has(> .quiz-hint-icon:only-child) {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.25rem;
+  margin: 0;
+}
+
+.quiz-hint-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* Room for the lamp so it never covers the tiles. */
+#view-door .task:has(.quiz-hint-icon:only-child) {
+  padding-top: 3.25rem;
+}
+
+.door-tools {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+#view-door[hidden] + .door-tools {
+  display: none;
 }
