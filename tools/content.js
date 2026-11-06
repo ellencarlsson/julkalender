@@ -75,6 +75,15 @@ function validateCrossword(task) {
 const TASK_VALIDATORS = { quiz: validateQuiz, challenge: validateChallenge, crossword: validateCrossword };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
+const IMAGE_PATH = /^images\/[\w.-]+\.(jpe?g|png|webp|gif)$/i;
+
+function validateImage(task) {
+  if (task.image === undefined) return task.alt === undefined ? [] : ["alt requires image"];
+  const errors = IMAGE_PATH.test(task.image) ? [] : ["image must be a path like images/name.jpg"];
+  if (task.alt !== undefined && !isNonEmptyString(task.alt)) errors.push("alt must be a non-empty string");
+  return errors;
+}
+
 function validateTaskCommon(task) {
   const errors = [];
   if (!isNonEmptyString(task.id)) errors.push("id must be a non-empty string");
@@ -82,7 +91,7 @@ function validateTaskCommon(task) {
     errors.push("weight must be a positive number");
   }
   if (task.clue !== undefined && !isNonEmptyString(task.clue)) errors.push("clue must be a non-empty string");
-  return errors;
+  return [...errors, ...validateImage(task)];
 }
 
 function validateTask(task, index) {

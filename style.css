@@ -581,3 +581,12 @@ button.small {
 .load-error {
   margin-top: 2rem;
 }
+
+.task-image {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 0.75rem;
+}

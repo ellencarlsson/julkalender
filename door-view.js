@@ -49,9 +49,16 @@ function photoSentButton(card, key, progress) {
   return [paragraph("task-instruction", PHOTO_INSTRUCTION), button, status];
 }
 
+function taskImage(task) {
+  const image = Object.assign(document.createElement("img"), { src: task.image, alt: task.alt ?? "", className: "task-image" });
+  image.loading = "lazy";
+  return image;
+}
+
 function taskCard(task, door, progress) {
   const card = document.createElement("article");
   card.className = "task";
+  if (task.image) card.append(taskImage(task));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   const key = taskKey(door, task.id);

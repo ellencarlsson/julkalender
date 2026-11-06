@@ -114,3 +114,21 @@ test("a clue cannot start on a space", () => {
   const clue = { number: 1, direction: "across", row: 0, col: 1, text: "x" };
   assert.match(validateDoor(crosswordDoor(["A B"], [clue])).join(), /letter cell/);
 });
+
+const challengeDoor = (overrides = {}) => ({
+  door: 2,
+  tasks: [{ id: "d", type: "challenge", description: "Hitta", ...overrides }],
+});
+
+test("task with an image in images/ and alt text is valid", () => {
+  assert.deepEqual(validateDoor(challengeDoor({ image: "images/door-2-dexter.jpg", alt: "Dexter" })), []);
+});
+
+test("image outside images/ or with unknown extension is rejected", () => {
+  assert.match(validateDoor(challengeDoor({ image: "https://example.com/x.jpg" })).join(), /image must be/);
+  assert.match(validateDoor(challengeDoor({ image: "images/x.txt" })).join(), /image must be/);
+});
+
+test("alt without image is rejected", () => {
+  assert.match(validateDoor(challengeDoor({ alt: "Dexter" })).join(), /alt requires image/);
+});
