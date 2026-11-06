@@ -2079,3 +2079,64 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   font-size: 1rem;
   color: var(--cream-muted);
 }
+
+/* Exam-style quiz (door 22): the answer is written on a line, and a right answer gets the teacher's red tick. */
+#view-door .exam-blank,
+#view-door .exam-answer {
+  border-bottom: 2px solid var(--cream);
+  color: var(--cream);
+  font-family: var(--hand-font);
+  font-size: 1.9rem;
+}
+
+#view-door .exam-blank {
+  flex: 1 1 9rem;
+  max-width: 16rem;
+  padding: 0 0.25rem 0.1rem;
+  border-top: none;
+  border-inline: none;
+  border-radius: 0;
+  background: none;
+}
+
+#view-door .exam-blank:focus {
+  outline: none;
+  border-bottom-color: var(--knit-red);
+}
+
+#view-door .exam-answer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0 0.25rem 0.1rem;
+}
+
+.exam-tick {
+  width: 2.4rem;
+  height: 2.4rem;
+  background: var(--knit-red);
+  -webkit-mask: var(--tick-mask) center / contain no-repeat;
+  mask: var(--tick-mask) center / contain no-repeat;
+  transform: rotate(-8deg);
+  --tick-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 13.5c2 1.6 3.6 3.6 5 6.5 3-7 7-12.5 12-16.5'/></svg>");
+}
+
+/* Wider screens: the formula on the left and the answer line beside it, like a printed test. */
+@media (min-width: 36rem) {
+  #view-door .task:not([hidden]):has(> .task-image):has(.exam-blank, .exam-answer) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 1.5rem;
+  }
+
+  #view-door .task:has(> .task-image):has(.exam-blank, .exam-answer) > p:first-child {
+    grid-column: 1 / -1;
+  }
+
+  #view-door .task:has(.exam-blank, .exam-answer) > .task-image {
+    max-width: 20rem;
+    margin: 0;
+  }
+}

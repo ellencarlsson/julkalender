@@ -111,6 +111,7 @@ check "doors with examples page their tasks beside the examples" grep -q "^funct
 check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
 check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answer)" quiz-view.js
 check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
+check "exam quizzes get the teacher's tick when solved" grep -q "task.exam ? examTick() : checkIcon()" quiz-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
