@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Haris Julkalender</title>
-  <link rel="stylesheet" href="./style.css?v=7cc249a313">
+  <link rel="stylesheet" href="./style.css?v=d68b024e66">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -15,9 +15,9 @@
   <script type="importmap">
   {
     "imports": {
-      "./app.js": "./app.js?v=7e30123c06",
+      "./app.js": "./app.js?v=8e97b6e029",
       "./crossword-view.js": "./crossword-view.js?v=13f7e71940",
-      "./door-view.js": "./door-view.js?v=456bbcccee",
+      "./door-view.js": "./door-view.js?v=161af9f7b7",
       "./doors.js": "./doors.js?v=2b6119d4d8",
       "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
       "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
@@ -28,19 +28,20 @@
       "./lib/level.js": "./lib/level.js?v=6038e01c2e",
       "./lib/progress.js": "./lib/progress.js?v=ca9606c422",
       "./lib/quiz.js": "./lib/quiz.js?v=343980e280",
-      "./lib/router.js": "./lib/router.js?v=aee6021235",
+      "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
       "./lib/test-reset.js": "./lib/test-reset.js?v=8a63eeb741",
       "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
       "./progress.js": "./progress.js?v=fa29d41f1d",
       "./quiz-view.js": "./quiz-view.js?v=8cadec8ab0",
+      "./sidequest-view.js": "./sidequest-view.js?v=00eb195049",
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
-      "./task-ui.js": "./task-ui.js?v=3320c2f9a4",
-      "./ui.js": "./ui.js?v=d52a0ffe66"
+      "./task-ui.js": "./task-ui.js?v=87b5e563a7",
+      "./ui.js": "./ui.js?v=7d111123f7"
     }
   }
   </script>
-  <script type="module" src="./app.js?v=7e30123c06"></script>
+  <script type="module" src="./app.js?v=8e97b6e029"></script>
 </head>
 <body>
   <main>
@@ -52,6 +53,10 @@
 
     <div id="signed-in" hidden>
       <header class="game-header">
+        <a href="#/sidequests" id="hint-circle" class="hint-circle" data-nav="sidequests" aria-label="0 ledtrådspoäng. Visa sidouppdrag">
+          <span id="hint-points" class="hint-number">0</span><span class="hint-bulb" aria-hidden="true">💡</span>
+        </a>
+
         <nav class="main-nav">
           <a href="#/backpack" data-nav="backpack" class="icon-button" aria-label="Ryggsäck" title="Ryggsäck"><span aria-hidden="true">🎒</span></a>
           <a href="#/" data-nav="overview" class="icon-button" aria-label="Luckor" title="Luckor"><span aria-hidden="true">📅</span></a>
@@ -83,10 +88,12 @@
           <ul id="clue-list"></ul>
           <p id="clues-empty">Inga ledtrådar än.</p>
         </div>
-        <div class="panel">
-          <h3>Ledtrådspoäng</h3>
-          <p>Du har <strong id="backpack-hint-points">0</strong> ledtrådspoäng.</p>
-        </div>
+      </section>
+
+      <section id="view-sidequests" data-view="sidequests" hidden>
+        <h2>Sidouppdrag</h2>
+        <p class="sidequests-intro">Sidouppdrag ger ledtrådspoäng som du kan använda för att få hjälp i korsorden.</p>
+        <div id="sidequest-list" class="task-area"></div>
       </section>
 
       <footer class="app-footer">

@@ -38,3 +38,8 @@ test("doorHash round-trips through parseRoute", () => {
     assert.deepEqual(parseRoute(doorHash(door)), { view: "door", door });
   }
 });
+
+test("side quests route", () => {
+  assert.deepEqual(parseRoute("#/sidequests"), { view: "sidequests" });
+  assert.deepEqual(parseRoute("#/sidequests/x"), { view: "overview" });
+});

@@ -48,7 +48,8 @@ const LEVEL_UP_VISIBLE_MS = 4000;
 let levelUpTimer = null;
 
 export function showHintPoints(points) {
-  element("backpack-hint-points").textContent = points;
+  element("hint-points").textContent = points;
+  element("hint-circle").setAttribute("aria-label", `${points} ledtrådspoäng. Visa sidouppdrag`);
 }
 
 export function hideLevelUp() {
@@ -69,13 +70,15 @@ export function showLevelUp(level) {
  *
  * Args:
  *   onDoorOpen: called with the door number whenever the door view is shown.
+ *   onSideQuestsOpen: called whenever the side quests panel is shown.
  */
-export function createShell({ onDoorOpen }) {
+export function createShell({ onDoorOpen, onSideQuestsOpen }) {
   renderDoorGrid();
   const render = () => {
     const route = parseRoute(location.hash);
     showRoute(route);
     if (route.view === "door") onDoorOpen(route.door);
+    if (route.view === "sidequests") onSideQuestsOpen();
   };
   window.addEventListener("hashchange", render);
   return render;
