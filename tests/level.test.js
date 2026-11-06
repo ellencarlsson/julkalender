@@ -1,7 +1,7 @@
 /** Tests for XP per door, levels and the level ring fill. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { doorXp, isDoorCompleted, levelFromXp, totalXp, xpRingPercent } from "../lib/level.js";
+import { doorXp, isDoorCompleted, levelFromXp, taskXp, totalXp, xpRingPercent } from "../lib/level.js";
 
 test("ring is empty at 0 XP, half at 50 and full at 100", () => {
   assert.equal(xpRingPercent(0), 0);
@@ -137,4 +137,13 @@ test("partly correct crossword words do not complete a door", () => {
 test("a door without tasks or content is never completed", () => {
   assert.equal(isDoorCompleted(3, door(), done()), false);
   assert.equal(isDoorCompleted(3, undefined, done("3-a")), false);
+});
+
+test("a task's XP is its weighted share of the door's 100 XP", () => {
+  const six = Array.from({ length: 6 }, (_, i) => ({ id: String(i) }));
+  assert.equal(taskXp(six[0], six), 17);
+  const weighted = [{ id: "a", weight: 3 }, { id: "b" }];
+  assert.equal(taskXp(weighted[0], weighted), 75);
+  assert.equal(taskXp(weighted[1], weighted), 25);
+  assert.equal(taskXp({ id: "x" }, []), 0);
 });
