@@ -1,9 +1,10 @@
 /**
- * Matching task: tap an item, then the target it belongs with. Pairs get a shared coloured frame and can be
+ * Matching task: tap an item, then the target it belongs with. A chosen pair is joined by a coloured line and can be
  * changed freely; only when every item has a partner are all pairs checked at once, so single pairs
  * never reveal whether they are right.
  */
 import { checkLinks, matchingBoard, nextBadge, shuffled } from "./lib/matching.js";
+import { createLineLayer, drawLines } from "./match-lines.js";
 import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
@@ -29,11 +30,21 @@ function sideButton(side, role) {
   return button;
 }
 
-/** A chosen pair is shown by the same coloured frame on both cards; badge picks the colour. */
+const PAIR_COLORS = ["#c0392b", "#2e6fb7", "#d9822b", "#8e44ad", "#16a3a3", "#c2185b"];
+const SOLVED_COLOR = "#2c6a3f";
+
+/** Marks a card as part of a pair; the pair itself is shown by the line between the two cards. */
 function setBadge(button, badge) {
   button.classList.toggle("match-linked", Boolean(badge));
-  if (badge) button.dataset.color = badge;
-  else delete button.dataset.color;
+}
+
+function redraw(ctx) {
+  const pairs = [...ctx.links].map(([item, target]) => ({
+    item: card(ctx, "item", item),
+    target: card(ctx, "target", target),
+    color: ctx.solved ? SOLVED_COLOR : PAIR_COLORS[(ctx.badges.get(item) - 1) % PAIR_COLORS.length],
+  }));
+  drawLines(ctx.root, ctx.lines, pairs);
 }
 
 function unlink(ctx, item) {
@@ -42,6 +53,7 @@ function unlink(ctx, item) {
   setBadge(card(ctx, "item", item), null);
   ctx.links.delete(item);
   ctx.badges.delete(item);
+  redraw(ctx);
 }
 
 function link(ctx, item, target) {
@@ -52,6 +64,7 @@ function link(ctx, item, target) {
   ctx.badges.set(item, badge);
   setBadge(card(ctx, "item", item), badge);
   setBadge(card(ctx, "target", target), badge);
+  redraw(ctx);
 }
 
 function select(ctx, button) {
@@ -91,7 +104,11 @@ function checkAll(ctx) {
   complete(ctx);
 }
 
+/** Solved: every picture is joined to its own name with a green line. */
 function lockAll(ctx) {
+  ctx.solved = true;
+  ctx.task.pairs.forEach((_, pair) => ctx.links.set(pair, pair));
+  redraw(ctx);
   ctx.root.querySelectorAll(".match-card").forEach((button) => {
     setBadge(button, null);
     button.classList.add("match-done");
@@ -138,7 +155,10 @@ export function createMatching({ task, key, progress, card: taskCard, xp }) {
   const { items, targets } = matchingBoard(task.pairs);
   const ctx = { task, key, progress, card: taskCard, xp, links: new Map(), badges: new Map(), selected: null };
   ctx.root = Object.assign(document.createElement("div"), { className: "match-board" });
-  ctx.root.append(column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
+  ctx.lines = createLineLayer();
+  ctx.root.append(ctx.lines, column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
+  // Lines follow the cards when the layout changes (rotation, images loading, a block becoming visible).
+  new ResizeObserver(() => redraw(ctx)).observe(ctx.root);
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) {
