@@ -30,7 +30,8 @@ check_sign_out_in_footer() {
 }
 
 check "index.html exists" test -f index.html
-check "page shows the Haris Julkalender heading" bash -c '[ "$(sed -nE "s/.*(<h1[^>]*>.*<\/h1>).*/\1/p" index.html | sed -E "s/<[^>]+>//g")" = "Haris Julkalender" ]'
+check "page shows the Haris Julkalender title image" grep -qE '<h1 class="site-title"><img src="./images/theme/title.png" alt="Haris Julkalender"' index.html
+check "title image exists" test -f images/theme/title.png
 check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
 check "title has no Santa hats" bash -c '! grep -q "class=\"hat\"" index.html && ! grep -q "\.hat" style.css'
 check "stylesheet is linked" grep -q 'rel="stylesheet" href="./style.css' index.html
