@@ -257,3 +257,10 @@ test("an examples table needs a title, headers and rows as wide as the headers",
   assert.match(validateDoor(quizDoor({ examples, examplesTable: table({ headers: [] }) })).join(), /examplesTable.headers/);
   assert.match(validateDoor(quizDoor({ examples, examplesTable: table({ rows: [["1"]] }) })).join(), /examplesTable.rows\[0\]/);
 });
+
+test("a task may look like a worksheet and carry an envelope", () => {
+  assert.deepEqual(validateDoor(quizDoor({ worksheet: "Matematik", envelope: ["Till eleven", "Alfabetsvägen 1–26"] })), []);
+  assert.match(validateDoor(quizDoor({ worksheet: "" })).join(), /worksheet must be/);
+  assert.match(validateDoor(quizDoor({ envelope: [] })).join(), /envelope must be/);
+  assert.match(validateDoor(quizDoor({ envelope: ["a", "b", "c", "d", "e", "f"] })).join(), /envelope must be/);
+});
