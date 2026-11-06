@@ -8,7 +8,8 @@ import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
-import { taskXp } from "./lib/level.js";
+import { XP_PER_LEVEL, taskXp } from "./lib/level.js";
+import { isItem } from "./lib/rewards.js";
 import { createSudoku } from "./sudoku-view.js";
 import { envelope, letterAddress, letterSent, worksheetHeader } from "./worksheet-view.js";
 
@@ -164,8 +165,25 @@ function resetButton(number, onReset) {
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
  *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
  */
+function rewardItem({ name, image, emoji }) {
+  const item = Object.assign(document.createElement("span"), { className: "door-done-item" });
+  const picture = image
+    ? Object.assign(document.createElement("img"), { src: image, alt: "" })
+    : Object.assign(document.createElement("span"), { className: "door-done-emoji", textContent: emoji });
+  item.append(picture, ` ${name}`);
+  return item;
+}
+
+/** What finishing the door gives; CSS reveals it once every task card is done. */
+function showDoorReward(door) {
+  const xp = Object.assign(document.createElement("span"), { className: "door-done-xp", textContent: `+${XP_PER_LEVEL} XP` });
+  const item = door?.reward?.item;
+  element("door-done").replaceChildren(xp, ...(isItem(item) ? [rewardItem(item)] : []));
+}
+
 export function showDoorContent(number, { state, door }, progress, onReset) {
   element("door-tools").replaceChildren();
+  showDoorReward(state === DOOR_STATE.OPEN ? door : null);
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress));
