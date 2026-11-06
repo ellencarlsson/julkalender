@@ -72,7 +72,26 @@ function validateCrossword(task) {
   return task.clues.flatMap((clue, index) => validateClue(clue, index, cells));
 }
 
-const TASK_VALIDATORS = { quiz: validateQuiz, challenge: validateChallenge, crossword: validateCrossword };
+const IMAGE_SIDE = /^images\/[\w.-]+\.(jpe?g|png|webp|gif)$/i;
+
+function validateSide(side, where) {
+  if (!isPlainObject(side)) return [`${where} must be an object`];
+  const hasText = isNonEmptyString(side.text);
+  const hasImage = isNonEmptyString(side.image) && IMAGE_SIDE.test(side.image);
+  if (hasText === hasImage) return [`${where} must have either text or an image like images/name.jpg`];
+  return [];
+}
+
+function validateMatching(task) {
+  if (!Array.isArray(task.pairs) || task.pairs.length < 2) return ["pairs must be a list of at least 2 pairs"];
+  return task.pairs.flatMap((pair, index) =>
+    isPlainObject(pair)
+      ? [...validateSide(pair.item, `pairs[${index}].item`), ...validateSide(pair.target, `pairs[${index}].target`)]
+      : [`pairs[${index}] must be an object`],
+  );
+}
+
+const TASK_VALIDATORS = { quiz: validateQuiz, challenge: validateChallenge, crossword: validateCrossword, matching: validateMatching };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
 const IMAGE_PATH = /^images\/[\w.-]+\.(jpe?g|png|webp|gif)$/i;

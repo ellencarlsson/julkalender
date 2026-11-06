@@ -1,5 +1,6 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { createCrossword } from "./crossword-view.js";
+import { createMatching } from "./matching-view.js";
 import { createQuiz } from "./quiz-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
@@ -31,6 +32,7 @@ function taskCard(task, door, progress) {
   if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
+  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
