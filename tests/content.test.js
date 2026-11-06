@@ -200,3 +200,8 @@ test("a tile quiz may leave out the question text, a plain quiz may not", () => 
   assert.deepEqual(validateDoor(quizDoor({ question: undefined, tiles: [6, 1] })), []);
   assert.match(validateDoor(quizDoor({ question: undefined })).join(), /question must be/);
 });
+
+test("a tile quiz may reveal a picture when solved", () => {
+  assert.deepEqual(validateDoor(quizDoor({ tiles: [6], solvedImage: "images/door-2/chokladboll.webp", solvedAlt: "En chokladboll" })), []);
+  assert.match(validateDoor(quizDoor({ tiles: [6], solvedImage: "https://x/y.png" })).join(), /solvedImage must be/);
+});

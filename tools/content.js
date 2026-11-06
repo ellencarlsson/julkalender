@@ -37,7 +37,8 @@ function validateQuiz(task) {
   if (!isNonEmptyStringList(task.answers)) errors.push("answers must be a non-empty list of strings");
   if (task.letters !== undefined && typeof task.letters !== "boolean") errors.push("letters must be true or false");
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
-  for (const field of ["hint", "submitLabel"]) {
+  if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  for (const field of ["hint", "submitLabel", "solvedAlt"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   return errors;

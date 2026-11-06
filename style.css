@@ -1059,3 +1059,84 @@ body:has(#view-door:not([hidden]))::before {
 .pt-lanthanide { background: #ffbfff; }
 .pt-actinide { background: #ff99cc; }
 .pt-letter { background: #f3e9d6; }
+
+/* Solved code word: the real symbols in the tiles and the answer as a picture after "=". */
+.pt-solved .pt-symbol {
+  opacity: 1;
+}
+
+.pt-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pt-result-image {
+  width: 4.5rem;
+  height: auto;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
+}
+
+/* The whole sum stays on one line: a grid of "tile, operator" pairs where tiles share the width
+   (up to a real tile's size), and tile text scales with the tile via container query units. */
+.pt-row {
+  display: grid;
+  grid-template-columns: repeat(var(--tile-count), minmax(0, 3.6rem) auto);
+  justify-content: center;
+  align-items: center;
+  gap: clamp(1px, 0.3vw, 3px);
+}
+
+.pt-tile {
+  container-type: inline-size;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 0.85;
+  border-width: clamp(1px, 0.3vw, 1.5px);
+}
+
+.pt-number {
+  top: 4cqi;
+  left: 7cqi;
+  font-size: 22cqi;
+}
+
+.pt-symbol {
+  margin-top: 4cqi;
+  font-size: 42cqi;
+}
+
+.pt-tile.pt-solved .pt-symbol {
+  opacity: 1;
+}
+
+.pt-mass {
+  position: absolute;
+  bottom: 5cqi;
+  left: 0;
+  width: 100%;
+  font-size: 17cqi;
+  text-align: center;
+}
+
+.pt-operator {
+  font-size: clamp(0.6rem, 2.2vw, 1rem);
+}
+
+/* 16px keeps iOS Safari from zooming in; on small phones the letters may touch the tile edge. */
+.pt-input {
+  width: 100%;
+  margin-top: 4cqi;
+  font-size: max(16px, 42cqi);
+}
+
+.pt-result-image {
+  width: clamp(2rem, 10vw, 4rem);
+}
+
+/* Desktop: a periodic table sum gets a wider door so the tiles can reach real tile size. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.pt-row) {
+    max-width: 60rem;
+  }
+}

@@ -1,5 +1,5 @@
 /** Draws a code-word sum as periodic table tiles: atomic number in the corner, symbol typed by the player. */
-import { elementCategory, formatSymbol } from "./lib/periodic.js";
+import { elementCategory, elementMass, elementSymbol, formatSymbol } from "./lib/periodic.js";
 
 function symbolInput(atomicNumber) {
   const input = Object.assign(document.createElement("input"), { type: "text", className: "pt-input", maxLength: 2 });
@@ -12,15 +12,22 @@ function symbolInput(atomicNumber) {
   return input;
 }
 
-function elementTile(atomicNumber, editable) {
+/** mode: "input" to type the symbol, "solved" to show it, anything else shows "?". */
+function elementTile(atomicNumber, mode) {
   const tile = document.createElement("span");
-  tile.className = `pt-tile pt-${elementCategory(atomicNumber)}`;
+  tile.className = `pt-tile pt-${elementCategory(atomicNumber)}${mode === "solved" ? " pt-solved" : ""}`;
   const number = Object.assign(document.createElement("span"), { className: "pt-number", textContent: atomicNumber });
-  const symbol = editable
-    ? symbolInput(atomicNumber)
-    : Object.assign(document.createElement("span"), { className: "pt-symbol", textContent: "?" });
-  tile.append(number, symbol);
+  const text = mode === "solved" ? elementSymbol(atomicNumber) : "?";
+  const symbol = mode === "input" ? symbolInput(atomicNumber) : Object.assign(document.createElement("span"), { className: "pt-symbol", textContent: text });
+  const mass = Object.assign(document.createElement("span"), { className: "pt-mass", textContent: elementMass(atomicNumber) ?? "" });
+  tile.append(number, symbol, mass);
   return tile;
+}
+
+function resultPicture({ src, alt }) {
+  const result = Object.assign(document.createElement("span"), { className: "pt-result" });
+  result.append(operator("="), Object.assign(document.createElement("img"), { src, alt: alt ?? "", className: "pt-result-image" }));
+  return result;
 }
 
 function letterTile(letter) {
@@ -37,17 +44,19 @@ const operator = (text) => Object.assign(document.createElement("span"), { class
  *
  * Args:
  *   tiles: atomic numbers and plain letters, e.g. [6, 1, "L", 18].
- *   options: { editable } — when true each element tile gets an input for its symbol.
+ *   options: { mode, result } — mode "input" gives each element tile a symbol field, "solved"
+ *     shows the real symbols; result { src, alt } replaces the final "?" with a picture when solved.
  * Returns:
- *   A row of tiles joined by "+" and ending in "= ?".
+ *   A row of tiles joined by "+" and ending in "= ?" or "=" and the picture.
  */
-export function createPeriodicTiles(tiles, { editable = false } = {}) {
+export function createPeriodicTiles(tiles, { mode = "hidden", result = null } = {}) {
   const row = Object.assign(document.createElement("div"), { className: "pt-row" });
+  row.style.setProperty("--tile-count", tiles.length);
   tiles.forEach((tile, index) => {
     if (index > 0) row.append(operator("+"));
-    row.append(typeof tile === "number" ? elementTile(tile, editable) : letterTile(tile));
+    row.append(typeof tile === "number" ? elementTile(tile, mode) : letterTile(tile));
   });
-  row.append(operator("= ?"));
+  row.append(mode === "solved" && result ? resultPicture(result) : operator("= ?"));
   return row;
 }
 
