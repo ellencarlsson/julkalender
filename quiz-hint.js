@@ -1,14 +1,14 @@
-/** "Använd ledtråd" for quiz tasks: one hint point reveals the task's hint text for good. */
+/** "Använd ledtråd" for quiz tasks: one chokladboll (hint point) reveals the task's hint text for good. */
 import { quizHintKey } from "./lib/quiz.js";
-import { paragraph } from "./task-ui.js";
+import { chokladbollIcon, paragraph } from "./task-ui.js";
 
 const HINT_MESSAGES = {
-  ask: "Vill du använda en ledtråd? Det kostar 1 ledtrådspoäng.",
-  noPoints: "Du har inga ledtrådspoäng. Klara ett sidouppdrag för att få fler.",
+  ask: "Vill du använda en ledtråd? Det kostar 1 chokladboll.",
+  noPoints: "Du har inga chokladbollar. Klara ett sidouppdrag för att få fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
-const hintText = (task) => paragraph("quiz-hint-text", `💡 Ledtråd: ${task.hint}`);
+const hintText = (task) => paragraph("quiz-hint-text", `Ledtråd: ${task.hint}`);
 
 function smallButton(text, onClick) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: "small", textContent: text });
@@ -41,9 +41,10 @@ function confirmHint(box, task, progress, key) {
 }
 
 function askButton(box, task, progress, key) {
-  const button = smallButton("💡", () => confirmHint(box, task, progress, key));
+  const button = smallButton("", () => confirmHint(box, task, progress, key));
+  button.append(chokladbollIcon());
   button.classList.add("quiz-hint-icon");
-  button.setAttribute("aria-label", "Använd ledtråd");
+  button.setAttribute("aria-label", "Använd ledtråd (kostar 1 chokladboll)");
   button.title = "Använd ledtråd";
   return button;
 }

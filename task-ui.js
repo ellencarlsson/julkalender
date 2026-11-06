@@ -1,6 +1,17 @@
 /** Small building blocks shared by the task views. */
 import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, PHOTO_SENT_LABEL } from "./lib/progress.js";
 
+/** The chokladboll picture used for hint points (collected from side quests, spent on hints). */
+export function chokladbollIcon() {
+  const icon = Object.assign(document.createElement("img"), { src: "./images/theme/chokladboll.webp", alt: "", className: "cb-icon" });
+  icon.setAttribute("aria-hidden", "true");
+  return icon;
+}
+
+export function chokladbollar(count) {
+  return `${count} ${count === 1 ? "chokladboll" : "chokladbollar"}`;
+}
+
 export function paragraph(className, text) {
   return Object.assign(document.createElement("p"), { className, textContent: text });
 }

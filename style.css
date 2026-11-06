@@ -204,7 +204,26 @@ button.small {
 }
 
 .hint-bulb {
-  font-size: 1rem;
+  width: 1.5rem;
+}
+
+/* The chokladboll picture stands in for hint points wherever they are earned or spent. */
+.cb-icon {
+  display: inline-block;
+  width: 1.25em;
+  height: auto;
+  vertical-align: -0.25em;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.quiz-hint-icon .cb-icon,
+.cw-lamp .cb-icon {
+  width: 1.7rem;
+  vertical-align: middle;
+}
+
+.sq-reward .cb-icon {
+  margin-left: 0.2rem;
 }
 
 .sidequests-intro {
