@@ -904,7 +904,7 @@ button.small {
 /* Door view: the content sits on an old parchment. The 9-slice border image keeps the torn edges
    intact while the middle stretches to any content height. The palette variables are overridden
    so every task type gets ink-brown text on paper. The side quests list uses the same parchment. */
-:is(#view-door, #view-sidequests):not([hidden]) {
+:is(#view-door, #view-sidequests, #view-backpack):not([hidden]) {
   --cream: #3a2716;
   --cream-muted: rgba(58, 39, 22, 0.72);
   --line: rgba(90, 60, 30, 0.35);
@@ -931,13 +931,13 @@ button.small {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(#view-door, #view-sidequests):not([hidden]) {
+  :is(#view-door, #view-sidequests, #view-backpack):not([hidden]) {
     animation: none;
   }
 }
 
 /* Softens the winter scene behind the parchment so the task is in focus. */
-body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
+body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::before {
   filter: blur(3px) brightness(0.8);
 }
 
@@ -1029,7 +1029,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 }
 
 @media (min-width: 36rem) {
-  :is(#view-door, #view-sidequests):not([hidden]) {
+  :is(#view-door, #view-sidequests, #view-backpack):not([hidden]) {
     border-width: 2.5rem;
     border-image-width: 2.5rem;
     padding: 0.5rem 1.25rem 1rem;
@@ -1287,7 +1287,8 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 }
 
 /* Side quests: a handwritten checklist on the parchment. */
-#view-sidequests h2 {
+#view-sidequests h2,
+#view-backpack h2 {
   margin: 0.25rem 0 0.5rem;
   font-family: "Dancing Script", var(--hand-font), cursive;
   font-size: clamp(2.2rem, 9vw, 3rem);
@@ -2309,4 +2310,71 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 
 #view-door .task:has(.exam-blank) .quiz-form button[type="submit"]:hover {
   background: rgba(58, 39, 22, 0.08);
+}
+
+/* Backpack: the gift card code as boxes that fill in, and the items collected so far. */
+#view-backpack h3 {
+  margin: 1rem 0 0.5rem;
+  font-family: var(--hand-font);
+  font-size: 1.4rem;
+  font-weight: normal;
+}
+
+/* All 11 boxes on one row, shrinking to fit narrow phones. */
+.code-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.code-box {
+  display: grid;
+  flex: 1 1 0;
+  place-items: center;
+  min-width: 0;
+  max-width: 2.6rem;
+  aspect-ratio: 5 / 6;
+  border: 2px solid var(--cream);
+  border-radius: 0.35rem;
+  font-family: var(--hand-font);
+  font-size: clamp(1.1rem, 5vw, 2rem);
+}
+
+.code-box--missing {
+  border-style: dashed;
+  color: var(--cream-muted);
+}
+
+.backpack-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--hand-font);
+  font-size: 1.35rem;
+}
+
+.backpack-chokladbollar {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 1.35rem;
+}
+
+.backpack-empty {
+  margin: 0;
+  color: var(--cream-muted);
+  font-family: var(--hand-font);
+  font-size: 1.15rem;
+}
+
+@media (min-width: 36rem) {
+  .code-boxes {
+    gap: 0.3rem;
+  }
 }

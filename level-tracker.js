@@ -8,8 +8,9 @@ import { showLevel, showLevelUp } from "./ui.js";
 /**
  * Args:
  *   onMaxLevel: called once per sign-in when the player reaches the last level.
+ *   onChange: called with ([number, door] pairs, progress) whenever doors or progress change.
  */
-export function createLevelTracker({ onMaxLevel = () => {} } = {}) {
+export function createLevelTracker({ onMaxLevel = () => {}, onChange = () => {} } = {}) {
   const doors = new Map();
   let progress = null;
   let shownLevel = 0;
@@ -24,6 +25,7 @@ export function createLevelTracker({ onMaxLevel = () => {} } = {}) {
   /** Celebrates only after a task is completed, never when data merely finishes loading. */
   function refresh({ celebrate = false } = {}) {
     markCompletedDoors();
+    onChange([...doors.entries()], progress);
     if (!progress) return;
     const { level, xpInLevel } = levelFromXp(totalXp([...doors.entries()], progress));
     if (celebrate && level > shownLevel) showLevelUp(level);
@@ -59,6 +61,7 @@ export function createLevelTracker({ onMaxLevel = () => {} } = {}) {
       reachedMax = false;
       showLevel(0, 0);
       markCompletedDoors();
+      onChange([], null);
     },
   };
 }
