@@ -429,18 +429,8 @@ button.small {
   font-style: italic;
 }
 
-.photo-sent {
-  width: 100%;
-  padding: 0.9rem 1rem;
-  font-weight: bold;
-}
-
-.photo-sent:disabled {
-  opacity: 0.6;
-}
-
-/* Challenges show their own "Klart!" with a checkmark, so they skip the corner marker. */
-.task--done:has(.task-done-state)::after {
+/* Challenges show their own "Klart!" or ticked box, so they skip the corner marker. */
+.task--done:has(.task-done-state, .photo-sent)::after {
   content: none;
 }
 
@@ -1021,8 +1011,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   border-top: none;
 }
 
-#view-door .quiz-form button[type="submit"],
-#view-door .photo-sent {
+#view-door .quiz-form button[type="submit"] {
   border: none;
   background: var(--knit-red);
   box-shadow: 0 3px 0 #8a2219;
