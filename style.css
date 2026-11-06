@@ -1354,6 +1354,11 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   cursor: pointer;
 }
 
+/* The dashed line separates side quests in a list; a challenge has a single box, so it needs none. */
+.sq-item.photo-sent {
+  border-bottom: none;
+}
+
 /* An ink-drawn box instead of the browser's white checkbox; ticked shows the theme checkmark. */
 .sq-check {
   flex: none;
