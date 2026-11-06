@@ -3,6 +3,7 @@ import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
+import { chokladbollar } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
 const GRID_DOORS = [...Array.from({ length: DOOR_COUNT }, (_, index) => index + 1), TEST_LOCKED_DOOR];
@@ -22,6 +23,21 @@ function renderDoorGrid() {
   }
 }
 
+const [FIRST_DOOR, LAST_DOOR] = [1, 24];
+
+/** Points an arrow at a neighbouring door, or hides it past the first or last door. */
+function setDoorArrow(id, door) {
+  const arrow = element(id);
+  arrow.hidden = door < FIRST_DOOR || door > LAST_DOOR;
+  arrow.href = doorHash(door);
+}
+
+function showDoorTitle(door) {
+  element("door-title").textContent = `Lucka ${door}`;
+  setDoorArrow("prev-door", door - 1);
+  setDoorArrow("next-door", door + 1);
+}
+
 function showRoute(route) {
   for (const section of document.querySelectorAll("[data-view]")) {
     section.hidden = section.dataset.view !== route.view;
@@ -30,7 +46,7 @@ function showRoute(route) {
     if (link.dataset.nav === route.view) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   }
-  if (route.view === "door") element("door-title").textContent = `Lucka ${route.door}`;
+  if (route.view === "door") showDoorTitle(route.door);
   window.scrollTo(0, 0);
 }
 
@@ -49,7 +65,7 @@ let levelUpTimer = null;
 
 export function showHintPoints(points) {
   element("hint-points").textContent = points;
-  element("hint-circle").setAttribute("aria-label", `${points} ledtrådspoäng. Visa sidouppdrag`);
+  element("hint-circle").setAttribute("aria-label", `${chokladbollar(points)}. Visa sidouppdrag`);
 }
 
 export function hideLevelUp() {

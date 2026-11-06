@@ -20,6 +20,7 @@ import {
   wordId,
 } from "./lib/crossword.js";
 import { wordKey } from "./lib/progress.js";
+import { chokladbollIcon } from "./task-ui.js";
 
 const SAVE_DELAY_MS = 800;
 /** The crossword view currently shown for each task, so a re-render or reset can deal with its pending save. */
@@ -256,7 +257,7 @@ function revealedCells(cells, task, key, progress) {
 const LAMP_MESSAGES = {
   noWord: "Markera ett ord i korsordet först.",
   alreadyRight: "Det ordet är redan rätt, så ingen ledtråd behövs.",
-  noPoints: "Du har inga ledtrådspoäng. Klara ett sidouppdrag för att få fler.",
+  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att få fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
@@ -276,6 +277,15 @@ function fillWord(ctx, clue) {
   }
 }
 
+/** Messages about the chokladboll show right by it, where the player is looking. */
+function showLampNote(ctx, text) {
+  ctx.confirm.hidden = true;
+  ctx.lampNote.textContent = text;
+  ctx.lampNote.hidden = !text;
+}
+
+const clueName = (clue) => `${clue.number} ${DIRECTION_LABELS[clue.direction].toLocaleLowerCase("sv-SE")}`;
+
 async function revealSelected(ctx, clue) {
   ctx.confirm.hidden = true;
   if (ctx.revealing) return;
@@ -283,10 +293,10 @@ async function revealSelected(ctx, clue) {
   try {
     await ctx.progress.revealWord(wordKey(ctx.key, wordId(clue)));
     fillWord(ctx, clue);
-    ctx.status.textContent = "";
+    showLampNote(ctx, "");
     afterChange(ctx);
   } catch {
-    ctx.status.textContent = LAMP_MESSAGES.failed;
+    showLampNote(ctx, LAMP_MESSAGES.failed);
   } finally {
     ctx.revealing = false;
   }
@@ -296,34 +306,38 @@ async function revealSelected(ctx, clue) {
 function onLamp(ctx) {
   if (ctx.solved) return;
   const clue = selectedClue(ctx);
-  if (!clue) return (ctx.status.textContent = LAMP_MESSAGES.noWord);
-  if (correctWordIds(ctx.cells, ctx.entries, [clue]).length > 0) return (ctx.status.textContent = LAMP_MESSAGES.alreadyRight);
-  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return (ctx.status.textContent = LAMP_MESSAGES.noPoints);
-  ctx.status.textContent = "";
+  if (!clue) return showLampNote(ctx, LAMP_MESSAGES.noWord);
+  if (correctWordIds(ctx.cells, ctx.entries, [clue]).length > 0) return showLampNote(ctx, LAMP_MESSAGES.alreadyRight);
+  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return showLampNote(ctx, LAMP_MESSAGES.noPoints);
+  showLampNote(ctx, "");
   ctx.pendingClue = clue;
+  ctx.confirmText.textContent = `Vill du använda en chokladboll för ${clueName(clue)}: ”${clue.text}”?`;
   ctx.confirm.hidden = false;
 }
 
-function confirmButton(text, onClick) {
-  const button = createElement("button", "small", text);
+function confirmButton(text, className, onClick) {
+  const button = createElement("button", `small ${className}`, text);
   button.type = "button";
   button.addEventListener("click", onClick);
   return button;
 }
 
 function createLamp(ctx) {
-  const lamp = createElement("button", "cw-lamp", "💡");
+  const lamp = createElement("button", "cw-lamp");
   lamp.type = "button";
-  lamp.setAttribute("aria-label", "Använd en ledtråd för det markerade ordet");
+  lamp.append(chokladbollIcon());
+  lamp.setAttribute("aria-label", "Använd en ledtråd för det markerade ordet (kostar 1 chokladboll)");
   lamp.addEventListener("click", () => onLamp(ctx));
-  ctx.confirm = createElement("div", "cw-confirm");
-  ctx.confirm.hidden = true;
+  ctx.confirm = Object.assign(createElement("div", "cw-confirm hint-popover"), { hidden: true });
+  ctx.confirmText = createElement("p");
   ctx.confirm.append(
-    createElement("p", null, "Vill du använda en ledtråd för detta ordet?"),
-    confirmButton("Ja", () => revealSelected(ctx, ctx.pendingClue)),
-    confirmButton("Nej", () => (ctx.confirm.hidden = true)),
+    ctx.confirmText,
+    confirmButton("Ja", "hint-yes", () => revealSelected(ctx, ctx.pendingClue)),
+    confirmButton("Nej", "hint-no", () => (ctx.confirm.hidden = true)),
   );
-  return ctx.solved ? [] : [lamp, ctx.confirm];
+  ctx.lampNote = Object.assign(createElement("p", "cw-lamp-note hint-popover"), { hidden: true });
+  ctx.lampNote.setAttribute("role", "status");
+  return ctx.solved ? [] : [lamp, ctx.confirm, ctx.lampNote];
 }
 
 function createContext({ task, key, progress, card }) {

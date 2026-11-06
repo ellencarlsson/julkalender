@@ -30,10 +30,9 @@ check_sign_out_in_footer() {
 }
 
 check "index.html exists" test -f index.html
-check "page shows the Haris Julkalender title image" grep -q '<img src="./images/theme/title.png" alt="Haris Julkalender"' index.html
-check "wide screens get the one-line title" grep -q 'media="(min-width: 48rem)" srcset="./images/theme/title-wide-v2.png"' index.html
-check "one-line title image exists" test -f images/theme/title-wide-v2.png
-check "title image exists" test -f images/theme/title.png
+check "page shows the one-line Haris Julkalender title image" grep -q '<img src="./images/theme/title-oneline.webp" alt="Haris Julkalender"' index.html
+check "title image exists" test -f images/theme/title-oneline.webp
+check "same title image on mobile and desktop" bash -c '! grep -q "<picture\|title-wide-v2\|images/theme/title.png" index.html'
 check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
 check "title has no Santa hats" bash -c '! grep -q "class=\"hat\"" index.html && ! grep -q "\.hat" style.css'
 check "stylesheet is linked" grep -q 'rel="stylesheet" href="./style.css' index.html
@@ -74,7 +73,8 @@ check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "no Luckor heading above the doors" bash -c '! grep -q "<h2>Luckor</h2>" index.html'
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has no back link" bash -c '! grep -q "back-link" index.html'
-check "door number and title share the door header" bash -c 'sed -n "/class=\"door-header\"/,/<\/div>/p" index.html | grep -q "id=\"door-subtitle\""'
+check "door view shows no door title" bash -c '! grep -q "door-subtitle" index.html door-view.js'
+check "door number uses the handwritten script font" grep -q "Dancing Script" style.css
 check "no task type labels in the door view" bash -c '! grep -nE "TASK_TYPE_LABELS|\"Utmaning\"|\"Fråga\"" door-view.js'
 check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
@@ -94,7 +94,6 @@ check "reset button is wired into the door view" grep -q "resetHandler(number, r
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
 check "level-up message element exists" grep -q 'id="level-up"' index.html
-check "door subtitle placeholder exists" grep -q 'id="door-subtitle"' index.html
 check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
 check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
@@ -104,6 +103,9 @@ check "local content folder is gitignored" git check-ignore -q content/door-1.js
 check "website never imports the admin SDK" bash -c '! grep -l "firebase-admin" *.js lib/*.js'
 check "firestore.rules exists" test -f firestore.rules
 check "firestore.rules uses server time" grep -q "request.time" firestore.rules
+check "task images have a renderer (regression #101)" grep -q "^function taskImage" door-view.js
+check "door view has prev/next arrows" grep -q "id=\"next-door\"" index.html
+check "block-pager.js has valid syntax" check_js_syntax block-pager.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

@@ -6,8 +6,8 @@
   <title>Haris Julkalender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=8f8984effb">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
+  <link rel="stylesheet" href="./style.css?v=135db2529d">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -19,8 +19,9 @@
   {
     "imports": {
       "./app.js": "./app.js?v=726a79ca6d",
-      "./crossword-view.js": "./crossword-view.js?v=47b8c48c48",
-      "./door-view.js": "./door-view.js?v=ec91026c71",
+      "./block-pager.js": "./block-pager.js?v=465c59442f",
+      "./crossword-view.js": "./crossword-view.js?v=2c258ce5c6",
+      "./door-view.js": "./door-view.js?v=342ab0adf7",
       "./doors.js": "./doors.js?v=2b6119d4d8",
       "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
       "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
@@ -28,22 +29,24 @@
       "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
       "./lib/door-state.js": "./lib/door-state.js?v=91df6ae122",
       "./lib/hints.js": "./lib/hints.js?v=43e3f72143",
-      "./lib/level.js": "./lib/level.js?v=6038e01c2e",
-      "./lib/matching.js": "./lib/matching.js?v=85ee8623d3",
-      "./lib/progress.js": "./lib/progress.js?v=ca9606c422",
+      "./lib/level.js": "./lib/level.js?v=f3da8b800a",
+      "./lib/matching.js": "./lib/matching.js?v=8ad187ecee",
+      "./lib/periodic.js": "./lib/periodic.js?v=d765f90375",
+      "./lib/progress.js": "./lib/progress.js?v=2bc2af29b5",
       "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
       "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
       "./lib/test-reset.js": "./lib/test-reset.js?v=8a63eeb741",
       "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
-      "./matching-view.js": "./matching-view.js?v=fe36a723ce",
+      "./matching-view.js": "./matching-view.js?v=c35fdfe476",
+      "./periodic-tiles.js": "./periodic-tiles.js?v=16fcd305c5",
       "./progress.js": "./progress.js?v=bbe6e79699",
-      "./quiz-hint.js": "./quiz-hint.js?v=700dfa3839",
-      "./quiz-view.js": "./quiz-view.js?v=5bcd6e232c",
-      "./sidequest-view.js": "./sidequest-view.js?v=00eb195049",
+      "./quiz-hint.js": "./quiz-hint.js?v=734c97e836",
+      "./quiz-view.js": "./quiz-view.js?v=7bcc934c97",
+      "./sidequest-view.js": "./sidequest-view.js?v=fd44619442",
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
-      "./task-ui.js": "./task-ui.js?v=87b5e563a7",
-      "./ui.js": "./ui.js?v=7d111123f7"
+      "./task-ui.js": "./task-ui.js?v=6c8d6c079c",
+      "./ui.js": "./ui.js?v=46ff9090f2"
     }
   }
   </script>
@@ -52,10 +55,7 @@
 <body>
   <main>
     <h1 class="site-title">
-      <picture>
-        <source media="(min-width: 48rem)" srcset="./images/theme/title-wide-v2.png" width="1400" height="388">
-        <img src="./images/theme/title.png" alt="Haris Julkalender" width="900" height="415">
-      </picture>
+      <img src="./images/theme/title-oneline.webp" alt="Haris Julkalender" width="1400" height="362">
     </h1>
 
     <section id="signed-out" hidden>
@@ -64,14 +64,15 @@
 
     <div id="signed-in" hidden>
       <header class="game-header">
-        <a href="#/sidequests" id="hint-circle" class="hint-circle" data-nav="sidequests" aria-label="0 ledtrådspoäng. Visa sidouppdrag">
-          <span id="hint-points" class="hint-number">0</span><span class="hint-bulb" aria-hidden="true">💡</span>
-        </a>
-
         <nav class="main-nav">
           <a href="#/backpack" data-nav="backpack" class="icon-button" aria-label="Ryggsäck" title="Ryggsäck"><span aria-hidden="true">🎒</span></a>
+          <a href="#/sidequests" data-nav="sidequests" class="icon-button" aria-label="Side quests" title="Side quests"><span aria-hidden="true">📝</span></a>
           <a href="#/" data-nav="overview" class="icon-button" aria-label="Luckor" title="Luckor"><span aria-hidden="true">📅</span></a>
         </nav>
+
+        <a href="#/sidequests" id="hint-circle" class="hint-circle" data-nav="sidequests" aria-label="0 chokladbollar. Visa sidouppdrag">
+          <span id="hint-points" class="hint-number">0</span><img class="hint-bulb cb-icon" src="./images/theme/chokladboll.webp" alt="" aria-hidden="true">
+        </a>
 
         <div id="level-ring" class="level-ring" role="progressbar" aria-label="Nivå 0, 0 av 100 XP mot nästa nivå" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <span id="level" class="level-number">0</span>
@@ -86,11 +87,14 @@
 
       <section id="view-door" data-view="door" hidden>
         <div class="door-header">
+          <a id="prev-door" class="door-arrow" aria-label="Föregående lucka">&lt;</a>
           <h2 id="door-title">Lucka</h2>
-          <p id="door-subtitle" class="door-subtitle" hidden></p>
+          <a id="next-door" class="door-arrow" aria-label="Nästa lucka">&gt;</a>
         </div>
         <div id="task-area" class="task-area"></div>
       </section>
+
+      <div id="door-tools" class="door-tools"></div>
 
       <section id="view-backpack" data-view="backpack" hidden>
         <h2>Ryggsäck</h2>
@@ -102,8 +106,8 @@
       </section>
 
       <section id="view-sidequests" data-view="sidequests" hidden>
-        <h2>Sidouppdrag</h2>
-        <p class="sidequests-intro">Sidouppdrag ger ledtrådspoäng som du kan använda för att få hjälp i korsorden.</p>
+        <h2>Side quests</h2>
+        <p class="sidequests-intro">Bocka av ett uppdrag när du har gjort det, så får du chokladbollar.</p>
         <div id="sidequest-list" class="task-area"></div>
       </section>
 

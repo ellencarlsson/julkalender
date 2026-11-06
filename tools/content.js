@@ -25,12 +25,20 @@ function isInsideWord(cells, r, c) {
   return (reaches(0, -1) && reaches(0, 1)) || (reaches(-1, 0) && reaches(1, 0));
 }
 
+const isTile = (tile) => (Number.isInteger(tile) && tile >= 1 && tile <= 118) || (typeof tile === "string" && /^\p{L}$/u.test(tile));
+const validTiles = (tiles) => Array.isArray(tiles) && tiles.length > 0 && tiles.every(isTile);
+
 function validateQuiz(task) {
   const errors = [];
-  if (!isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
+  // A tile sum is the question itself, so the question text may be left out then.
+  if (!isNonEmptyString(task.question) && !(task.tiles && task.question === undefined)) {
+    errors.push("question must be a non-empty string");
+  }
   if (!isNonEmptyStringList(task.answers)) errors.push("answers must be a non-empty list of strings");
   if (task.letters !== undefined && typeof task.letters !== "boolean") errors.push("letters must be true or false");
-  for (const field of ["hint", "submitLabel"]) {
+  if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
+  if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  for (const field of ["hint", "submitLabel", "solvedAlt"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   return errors;

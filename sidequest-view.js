@@ -1,22 +1,36 @@
-/** Side quests panel: each quest with its hint point reward and a "photo sent" button. */
+/** Side quests list: a handwritten checklist where ticking a quest earns its chokladbollar (hint points). */
 import { sideQuestReward } from "./lib/hints.js";
-import { paragraph, photoSentControls } from "./task-ui.js";
+import { chokladbollar, chokladbollIcon, paragraph } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
 
-function rewardText(quest) {
-  const points = sideQuestReward(quest);
-  return `+${points} ledtrådspoäng`;
+
+async function completeQuest(item, checkbox, quest, progress) {
+  checkbox.disabled = true;
+  item.querySelector(".sq-error")?.remove();
+  try {
+    await progress.completeSideQuest(quest.id);
+    item.classList.add("sq-item--done");
+  } catch {
+    checkbox.checked = false;
+    checkbox.disabled = false;
+    item.append(paragraph("sq-error", "Kunde inte spara. Försök igen."));
+  }
 }
 
-function questCard(quest, progress) {
-  const card = document.createElement("article");
-  card.className = "task sidequest";
+function questItem(quest, progress) {
   const done = progress.isSideQuestCompleted(quest.id);
-  if (done) card.classList.add("task--done");
-  card.append(paragraph("", quest.text), paragraph("sidequest-reward", rewardText(quest)));
-  card.append(...photoSentControls(card, done, () => progress.completeSideQuest(quest.id)));
-  return card;
+  const item = document.createElement("li");
+  const label = Object.assign(document.createElement("label"), { className: `sq-item${done ? " sq-item--done" : ""}` });
+  const checkbox = Object.assign(document.createElement("input"), { type: "checkbox", className: "sq-check", checked: done, disabled: done });
+  const text = Object.assign(document.createElement("span"), { className: "sq-text", textContent: quest.text });
+  const reward = Object.assign(document.createElement("span"), { className: "sq-reward", textContent: `+${sideQuestReward(quest)}` });
+  reward.append(chokladbollIcon());
+  reward.setAttribute("aria-label", chokladbollar(sideQuestReward(quest)));
+  checkbox.addEventListener("change", () => checkbox.checked && completeQuest(label, checkbox, quest, progress));
+  label.append(checkbox, text, reward);
+  item.append(label);
+  return item;
 }
 
 /**
@@ -30,5 +44,7 @@ export function renderSideQuests(quests, progress) {
   const list = element("sidequest-list");
   if (!progress) return list.replaceChildren(paragraph("", "Laddar…"));
   if (quests.length === 0) return list.replaceChildren(paragraph("", "Sidouppdragen dyker upp 1 december."));
-  list.replaceChildren(...quests.map((quest) => questCard(quest, progress)));
+  const checklist = Object.assign(document.createElement("ul"), { className: "sq-list" });
+  checklist.append(...quests.map((quest) => questItem(quest, progress)));
+  list.replaceChildren(checklist);
 }

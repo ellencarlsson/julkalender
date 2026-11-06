@@ -1,4 +1,5 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
+import { blockPager, isPagedDoor } from "./block-pager.js";
 import { createCrossword } from "./crossword-view.js";
 import { createMatching } from "./matching-view.js";
 import { createQuiz } from "./quiz-view.js";
@@ -7,6 +8,7 @@ import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
+import { taskXp } from "./lib/level.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -23,19 +25,32 @@ function taskPrompt(task) {
   return null;
 }
 
-function taskCard(task, door, progress) {
+function taskImage(task) {
+  const image = Object.assign(document.createElement("img"), { src: task.image, alt: task.alt ?? "", className: "task-image" });
+  image.loading = "lazy";
+  return image;
+}
+
+function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
   card.className = "task";
-  if (task.image) card.append(taskImage(task));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
+  if (task.image) card.append(taskImage(task));
   const key = taskKey(door, task.id);
   if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
-  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card }));
+  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
+}
+
+function taskElements(tasks, door, progress) {
+  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
+  // The block title above the cards already names each task, so its prompt is not repeated in the card.
+  const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));
+  return [blockPager(cards, tasks.map((task) => task.prompt ?? ""))];
 }
 
 function showMessage(...lines) {
@@ -45,7 +60,6 @@ function showMessage(...lines) {
     return paragraph;
   });
   element("task-area").replaceChildren(...paragraphs);
-  element("door-subtitle").hidden = true;
 }
 
 function showLocked(number) {
@@ -101,11 +115,10 @@ function resetButton(number, onReset) {
  *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
  */
 export function showDoorContent(number, { state, door }, progress, onReset) {
+  element("door-tools").replaceChildren();
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
-  const subtitle = element("door-subtitle");
-  subtitle.textContent = door.title ?? "";
-  subtitle.hidden = !door.title;
-  element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
-  if (onReset) element("task-area").append(resetButton(number, onReset));
+  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress));
+  // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
+  if (onReset) element("door-tools").append(resetButton(number, onReset));
 }

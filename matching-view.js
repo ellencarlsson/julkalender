@@ -1,10 +1,18 @@
-/** Matching task: tap an item, then the target it belongs with; right pairs lock, wrong ones bounce back. */
-import { isCorrectPair, isMatchingSolved, matchingBoard, shuffled } from "./lib/matching.js";
+/**
+ * Matching task: tap an item, then the target it belongs with. Pairs get a shared number and can be
+ * changed freely; only when every item has a partner are all pairs checked at once, so single pairs
+ * never reveal whether they are right.
+ */
+import { checkLinks, matchingBoard, nextBadge, shuffled } from "./lib/matching.js";
 import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på något i vänstra kolumnen och sedan på det det hör till.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till. När alla har ett par kollas svaret.";
+const NOT_YET = "Inte rätt än – byt några par och försök igen.";
+
+const successLabel = (xp) => (xp ? `Alla rätt! 🎉 +${xp} XP` : CHALLENGE_DONE_LABEL);
+const card = (ctx, role, pair) => ctx.root.querySelector(`.match-${role}[data-pair="${pair}"]`);
 
 function sideContent(side) {
   if (!side.image) return [document.createTextNode(side.text)];
@@ -21,48 +29,89 @@ function sideButton(side, role) {
   return button;
 }
 
-function lockPair(ctx, pair) {
-  ctx.matched.add(pair);
-  ctx.root.querySelectorAll(`.match-card[data-pair="${pair}"]`).forEach((button) => {
+function setBadge(button, badge) {
+  button.querySelector(".match-badge")?.remove();
+  button.classList.toggle("match-linked", Boolean(badge));
+  if (badge) button.append(Object.assign(document.createElement("span"), { className: "match-badge", textContent: badge }));
+}
+
+function unlink(ctx, item) {
+  if (!ctx.links.has(item)) return;
+  setBadge(card(ctx, "target", ctx.links.get(item)), null);
+  setBadge(card(ctx, "item", item), null);
+  ctx.links.delete(item);
+  ctx.badges.delete(item);
+}
+
+function link(ctx, item, target) {
+  const owner = [...ctx.links].find(([, chosen]) => chosen === target)?.[0];
+  if (owner !== undefined) unlink(ctx, owner);
+  const badge = nextBadge(new Set(ctx.badges.values()));
+  ctx.links.set(item, target);
+  ctx.badges.set(item, badge);
+  setBadge(card(ctx, "item", item), badge);
+  setBadge(card(ctx, "target", target), badge);
+}
+
+function select(ctx, button) {
+  ctx.selected?.removeAttribute("aria-pressed");
+  ctx.selected = ctx.selected === button ? null : button;
+  ctx.selected?.setAttribute("aria-pressed", "true");
+}
+
+/** Tapping a paired item frees it so it can be paired again. */
+function selectItem(ctx, button) {
+  ctx.status.textContent = "";
+  unlink(ctx, Number(button.dataset.pair));
+  select(ctx, button);
+}
+
+function tryTarget(ctx, target) {
+  const item = ctx.selected;
+  if (!item) return (ctx.status.textContent = "Välj först en bild att para ihop.");
+  select(ctx, item);
+  link(ctx, Number(item.dataset.pair), Number(target.dataset.pair));
+  checkAll(ctx);
+}
+
+function shakeBoard(ctx) {
+  ctx.root.classList.add("match-wrong");
+  setTimeout(() => ctx.root.classList.remove("match-wrong"), WRONG_MS);
+}
+
+function checkAll(ctx) {
+  const result = checkLinks(ctx.links, ctx.task.pairs.length);
+  if (result === "incomplete") return;
+  if (result === "wrong") {
+    ctx.status.textContent = NOT_YET;
+    return shakeBoard(ctx);
+  }
+  lockAll(ctx);
+  complete(ctx);
+}
+
+function lockAll(ctx) {
+  ctx.root.querySelectorAll(".match-card").forEach((button) => {
+    setBadge(button, null);
     button.classList.add("match-done");
     button.disabled = true;
     button.removeAttribute("aria-pressed");
   });
 }
 
-function bounce(ctx, item, target) {
-  ctx.status.textContent = "Inte rätt, försök igen.";
-  [item, target].forEach((button) => button.classList.add("match-wrong"));
-  setTimeout(() => [item, target].forEach((button) => button.classList.remove("match-wrong")), WRONG_MS);
-}
-
-async function completeIfSolved(ctx) {
-  if (!isMatchingSolved(ctx.task.pairs, ctx.matched)) return;
+async function complete(ctx) {
   ctx.status.textContent = "Sparar…";
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
-    ctx.status.replaceWith(doneState(CHALLENGE_DONE_LABEL));
+    const success = doneState(successLabel(ctx.xp));
+    success.classList.add("match-success");
+    ctx.status.replaceWith(success);
+    // Lets a paged door move on to the next block.
+    ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     ctx.status.textContent = "Kunde inte spara. Försök igen genom att ladda om sidan.";
   }
-}
-
-function selectItem(ctx, button) {
-  ctx.selected?.removeAttribute("aria-pressed");
-  ctx.selected = ctx.selected === button ? null : button;
-  ctx.selected?.setAttribute("aria-pressed", "true");
-  ctx.status.textContent = "";
-}
-
-function tryTarget(ctx, target) {
-  const item = ctx.selected;
-  if (!item) return (ctx.status.textContent = "Välj först något i vänstra kolumnen.");
-  selectItem(ctx, item);
-  if (!isCorrectPair(Number(item.dataset.pair), Number(target.dataset.pair))) return bounce(ctx, item, target);
-  ctx.status.textContent = "";
-  lockPair(ctx, Number(item.dataset.pair));
-  completeIfSolved(ctx);
 }
 
 function column(ctx, sides, role, onTap) {
@@ -79,19 +128,20 @@ function column(ctx, sides, role, onTap) {
  * Builds a matching task.
  *
  * Args:
- *   options: { task, key, progress, card } where card is the task card to mark as done.
+ *   options: { task, key, progress, card, xp } where card is the task card to mark as done and
+ *     xp the XP this task is worth, shown when it is solved.
  * Returns:
  *   The elements to append to the card.
  */
-export function createMatching({ task, key, progress, card }) {
+export function createMatching({ task, key, progress, card: taskCard, xp }) {
   const { items, targets } = matchingBoard(task.pairs);
-  const ctx = { task, key, progress, card, matched: new Set(), selected: null };
+  const ctx = { task, key, progress, card: taskCard, xp, links: new Map(), badges: new Map(), selected: null };
   ctx.root = Object.assign(document.createElement("div"), { className: "match-board" });
   ctx.root.append(column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) {
-    task.pairs.forEach((_, pair) => lockPair(ctx, pair));
+    lockAll(ctx);
     return [ctx.root, doneState(CHALLENGE_DONE_LABEL)];
   }
   return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
