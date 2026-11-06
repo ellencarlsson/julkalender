@@ -1,4 +1,4 @@
-/** School-assignment touches for a task: a worksheet header and a letter in an envelope. */
+/** Letter touches for a task: a worksheet header, an envelope, or the parchment itself as a letter. */
 
 const element = (tag, className, text) => Object.assign(document.createElement(tag), { className, ...(text !== undefined && { textContent: text }) });
 
@@ -31,4 +31,20 @@ export function envelope(lines, sentText) {
   const sent = element("p", "envelope-sent", sentText);
   sent.setAttribute("role", "status");
   return [letter, sent];
+}
+
+/** The address handwritten in the top corner, as when the whole parchment is the letter. */
+export function letterAddress(lines) {
+  const address = element("div", "letter-address");
+  address.append(...lines.map((line) => element("p", "", line)));
+  return address;
+}
+
+/** A SKICKAT stamp and a message, shown on the parchment once the task card is done. */
+export function letterSent(text) {
+  const sent = element("div", "letter-sent");
+  const message = element("p", "letter-sent-text", text);
+  message.setAttribute("role", "status");
+  sent.append(element("span", "letter-sent-stamp", "SKICKAT"), message);
+  return sent;
 }
