@@ -1151,12 +1151,27 @@ body:has(#view-door:not([hidden]))::before {
   line-height: 1;
 }
 
-/* The hint is just a lamp in the task's top-right corner until it is opened. */
+/* Until it is opened the hint is just a lamp, on the same line as the door title at the far right. */
+#view-door:not([hidden]) {
+  position: relative;
+}
+
+#view-door .task:has(.quiz-hint-icon:only-child) {
+  position: static;
+}
+
 .quiz-hint:has(> .quiz-hint-icon:only-child) {
   position: absolute;
-  top: 0.5rem;
-  right: 0.25rem;
+  top: 0.3rem;
+  right: 0.5rem;
   margin: 0;
+}
+
+@media (min-width: 36rem) {
+  .quiz-hint:has(> .quiz-hint-icon:only-child) {
+    top: 1rem;
+    right: 1.25rem;
+  }
 }
 
 .quiz-hint-icon {
@@ -1168,10 +1183,6 @@ body:has(#view-door:not([hidden]))::before {
   line-height: 1;
 }
 
-/* Room for the lamp so it never covers the tiles. */
-#view-door .task:has(.quiz-hint-icon:only-child) {
-  padding-top: 3.25rem;
-}
 
 .door-tools {
   display: flex;
@@ -1181,4 +1192,29 @@ body:has(#view-door:not([hidden]))::before {
 
 #view-door[hidden] + .door-tools {
   display: none;
+}
+
+/* Phones: the sum wraps onto two rows of five large tiles instead of one tiny line; the "+" at
+   the end of the first row shows that it continues. */
+@media (max-width: 36rem) {
+  .pt-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr) auto);
+    row-gap: 0.75rem;
+  }
+
+  .pt-operator {
+    font-size: 1rem;
+  }
+
+  .pt-unknown {
+    font-size: 2.6rem;
+  }
+
+  .pt-result-image {
+    width: 3.2rem;
+  }
+
+  #view-door .task:has(.pt-row) {
+    padding-inline: 0;
+  }
 }
