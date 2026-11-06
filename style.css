@@ -1821,3 +1821,30 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     z-index: 1;
   }
 }
+
+/* The final message at level 24 is written on the same parchment as the doors. */
+.final-message:not([hidden]) {
+  margin: 0 0 1.5rem;
+  border: 1.6rem solid transparent;
+  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  padding: 0.25rem 0.75rem 0.75rem;
+  color: #3a2716;
+  text-align: center;
+  text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.45));
+}
+
+.final-message h2 {
+  margin: 0 0 0.75rem;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: clamp(1.8rem, 7vw, 2.4rem);
+  font-weight: 600;
+}
+
+/* Line breaks in the message are kept as Ellen wrote them. */
+.final-message p {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 1.3rem;
+  white-space: pre-line;
+}

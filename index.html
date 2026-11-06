@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=6127df1aee">
+  <link rel="stylesheet" href="./style.css?v=6feb02ce95">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -18,14 +18,15 @@
   <script type="importmap">
   {
     "imports": {
-      "./app.js": "./app.js?v=726a79ca6d",
+      "./app.js": "./app.js?v=d33f1fb67a",
       "./block-pager.js": "./block-pager.js?v=465c59442f",
       "./crossword-view.js": "./crossword-view.js?v=2c258ce5c6",
       "./door-view.js": "./door-view.js?v=342ab0adf7",
       "./doors.js": "./doors.js?v=2b6119d4d8",
+      "./final-message.js": "./final-message.js?v=227146e48e",
       "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
       "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
-      "./level-tracker.js": "./level-tracker.js?v=30b63112f7",
+      "./level-tracker.js": "./level-tracker.js?v=946e898f66",
       "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
       "./lib/door-state.js": "./lib/door-state.js?v=91df6ae122",
       "./lib/hints.js": "./lib/hints.js?v=43e3f72143",
@@ -51,7 +52,7 @@
     }
   }
   </script>
-  <script type="module" src="./app.js?v=726a79ca6d"></script>
+  <script type="module" src="./app.js?v=d33f1fb67a"></script>
 </head>
 <body>
   <main>
@@ -83,6 +84,10 @@
       <p id="level-up" class="level-up" role="status" hidden></p>
 
       <section id="view-overview" data-view="overview">
+        <article id="final-message" class="final-message" hidden>
+          <h2>Ett meddelande från Ellen</h2>
+          <p id="final-message-text"></p>
+        </article>
         <ol id="door-grid" class="door-grid"></ol>
       </section>
 
