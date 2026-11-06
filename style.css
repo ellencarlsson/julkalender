@@ -1378,7 +1378,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   content: "";
   position: absolute;
   inset: -0.35rem;
-  background: #2c6a3f;
+  background: var(--cream);
   -webkit-mask: var(--check-mask) center / contain no-repeat;
   mask: var(--check-mask) center / contain no-repeat;
 }
