@@ -9,6 +9,7 @@ import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 import { taskXp } from "./lib/level.js";
+import { createSudoku } from "./sudoku-view.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -42,6 +43,7 @@ function taskCard(task, door, progress, xp) {
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
+  if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }

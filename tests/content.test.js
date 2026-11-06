@@ -205,3 +205,14 @@ test("a tile quiz may reveal a picture when solved", () => {
   assert.deepEqual(validateDoor(quizDoor({ tiles: [6], solvedImage: "images/door-2/chokladboll.webp", solvedAlt: "En chokladboll" })), []);
   assert.match(validateDoor(quizDoor({ tiles: [6], solvedImage: "https://x/y.png" })).join(), /solvedImage must be/);
 });
+
+const SUDOKU_SOLUTION = "489316752357248619612975384576824931194753826823169475741682593968531247235497168";
+const SUDOKU_PUZZLE = "4.93.675...724...961.....8.57..24.31...7..8..8.3.6..7...1...5...68..1.47...4.71.8";
+const sudokuDoor = (overrides = {}) => ({ door: 3, tasks: [{ id: "s", type: "sudoku", puzzle: SUDOKU_PUZZLE, solution: SUDOKU_SOLUTION, ...overrides }] });
+
+test("a sudoku needs a valid solution that agrees with the given digits", () => {
+  assert.deepEqual(validateDoor(sudokuDoor()), []);
+  assert.match(validateDoor(sudokuDoor({ puzzle: "123" })).join(), /puzzle must be/);
+  assert.match(validateDoor(sudokuDoor({ solution: SUDOKU_SOLUTION.replace("4", "5") })).join(), /not a valid sudoku/);
+  assert.match(validateDoor(sudokuDoor({ puzzle: "5" + SUDOKU_PUZZLE.slice(1) })).join(), /must match the solution/);
+});
