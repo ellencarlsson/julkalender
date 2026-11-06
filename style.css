@@ -2465,3 +2465,23 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task-prompt {
   white-space: pre-line;
 }
+
+/* Quiz submit as a small handwritten ink button on the parchment, not a big red slab. */
+#view-door .quiz-form button[type="submit"] {
+  padding: 0.35rem 1.1rem;
+  border: 2px dashed rgba(58, 39, 22, 0.55);
+  border-radius: 0.6rem;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font: 1.35rem var(--hand-font);
+  font-weight: normal;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+#view-door .quiz-form button[type="submit"]:hover,
+#view-door .quiz-form button[type="submit"]:focus-visible {
+  border-color: rgba(58, 39, 22, 0.9);
+  outline: none;
+  transform: rotate(-1.5deg) scale(1.04);
+}
