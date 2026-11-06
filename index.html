@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=cef06bc379">
+  <link rel="stylesheet" href="./style.css?v=78ea7b1aad">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -42,7 +42,7 @@
       "./progress.js": "./progress.js?v=bbe6e79699",
       "./quiz-hint.js": "./quiz-hint.js?v=a6cfed7f89",
       "./quiz-view.js": "./quiz-view.js?v=7bcc934c97",
-      "./sidequest-view.js": "./sidequest-view.js?v=00eb195049",
+      "./sidequest-view.js": "./sidequest-view.js?v=4e68788900",
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
       "./task-ui.js": "./task-ui.js?v=87b5e563a7",
       "./ui.js": "./ui.js?v=8c72ea305d"
@@ -69,6 +69,7 @@
 
         <nav class="main-nav">
           <a href="#/backpack" data-nav="backpack" class="icon-button" aria-label="Ryggsäck" title="Ryggsäck"><span aria-hidden="true">🎒</span></a>
+          <a href="#/sidequests" data-nav="sidequests" class="icon-button" aria-label="Side quests" title="Side quests"><span aria-hidden="true">📝</span></a>
           <a href="#/" data-nav="overview" class="icon-button" aria-label="Luckor" title="Luckor"><span aria-hidden="true">📅</span></a>
         </nav>
 
@@ -104,8 +105,8 @@
       </section>
 
       <section id="view-sidequests" data-view="sidequests" hidden>
-        <h2>Sidouppdrag</h2>
-        <p class="sidequests-intro">Sidouppdrag ger ledtrådspoäng som du kan använda för att få hjälp i korsorden.</p>
+        <h2>Side quests</h2>
+        <p class="sidequests-intro">Bocka av ett uppdrag när du har gjort det, så får du ledtrådspoäng.</p>
         <div id="sidequest-list" class="task-area"></div>
       </section>
 
