@@ -84,7 +84,12 @@ function validateSide(side, where) {
 
 function validateMatching(task) {
   if (!Array.isArray(task.pairs) || task.pairs.length < 2) return ["pairs must be a list of at least 2 pairs"];
-  return task.pairs.flatMap((pair, index) =>
+  const promptErrors = task.prompt === undefined || isNonEmptyString(task.prompt) ? [] : ["prompt must be a non-empty string"];
+  return promptErrors.concat(pairErrors(task.pairs));
+}
+
+function pairErrors(pairs) {
+  return pairs.flatMap((pair, index) =>
     isPlainObject(pair)
       ? [...validateSide(pair.item, `pairs[${index}].item`), ...validateSide(pair.target, `pairs[${index}].target`)]
       : [`pairs[${index}] must be an object`],
