@@ -16,32 +16,36 @@ function smallButton(text, onClick) {
   return button;
 }
 
-async function spendHint(box, task, progress, key) {
-  box.querySelectorAll("button").forEach((button) => (button.disabled = true));
+async function spendHint(ctx) {
+  ctx.panel.querySelectorAll("button").forEach((button) => (button.disabled = true));
   try {
-    await progress.useHint(key);
-    box.replaceChildren(hintText(task));
+    await ctx.progress.useHint(ctx.hintKey);
+    showHintText(ctx);
   } catch {
-    box.replaceChildren(paragraph("task-status", HINT_MESSAGES.failed), askButton(box, task, progress, key));
+    ctx.panel.replaceChildren(paragraph("task-status", HINT_MESSAGES.failed));
   }
 }
 
-function confirmHint(box, task, progress, key) {
-  if ((progress.hintBalance?.() ?? 0) < 1) {
-    box.replaceChildren(paragraph("task-status", HINT_MESSAGES.noPoints), askButton(box, task, progress, key));
-    return;
-  }
+function showHintText(ctx) {
+  ctx.revealed = true;
+  ctx.panel.replaceChildren(hintText(ctx.task));
+}
+
+function confirmHint(ctx) {
+  if (ctx.revealed) return;
+  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return ctx.panel.replaceChildren(paragraph("task-status", HINT_MESSAGES.noPoints));
   const confirm = Object.assign(document.createElement("div"), { className: "quiz-hint-confirm" });
   confirm.append(
     paragraph("", HINT_MESSAGES.ask),
-    smallButton("Ja", () => spendHint(box, task, progress, key)),
-    smallButton("Nej", () => box.replaceChildren(askButton(box, task, progress, key))),
+    smallButton("Ja", () => spendHint(ctx)),
+    smallButton("Nej", () => ctx.panel.replaceChildren()),
   );
-  box.replaceChildren(confirm);
+  ctx.panel.replaceChildren(confirm);
 }
 
-function askButton(box, task, progress, key) {
-  const button = smallButton("", () => confirmHint(box, task, progress, key));
+// The icon never leaves the corner; questions and the hint text go in the panel below it.
+function hintIcon(ctx) {
+  const button = smallButton("", () => confirmHint(ctx));
   button.append(chokladbollIcon());
   button.classList.add("quiz-hint-icon");
   button.setAttribute("aria-label", "Använd ledtråd (kostar 1 chokladboll)");
@@ -60,7 +64,9 @@ function askButton(box, task, progress, key) {
 export function createQuizHint({ task, key, progress }) {
   if (!task.hint) return null;
   const box = Object.assign(document.createElement("div"), { className: "quiz-hint" });
-  const hintKey = quizHintKey(key);
-  box.append(progress.isWordRevealed?.(hintKey) ? hintText(task) : askButton(box, task, progress, hintKey));
+  const ctx = { task, progress, hintKey: quizHintKey(key), revealed: false };
+  ctx.panel = Object.assign(document.createElement("div"), { className: "quiz-hint-panel" });
+  if (progress.isWordRevealed?.(ctx.hintKey)) showHintText(ctx);
+  box.append(hintIcon(ctx), ctx.panel);
   return box;
 }
