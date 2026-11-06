@@ -134,6 +134,18 @@ h1 {
   white-space: nowrap;
 }
 
+/* Painted title art with Santa hat and reindeer; the alt text keeps the real title for screen readers. */
+.site-title {
+  margin: 0 auto 0.5rem;
+  line-height: 0;
+}
+
+.site-title img {
+  width: min(88%, 26rem);
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(10, 16, 40, 0.45));
+}
+
 a {
   color: var(--cream);
 }
