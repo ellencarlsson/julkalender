@@ -275,6 +275,7 @@ test("door rewards: a code digit with its position and/or an item", () => {
   const popcorn = { name: "Popcorn", image: "images/items/popcorn.webp" };
   assert.deepEqual(validateDoor(door({ digit: "7", position: 3, item: popcorn })), []);
   assert.deepEqual(validateDoor(door({ item: popcorn })), []);
+  assert.deepEqual(validateDoor(door({ item: { name: "Popcorn", emoji: "🍿" } })), []);
   assert.equal(validateDoor(door({ item: "Popcorn" })).length, 1);
   assert.equal(validateDoor(door({ item: { name: "Popcorn", image: "popcorn.webp" } })).length, 1);
   assert.equal(validateDoor(door({ digit: "7" })).length, 1);

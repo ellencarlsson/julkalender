@@ -2371,6 +2371,15 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   filter: drop-shadow(0 2px 3px rgba(58, 39, 22, 0.35));
 }
 
+.backpack-item-emoji {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+
 .backpack-item-name {
   font-size: 1.15rem;
   line-height: 1.15;

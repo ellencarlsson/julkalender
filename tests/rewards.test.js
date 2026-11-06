@@ -31,3 +31,8 @@ test("items are listed in door order", () => {
 test("an item without a picture is ignored", () => {
   assert.deepEqual(collectRewards([[1, door({ item: "Popcorn" })]], progressWith("1-a")).items, []);
 });
+
+test("an item may use an emoji instead of a picture", () => {
+  const popcorn = { name: "Popcorn", emoji: "🍿" };
+  assert.deepEqual(collectRewards([[1, door({ item: popcorn })]], progressWith("1-a")).items, [popcorn]);
+});

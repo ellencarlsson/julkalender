@@ -210,8 +210,11 @@ function rewardErrors(reward) {
   if (hasDigit && !(isDigit(reward.digit) && isCodePosition(reward.position))) {
     errors.push(`reward needs both digit ("0"-"9") and position (1-${CODE_LENGTH})`);
   }
-  const validItem = isPlainObject(reward.item) && isNonEmptyString(reward.item.name) && IMAGE_PATH.test(reward.item.image ?? "");
-  if (reward.item !== undefined && !validItem) errors.push('reward.item must be { "name": "...", "image": "images/..." }');
+  const item = reward.item;
+  const hasPicture = isPlainObject(item) && (IMAGE_PATH.test(item.image ?? "") || isNonEmptyString(item.emoji));
+  if (item !== undefined && !(hasPicture && isNonEmptyString(item.name))) {
+    errors.push('reward.item must be { "name": "...", "image": "images/..." } or { "name": "...", "emoji": "🍿" }');
+  }
   if (!hasDigit && reward.item === undefined) errors.push("reward must have a digit, an item or both");
   return errors;
 }

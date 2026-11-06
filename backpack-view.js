@@ -10,9 +10,17 @@ function codeBox(digit) {
   return box;
 }
 
-function itemTile({ name, image }) {
+function itemPicture({ image, emoji }) {
+  if (image) return Object.assign(document.createElement("img"), { src: image, alt: "" });
+  const picture = Object.assign(document.createElement("span"), { className: "backpack-item-emoji", textContent: emoji });
+  picture.setAttribute("aria-hidden", "true");
+  return picture;
+}
+
+function itemTile(item) {
+  const { name } = item;
   const tile = Object.assign(document.createElement("li"), { className: `backpack-item ${REWARD_ITEM}` });
-  const picture = Object.assign(document.createElement("img"), { src: image, alt: "" });
+  const picture = itemPicture(item);
   tile.append(picture, Object.assign(document.createElement("span"), { className: "backpack-item-name", textContent: name }));
   return tile;
 }
