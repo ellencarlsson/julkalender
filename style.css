@@ -180,22 +180,14 @@ button.small {
   margin-bottom: 1.5rem;
 }
 
+/* Pushed right so the chokladbollar sit just left of the level, with the nav icons far left. */
 .hint-circle {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.15rem;
-  width: 4rem;
-  height: 4rem;
-  border: 3px solid var(--gold);
-  border-radius: 50%;
-  background: var(--surface);
+  margin: 0 0.75rem 0 auto;
   color: var(--cream);
   text-decoration: none;
-}
-
-.hint-circle[aria-current="page"] {
-  background: var(--surface-raised);
 }
 
 .hint-number {
