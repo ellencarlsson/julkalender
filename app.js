@@ -12,12 +12,14 @@ import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
 import { discardPendingCrossword } from "./crossword-view.js";
 import { createDoorReader } from "./doors.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { createHintTracker } from "./hint-tracker.js";
 import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { doorResetPlan } from "./lib/test-reset.js";
 import { loadProgress } from "./progress.js";
+import { readSideQuests } from "./sidequests.js";
 import { createShell, hideLevelUp } from "./ui.js";
 
 const app = initializeApp(firebaseConfig);
@@ -26,13 +28,17 @@ const db = getFirestore(app);
 const doors = createDoorReader(db);
 let progressReady = null;
 const levels = createLevelTracker();
+const hints = createHintTracker();
 const showShell = createShell({ onDoorOpen: openDoor });
 const element = (id) => document.getElementById(id);
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
 function startProgressLoad(uid) {
   const loading = loadProgress(db, uid);
-  loading.then(levels.setProgress, () => {});
+  loading.then((progress) => {
+    levels.setProgress(progress);
+    hints.setProgress(progress);
+  }, () => {});
   return loading;
 }
 
@@ -48,6 +54,15 @@ function withLevelUpdates(progress) {
       await progress.markWordsCorrect(keys);
       levels.refresh({ celebrate: true });
     },
+    async revealWord(key) {
+      await progress.revealWord(key);
+      hints.refresh();
+      levels.refresh({ celebrate: true });
+    },
+    async completeSideQuest(id) {
+      await progress.completeSideQuest(id);
+      hints.refresh();
+    },
   };
 }
 
@@ -58,6 +73,7 @@ function resetHandler(number, door, progress) {
     await progress.resetDoor(number, door);
     hideLevelUp();
     levels.refresh();
+    hints.refresh();
     openDoor(number);
   };
 }
@@ -114,9 +130,11 @@ element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
   levels.reset();
+  hints.reset();
   progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
   if (user) loadDoorStates();
+  if (user) readSideQuests(db).then(hints.setSideQuests, () => {});
 });
 
 // Lets the load-error fallback in index.html know the app started; errors after this point are not load failures.

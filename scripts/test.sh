@@ -78,6 +78,9 @@ check "doors.js has valid syntax" check_js_syntax doors.js
 check "door-view.js has valid syntax" check_js_syntax door-view.js
 check "no honor checkbox left anywhere" bash -c '! grep -rqiE "heder och samvete|honor" *.js lib style.css'
 check "progress.js has valid syntax" check_js_syntax progress.js
+check "hint-tracker.js has valid syntax" check_js_syntax hint-tracker.js
+check "sidequests.js has valid syntax" check_js_syntax sidequests.js
+check "side quests readable only from door 1 unlock (or admin)" grep -q "match /sidequests/{quest}" firestore.rules
 check "quiz-view.js has valid syntax" check_js_syntax quiz-view.js
 check "task-ui.js has valid syntax" check_js_syntax task-ui.js
 check "reset button is wired into the door view" grep -q "resetHandler(number, result.door, progress)" app.js

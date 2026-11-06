@@ -1,7 +1,7 @@
 /** Tests for validating content before it is uploaded from the terminal. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseContentFiles, toDoorDocument, toFinalDocument, validateDoor, validateFinal } from "../tools/content.js";
+import { parseContentFiles, toDoorDocument, toFinalDocument, toSideQuestDocument, validateDoor, validateFinal } from "../tools/content.js";
 
 const quizDoor = (overrides = {}) => ({
   door: 1,
@@ -131,4 +131,29 @@ test("image outside images/ or with unknown extension is rejected", () => {
 
 test("alt without image is rejected", () => {
   assert.match(validateDoor(challengeDoor({ alt: "Dexter" })).join(), /alt requires image/);
+});
+
+const sideQuestFile = (sidequests) => file("sidequests.json", { sidequests });
+
+test("a side quests file is parsed and validated", () => {
+  const content = parseContentFiles([sideQuestFile([{ id: "lol", text: "Få stats 10/0/5" }, { id: "hjortar", text: "Hälsa", reward: 2 }])]);
+  assert.deepEqual(content.errors, []);
+  assert.equal(content.sideQuests.length, 2);
+  assert.deepEqual(toSideQuestDocument(content.sideQuests[0], 0), { id: "lol", text: "Få stats 10/0/5", reward: 1, order: 0 });
+});
+
+test("side quests need a simple id, text and a whole-number reward", () => {
+  const { errors } = parseContentFiles([sideQuestFile([{ id: "Bad Id", text: "" }, { id: "x", text: "t", reward: 1.5 }])]);
+  assert.match(errors.join(), /id must use only/);
+  assert.match(errors.join(), /text must be/);
+  assert.match(errors.join(), /reward must be/);
+});
+
+test("duplicate side quest ids are rejected", () => {
+  const { errors } = parseContentFiles([sideQuestFile([{ id: "lol", text: "a" }, { id: "lol", text: "b" }])]);
+  assert.match(errors.join(), /used more than once/);
+});
+
+test("no sidequests file means sideQuests is null, so existing side quests are left alone", () => {
+  assert.equal(parseContentFiles([file("door-1.json", quizDoor())]).sideQuests, null);
 });
