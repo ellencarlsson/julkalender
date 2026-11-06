@@ -30,7 +30,7 @@ function sideButton(side, role) {
   return button;
 }
 
-const PAIR_COLORS = ["#c0392b", "#2e6fb7", "#d9822b", "#8e44ad", "#16a3a3", "#c2185b"];
+const LINE_COLOR = "#2b1d12";
 const SOLVED_COLOR = "#2c6a3f";
 
 /** Marks a card as part of a pair; the pair itself is shown by the line between the two cards. */
@@ -39,10 +39,11 @@ function setBadge(button, badge) {
 }
 
 function redraw(ctx) {
+  // Lines start at the picture itself, not the wider button around it.
   const pairs = [...ctx.links].map(([item, target]) => ({
-    item: card(ctx, "item", item),
+    item: card(ctx, "item", item).querySelector("img") ?? card(ctx, "item", item),
     target: card(ctx, "target", target),
-    color: ctx.solved ? SOLVED_COLOR : PAIR_COLORS[(ctx.badges.get(item) - 1) % PAIR_COLORS.length],
+    color: ctx.solved ? SOLVED_COLOR : LINE_COLOR,
   }));
   drawLines(ctx.root, ctx.lines, pairs);
 }
