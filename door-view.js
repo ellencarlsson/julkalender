@@ -45,7 +45,6 @@ function showMessage(...lines) {
     return paragraph;
   });
   element("task-area").replaceChildren(...paragraphs);
-  element("door-subtitle").hidden = true;
 }
 
 function showLocked(number) {
@@ -103,9 +102,6 @@ function resetButton(number, onReset) {
 export function showDoorContent(number, { state, door }, progress, onReset) {
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
-  const subtitle = element("door-subtitle");
-  subtitle.textContent = door.title ?? "";
-  subtitle.hidden = !door.title;
   element("task-area").replaceChildren(...(door.tasks ?? []).map((task) => taskCard(task, number, progress)));
   if (onReset) element("task-area").append(resetButton(number, onReset));
 }

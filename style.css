@@ -363,17 +363,6 @@ button.small {
   white-space: nowrap;
 }
 
-/* One line always; a title too long for the screen is shortened with an ellipsis. */
-.door-subtitle {
-  min-width: 0;
-  overflow: hidden;
-  margin: 0;
-  font-size: clamp(1.05rem, 4.5vw, 1.25rem);
-  font-style: italic;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .task-area {
   display: flex;
@@ -904,36 +893,18 @@ body:has(#view-door:not([hidden]))::before {
 
 #view-door .door-header {
   align-items: center;
+  justify-content: center;
   margin-bottom: 1.25rem;
 }
 
+/* Handwritten "Lucka X", centered on the parchment. */
 #view-door .door-header h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--hand-font);
-  font-size: 2rem;
-  font-weight: normal;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: clamp(2.2rem, 9vw, 3rem);
+  font-weight: 600;
 }
 
-.door-number-tile {
-  display: grid;
-  place-items: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 0.7rem;
-  border: 1px solid var(--line);
-  background: var(--cell);
-  box-shadow: 0 2px 6px rgba(90, 60, 30, 0.2);
-  font-size: 1.7rem;
-}
 
-#view-door .door-subtitle {
-  color: var(--gold);
-  font-family: var(--hand-font);
-  font-size: 1.6rem;
-  font-style: normal;
-}
 
 #view-door .task {
   padding: 1.25rem;

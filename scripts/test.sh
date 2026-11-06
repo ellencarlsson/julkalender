@@ -74,7 +74,8 @@ check "door overview grid exists" grep -q 'id="door-grid"' index.html
 check "no Luckor heading above the doors" bash -c '! grep -q "<h2>Luckor</h2>" index.html'
 check "door view has task area" grep -q 'id="task-area"' index.html
 check "door view has no back link" bash -c '! grep -q "back-link" index.html'
-check "door number and title share the door header" bash -c 'sed -n "/class=\"door-header\"/,/<\/div>/p" index.html | grep -q "id=\"door-subtitle\""'
+check "door view shows no door title" bash -c '! grep -q "door-subtitle" index.html door-view.js'
+check "door number uses the handwritten script font" grep -q "Dancing Script" style.css
 check "no task type labels in the door view" bash -c '! grep -nE "TASK_TYPE_LABELS|\"Utmaning\"|\"Fråga\"" door-view.js'
 check "backpack view exists" grep -q 'data-view="backpack"' index.html
 check "backpack opened by icon button" grep -qE '<a href="#/backpack"[^>]*class="icon-button"[^>]*aria-label="Ryggsäck"' index.html
@@ -94,7 +95,6 @@ check "reset button is wired into the door view" grep -q "resetHandler(number, r
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
 check "level-up message element exists" grep -q 'id="level-up"' index.html
-check "door subtitle placeholder exists" grep -q 'id="door-subtitle"' index.html
 check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
 check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
