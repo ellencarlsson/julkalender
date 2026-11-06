@@ -216,3 +216,18 @@ test("a sudoku needs a valid solution that agrees with the given digits", () => 
   assert.match(validateDoor(sudokuDoor({ solution: SUDOKU_SOLUTION.replace("4", "5") })).join(), /not a valid sudoku/);
   assert.match(validateDoor(sudokuDoor({ puzzle: "5" + SUDOKU_PUZZLE.slice(1) })).join(), /must match the solution/);
 });
+
+test("svg images are accepted", () => {
+  assert.deepEqual(validateDoor(quizDoor({ image: "images/door-22/butan.svg", alt: "Butan" })), []);
+});
+
+test("a quiz may show named example pictures", () => {
+  const examples = [{ image: "images/door-22/metan.svg", name: "metan" }];
+  assert.deepEqual(validateDoor(quizDoor({ examples })), []);
+});
+
+test("examples must be a non-empty list of image + name", () => {
+  assert.match(validateDoor(quizDoor({ examples: [] })).join(), /examples must be/);
+  assert.match(validateDoor(quizDoor({ examples: [{ image: "images/metan.svg" }] })).join(), /examples\[0\]/);
+  assert.match(validateDoor(quizDoor({ examples: [{ image: "https://x/y.svg", name: "metan" }] })).join(), /examples\[0\]/);
+});

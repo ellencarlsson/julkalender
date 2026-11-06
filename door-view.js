@@ -32,9 +32,24 @@ function taskImage(task) {
   return image;
 }
 
+function exampleFigure({ image, name }) {
+  const figure = document.createElement("figure");
+  const picture = taskImage({ image, alt: name });
+  picture.className = "example-image";
+  figure.append(picture, Object.assign(document.createElement("figcaption"), { textContent: name }));
+  return figure;
+}
+
+function exampleGallery(examples) {
+  const gallery = Object.assign(document.createElement("div"), { className: "task-examples" });
+  gallery.append(...examples.map(exampleFigure));
+  return gallery;
+}
+
 function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
   card.className = "task";
+  if (task.examples) card.append(exampleGallery(task.examples));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   if (task.image) card.append(taskImage(task));

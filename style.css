@@ -1937,3 +1937,32 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     width: 30rem;
   }
 }
+
+/* Structural formulas keep their drawn size, so a short molecule never looks bigger than a long one. */
+.task-image[src$=".svg"],
+.example-image {
+  width: auto;
+  max-width: 100%;
+}
+
+.task-examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.task-examples figure {
+  margin: 0;
+  text-align: center;
+  font-family: var(--hand-font);
+  font-size: 1.3rem;
+}
+
+.example-image {
+  display: block;
+  height: auto;
+  margin: 0 auto 0.25rem;
+}
