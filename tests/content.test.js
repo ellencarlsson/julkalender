@@ -232,9 +232,17 @@ test("examples must be a non-empty list of image + name", () => {
   assert.match(validateDoor(quizDoor({ examples: [{ image: "https://x/y.svg", name: "metan" }] })).join(), /examples\[0\]/);
 });
 
-test("examples may have a note, but only together with examples", () => {
+test("examples may have a table, but only together with examples", () => {
   const examples = [{ image: "images/door-22/metan.svg", name: "metan" }];
-  assert.deepEqual(validateDoor(quizDoor({ examples, examplesNote: "1 met · 2 et" })), []);
-  assert.match(validateDoor(quizDoor({ examples, examplesNote: "" })).join(), /examplesNote must be/);
-  assert.match(validateDoor(quizDoor({ examplesNote: "1 met" })).join(), /examplesNote requires examples/);
+  const table = { title: "Metanserien", headers: ["Antal kol", "Enkelbindning"], rows: [["1", "metan"]] };
+  assert.deepEqual(validateDoor(quizDoor({ examples, examplesTable: table })), []);
+  assert.match(validateDoor(quizDoor({ examplesTable: table })).join(), /examplesTable requires examples/);
+});
+
+test("an examples table needs a title, headers and rows as wide as the headers", () => {
+  const examples = [{ image: "images/door-22/metan.svg", name: "metan" }];
+  const table = (overrides) => ({ title: "M", headers: ["a", "b"], rows: [["1", "x"]], ...overrides });
+  assert.match(validateDoor(quizDoor({ examples, examplesTable: table({ title: "" }) })).join(), /examplesTable.title/);
+  assert.match(validateDoor(quizDoor({ examples, examplesTable: table({ headers: [] }) })).join(), /examplesTable.headers/);
+  assert.match(validateDoor(quizDoor({ examples, examplesTable: table({ rows: [["1"]] }) })).join(), /examplesTable.rows\[0\]/);
 });
