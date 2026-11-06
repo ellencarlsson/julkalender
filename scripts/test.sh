@@ -111,7 +111,7 @@ check "doors with examples page their tasks beside the examples" grep -q "^funct
 check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
 check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answer)" quiz-view.js
 check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
-check "exam quizzes get the teacher's tick when solved" grep -q "task.exam ? examTick() : checkIcon()" quiz-view.js
+check "exam quizzes get the teacher's cursive R when solved" grep -q "task.exam ? examAnswer(text)" quiz-view.js
 check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
 check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
 check "all local imports exist" check_local_imports

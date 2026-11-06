@@ -82,17 +82,20 @@ async function submitAnswer(ctx) {
   }
 }
 
-/** The answer stays visible with a check beside it; only completion is stored, so a reload shows the first accepted answer. */
-function examTick() {
-  const tick = Object.assign(document.createElement("span"), { className: "exam-tick" });
-  tick.setAttribute("aria-hidden", "true");
-  return tick;
+/** The answer stays on its line, with the teacher's red cursive R ("rätt") where the Rätta button was. */
+function examAnswer(text) {
+  const row = Object.assign(document.createElement("p"), { className: "task-done-state exam-answer" });
+  const mark = Object.assign(document.createElement("span"), { className: "exam-mark", textContent: "R" });
+  mark.setAttribute("aria-hidden", "true");
+  row.append(Object.assign(document.createElement("span"), { className: "exam-line", textContent: text }), mark);
+  return row;
 }
 
+/** Only completion is stored, so a reload shows the first accepted answer. */
 function solvedAnswer(task, typed) {
   const text = typed?.trim() || task.answers[0];
-  const row = paragraph(`task-done-state ${task.exam ? "exam-answer" : "quiz-solved-answer"}`, `${text} `);
-  row.append(task.exam ? examTick() : checkIcon());
+  const row = task.exam ? examAnswer(text) : paragraph("task-done-state quiz-solved-answer", `${text} `);
+  if (!task.exam) row.append(checkIcon());
   row.setAttribute("role", "status");
   row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
   return row;
