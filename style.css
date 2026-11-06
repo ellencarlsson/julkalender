@@ -1598,3 +1598,32 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     animation: none;
   }
 }
+
+/* A chosen pair: the same small number on both cards, no right/wrong until everything is paired. */
+.match-card {
+  position: relative;
+}
+
+.match-card.match-linked {
+  border-color: rgba(58, 39, 22, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(58, 39, 22, 0.4);
+}
+
+.match-badge {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.55rem;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--knit-red);
+  color: #fff;
+  font: bold 0.95rem var(--hand-font);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.match-board.match-wrong {
+  animation: match-shake 0.3s;
+}
