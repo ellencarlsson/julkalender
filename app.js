@@ -46,7 +46,14 @@ function showSideQuestsIfOpen() {
 }
 
 function openSideQuests() {
-  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress));
+  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress), resetSideQuests);
+}
+
+/** TEST_RESET_SIDEQUESTS: clears the signed-in user's own ticked side quests and shows the list fresh. */
+async function resetSideQuests() {
+  await loadedProgress.resetSideQuests();
+  hints.refresh();
+  openSideQuests();
 }
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
