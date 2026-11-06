@@ -1256,22 +1256,25 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   position: relative;
 }
 
-#view-door .task:has(.quiz-hint-icon:only-child) {
+#view-door .task:has(.quiz-hint-icon) {
   position: static;
 }
 
-.quiz-hint:has(> .quiz-hint-icon:only-child) {
+.quiz-hint-icon {
   position: absolute;
   top: 0.3rem;
   right: 0.5rem;
-  margin: 0;
 }
 
 @media (min-width: 36rem) {
-  .quiz-hint:has(> .quiz-hint-icon:only-child) {
+  .quiz-hint-icon {
     top: 1rem;
     right: 1.25rem;
   }
+}
+
+.quiz-hint:has(> .quiz-hint-panel:empty) {
+  margin: 0;
 }
 
 .quiz-hint-icon {
@@ -1495,7 +1498,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   }
 }
 
-#view-door .quiz-hint:has(> .quiz-hint-icon:only-child),
+#view-door .quiz-hint-icon,
 #view-door .cw-lamp {
   position: absolute;
   top: var(--hint-top);
