@@ -3,7 +3,7 @@ import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
-import { checkIcon, doneState, paragraph } from "./task-ui.js";
+import { checkIcon, paragraph } from "./task-ui.js";
 
 function answerInput() {
   const input = document.createElement("input");
@@ -105,7 +105,11 @@ function solvedAnswer(task, typed) {
 function solvedState(task, typed) {
   if (!task.tiles) return [solvedAnswer(task, typed)];
   const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
-  return [createPeriodicTiles(task.tiles, { mode: "solved", result }), doneState(QUIZ_DONE_LABEL)];
+  // The revealed symbols and picture are the answer, so no separate "Rätt svar!" line.
+  const tiles = createPeriodicTiles(task.tiles, { mode: "solved", result });
+  tiles.setAttribute("role", "status");
+  tiles.setAttribute("aria-label", QUIZ_DONE_LABEL);
+  return [tiles];
 }
 
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
