@@ -1600,30 +1600,22 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   }
 }
 
-/* A chosen pair: the same small number on both cards, no right/wrong until everything is paired. */
+/* A chosen pair: the same coloured frame on both cards, no right/wrong until everything is paired. */
 .match-card {
   position: relative;
 }
 
 .match-card.match-linked {
-  border-color: rgba(58, 39, 22, 0.75);
-  box-shadow: inset 0 0 0 1px rgba(58, 39, 22, 0.4);
+  border: 3px solid var(--pair-color);
+  box-shadow: 0 0 0 2px var(--pair-color), 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.match-badge {
-  position: absolute;
-  top: -0.55rem;
-  right: -0.55rem;
-  display: grid;
-  place-items: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  background: var(--knit-red);
-  color: #fff;
-  font: bold 0.95rem var(--hand-font);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
+.match-card[data-color="1"] { --pair-color: #c0392b; }
+.match-card[data-color="2"] { --pair-color: #2e6fb7; }
+.match-card[data-color="3"] { --pair-color: #d9822b; }
+.match-card[data-color="4"] { --pair-color: #8e44ad; }
+.match-card[data-color="5"] { --pair-color: #16a3a3; }
+.match-card[data-color="6"] { --pair-color: #c2185b; }
 
 .match-board.match-wrong {
   animation: match-shake 0.3s;
@@ -1632,4 +1624,40 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 /* An open door shows only the parchment; signing out is done from the other views. */
 #signed-in:has(> #view-door:not([hidden])) .app-footer {
   display: none;
+}
+
+/* Names as plain lettering in a bold display font, no box around them. */
+.match-target {
+  border: 3px solid transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: none;
+}
+
+#view-door .match-target.match-done {
+  background: none;
+}
+
+/* Phones: bigger pictures, and every name sits on the same row as a picture. */
+@media (max-width: 35.99rem) {
+  .match-column > .match-card {
+    height: 6.5rem;
+    min-height: 0;
+  }
+
+  .match-card:has(img) img {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+/* The picture just tapped: a dashed ink frame, so it is never mistaken for a coloured pair. */
+.match-card[aria-pressed="true"] {
+  border: 3px dashed rgba(58, 39, 22, 0.85);
+  transform: translateY(-2px);
 }

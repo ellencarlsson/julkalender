@@ -1,5 +1,5 @@
 /**
- * Matching task: tap an item, then the target it belongs with. Pairs get a shared number and can be
+ * Matching task: tap an item, then the target it belongs with. Pairs get a shared coloured frame and can be
  * changed freely; only when every item has a partner are all pairs checked at once, so single pairs
  * never reveal whether they are right.
  */
@@ -8,7 +8,7 @@ import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till. När alla har ett par kollas svaret.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till.";
 const NOT_YET = "Inte rätt än – byt några par och försök igen.";
 
 const successLabel = (xp) => (xp ? `Alla rätt! 🎉 +${xp} XP` : CHALLENGE_DONE_LABEL);
@@ -29,10 +29,11 @@ function sideButton(side, role) {
   return button;
 }
 
+/** A chosen pair is shown by the same coloured frame on both cards; badge picks the colour. */
 function setBadge(button, badge) {
-  button.querySelector(".match-badge")?.remove();
   button.classList.toggle("match-linked", Boolean(badge));
-  if (badge) button.append(Object.assign(document.createElement("span"), { className: "match-badge", textContent: badge }));
+  if (badge) button.dataset.color = badge;
+  else delete button.dataset.color;
 }
 
 function unlink(ctx, item) {
