@@ -4,7 +4,7 @@
  * when every cell matches the solution. A chokladboll fills in three random empty cells.
  */
 import {
-  conflicts, decodeNotes, decodeRows, eliminateNotes, emptyNotes, encodeNotes, encodeRows, isSolved, parseGrid, peers,
+  conflicts, decodeNotes, digitProgress, decodeRows, eliminateNotes, emptyNotes, encodeNotes, encodeRows, isSolved, parseGrid, peers,
   pickHintCells, SIZE,
 } from "./lib/sudoku.js";
 import { chokladbollIcon, doneState, paragraph } from "./task-ui.js";
@@ -89,9 +89,19 @@ function setDigit(ctx, digit) {
   if (ctx.noteMode && digit) toggleNote(ctx, ctx.selected, digit);
   else placeDigit(ctx, ctx.selected, digit);
   ctx.status.textContent = "";
+  announceFinishedDigit(ctx, digit);
   refresh(ctx);
   scheduleSave(ctx);
   checkSolved(ctx);
+}
+
+/** Each digit 1-9 placed everywhere it belongs is worth its own share of the sudoku's XP. */
+function announceFinishedDigit(ctx, digit) {
+  const { done, total } = digitProgress(ctx.puzzle, ctx.values, ctx.solution);
+  const finishedOne = done > ctx.finishedDigits;
+  ctx.finishedDigits = done;
+  if (!finishedOne || !ctx.xp || done === total) return;
+  ctx.status.textContent = `Alla ${digit}:or är klara! +${Math.round(ctx.xp / total)} XP`;
 }
 
 function moveSelection(ctx, key) {
@@ -262,7 +272,8 @@ export function createSudoku({ task, key, progress, card, xp }) {
   const givens = new Set(puzzle.flatMap((given, index) => (given ? [index] : [])));
   const done = progress.isCompleted(key);
   const state = done ? { values: [...solution], hinted: new Set(), notes: emptyNotes() } : savedValues(puzzle, key, progress);
-  const ctx = { task, key, progress, card, xp, solution, givens, ...state, selected: null, done, noteMode: false };
+  const ctx = { task, key, progress, card, xp, puzzle, solution, givens, ...state, selected: null, done, noteMode: false };
+  ctx.finishedDigits = digitProgress(puzzle, ctx.values, solution).done;
   const grid = buildGrid(ctx);
   refresh(ctx);
   if (done) return [grid, doneState("Sudokut är löst!")];

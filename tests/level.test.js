@@ -147,3 +147,14 @@ test("a task's XP is its weighted share of the door's 100 XP", () => {
   assert.equal(taskXp(weighted[1], weighted), 25);
   assert.equal(taskXp({ id: "x" }, []), 0);
 });
+
+test("a sudoku gives XP for every digit placed everywhere it belongs", async () => {
+  const { encodeRows, parseGrid } = await import("../lib/sudoku.js");
+  const solutionText = "534678912672195348198342567859761423426853791713924856961537284287419635345286179";
+  const solution = parseGrid(solutionText);
+  const puzzle = solution.map((value) => (value === 1 ? 1 : 0));
+  const values = solution.map((value) => (value === 5 || value === 7 ? value : 0));
+  const door = { tasks: [{ id: "s", type: "sudoku", puzzle: puzzle.join(""), solution: solutionText }] };
+  const progress = { isCompleted: () => false, crosswordEntries: () => encodeRows(values, new Set()) };
+  assert.equal(doorXp(3, door, progress), 25);
+});
