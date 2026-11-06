@@ -30,7 +30,10 @@ const validTiles = (tiles) => Array.isArray(tiles) && tiles.length > 0 && tiles.
 
 function validateQuiz(task) {
   const errors = [];
-  if (!isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
+  // A tile sum is the question itself, so the question text may be left out then.
+  if (!isNonEmptyString(task.question) && !(task.tiles && task.question === undefined)) {
+    errors.push("question must be a non-empty string");
+  }
   if (!isNonEmptyStringList(task.answers)) errors.push("answers must be a non-empty list of strings");
   if (task.letters !== undefined && typeof task.letters !== "boolean") errors.push("letters must be true or false");
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");

@@ -820,7 +820,8 @@ button.small {
   outline-offset: 1px;
 }
 
-.quiz-letters + button {
+.quiz-letters + button,
+.quiz-form .pt-row + button {
   margin-inline: auto;
 }
 
@@ -1013,6 +1014,33 @@ body:has(#view-door:not([hidden]))::before {
 
 .pt-tile:not(.pt-letter) .pt-symbol {
   opacity: 0.35;
+}
+
+/* Typing field where the symbol would be; 16px minimum stops iOS Safari from zooming in. */
+.pt-input {
+  width: 2.4rem;
+  margin-top: 0.4rem;
+  padding: 0;
+  border: none;
+  border-bottom: 2px dashed rgba(0, 0, 0, 0.35);
+  background: transparent;
+  color: #1d1d1d;
+  font: bold max(16px, 1.4rem) Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+.pt-input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.pt-input:focus {
+  outline: none;
+  border-bottom-color: var(--gold);
+}
+
+/* The tiles are the answer, so they span the whole form row. */
+.quiz-form .pt-row {
+  flex: 1 1 100%;
 }
 
 .pt-operator {

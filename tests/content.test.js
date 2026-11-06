@@ -195,3 +195,8 @@ test("a quiz may show its sum as periodic table tiles", () => {
   assert.match(validateDoor(quizDoor({ tiles: [6, 119] })).join(), /tiles must be/);
   assert.match(validateDoor(quizDoor({ tiles: ["LL"] })).join(), /tiles must be/);
 });
+
+test("a tile quiz may leave out the question text, a plain quiz may not", () => {
+  assert.deepEqual(validateDoor(quizDoor({ question: undefined, tiles: [6, 1] })), []);
+  assert.match(validateDoor(quizDoor({ question: undefined })).join(), /question must be/);
+});
