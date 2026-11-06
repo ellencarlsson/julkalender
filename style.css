@@ -349,11 +349,12 @@ button.small {
 .door[data-completed="true"]::after {
   content: "";
   position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
+  top: -0.35rem;
+  right: -0.35rem;
   width: 1.9rem;
   height: 1.9rem;
   background: url("./images/theme/wax-seal.webp") center / contain no-repeat;
+  opacity: 0.85;
   filter: drop-shadow(0 2px 3px rgba(60, 10, 5, 0.4));
 }
 
@@ -775,8 +776,8 @@ button.small {
   }
 
   .door[data-completed="true"]::after {
-    top: 0.35rem;
-    right: 0.35rem;
+    top: -0.5rem;
+    right: -0.5rem;
     width: 2.9rem;
     height: 2.9rem;
   }
