@@ -2106,10 +2106,11 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 }
 
 #view-door .exam-answer {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin: 0;
+  width: fit-content;
+  margin: 0 0 0 auto;
   padding: 0 0.25rem 0.1rem;
 }
 
@@ -2123,23 +2124,22 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   --tick-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 13.5c2 1.6 3.6 3.6 5 6.5 3-7 7-12.5 12-16.5'/></svg>");
 }
 
-/* Wider screens: the formula on the left and the answer line beside it, like a printed test. */
-@media (min-width: 36rem) {
-  #view-door .task:not([hidden]):has(> .task-image):has(.exam-blank, .exam-answer) {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    column-gap: 1.5rem;
-  }
+/* The answer line sits under the picture, on the right, like a printed test. */
+#view-door .task:has(.exam-blank) .quiz-form {
+  justify-content: flex-end;
+}
 
-  #view-door .task:has(> .task-image):has(.exam-blank, .exam-answer) > p:first-child {
-    grid-column: 1 / -1;
-  }
-
-  #view-door .task:has(.exam-blank, .exam-answer) > .task-image {
-    max-width: 20rem;
-    margin: 0;
-  }
+/* A molecular formula shown where a picture would be, about as big as the drawn molecules. */
+.task-formula {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Same height as the drawn molecules (162px), so the answer line sits at the same place. */
+  min-height: 162px;
+  margin: 0 0 1rem;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 3.2rem;
+  letter-spacing: 0.05em;
 }
 
 /* School worksheet (door 8): a sheet of squared maths paper lying on the parchment. */
