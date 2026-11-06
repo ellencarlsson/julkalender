@@ -180,6 +180,7 @@ function validateWorksheet(task) {
 
 function validateTaskCommon(task) {
   const errors = [...validateWorksheet(task)];
+  if (task.pageTitle !== undefined && !isNonEmptyString(task.pageTitle)) errors.push("pageTitle must be a non-empty string");
   if (!isNonEmptyString(task.id)) errors.push("id must be a non-empty string");
   if (task.weight !== undefined && !(Number.isFinite(task.weight) && task.weight > 0)) {
     errors.push("weight must be a positive number");
@@ -225,6 +226,7 @@ export function validateDoor(source) {
   const errors = [];
   if (!isValidDoor(source.door)) errors.push(`door must be an integer 1-${DOOR_COUNT}`);
   if (source.title !== undefined && typeof source.title !== "string") errors.push("title must be a string");
+  if (source.paged !== undefined && typeof source.paged !== "boolean") errors.push("paged must be true or false");
   if (!Array.isArray(source.tasks) || source.tasks.length === 0) {
     return [...errors, "tasks must be a non-empty list"];
   }
@@ -317,6 +319,7 @@ export function parseContentFiles(files) {
 
 export function toDoorDocument(source) {
   const document = { door: source.door, title: source.title ?? "", tasks: source.tasks };
+  if (source.paged) document.paged = true;
   return source.reward ? { ...document, reward: source.reward } : document;
 }
 
