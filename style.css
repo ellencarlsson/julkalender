@@ -1014,6 +1014,11 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   border-top: 2px dashed var(--line);
 }
 
+/* A paged door shows one block at a time, so there is nothing to separate. */
+#view-door .block-pager .task + .task {
+  border-top: none;
+}
+
 #view-door .quiz-form button[type="submit"],
 #view-door .photo-sent {
   border: none;
