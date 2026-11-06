@@ -298,3 +298,14 @@ test("a task may be a letter on the parchment with an address and a sent message
   assert.match(validateDoor(quizDoor({ letterAddress: [] })).join(), /letterAddress must be/);
   assert.match(validateDoor(quizDoor({ letterSent: "" })).join(), /letterSent must be/);
 });
+
+test("a door may show its tasks one per page, each with its own page title", () => {
+  assert.deepEqual(validateDoor({ ...quizDoor({ pageTitle: "Recept 1" }), paged: true }), []);
+  assert.match(validateDoor({ ...quizDoor(), paged: "yes" }).join(), /paged must be/);
+  assert.match(validateDoor(quizDoor({ pageTitle: "" })).join(), /pageTitle must be/);
+});
+
+test("the paged flag is kept in the uploaded door document", () => {
+  assert.equal(toDoorDocument({ ...quizDoor(), paged: true }).paged, true);
+  assert.equal("paged" in toDoorDocument(quizDoor()), false);
+});

@@ -95,13 +95,13 @@ function examplesLayout(tasks, examples, door, progress) {
   return layout;
 }
 
-function taskElements(tasks, door, progress) {
+function taskElements(tasks, door, progress, paged) {
   const examples = tasks.flatMap((task) => task.examples ?? []);
   if (examples.length > 0) return [examplesLayout(tasks, examples, door, progress)];
-  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
+  if (!isPagedDoor(tasks, { paged })) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   // The block title above the cards already names each task, so its prompt is not repeated in the card.
   const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));
-  return [blockPager(cards, tasks.map((task) => task.prompt ?? ""))];
+  return [blockPager(cards, tasks.map((task) => task.pageTitle ?? task.prompt ?? ""))];
 }
 
 function showMessage(...lines) {
@@ -186,7 +186,7 @@ export function showDoorContent(number, { state, door }, progress, onReset) {
   showDoorReward(state === DOOR_STATE.OPEN ? door : null);
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
-  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress));
+  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress, door.paged));
   // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
   if (onReset) element("door-tools").append(resetButton(number, onReset));
 }
