@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=1ba66f4103">
+  <link rel="stylesheet" href="./style.css?v=22a6721a56">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -19,7 +19,7 @@
   {
     "imports": {
       "./app.js": "./app.js?v=60882ee084",
-      "./backpack-view.js": "./backpack-view.js?v=a161520e57",
+      "./backpack-view.js": "./backpack-view.js?v=d1b6990a10",
       "./block-pager.js": "./block-pager.js?v=93a97a2d06",
       "./crossword-view.js": "./crossword-view.js?v=0897a6722b",
       "./door-view.js": "./door-view.js?v=3006de8d4b",
@@ -36,7 +36,7 @@
       "./lib/periodic.js": "./lib/periodic.js?v=d765f90375",
       "./lib/progress.js": "./lib/progress.js?v=2bc2af29b5",
       "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
-      "./lib/rewards.js": "./lib/rewards.js?v=c9bb415283",
+      "./lib/rewards.js": "./lib/rewards.js?v=8cdfe28019",
       "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/sudoku.js": "./lib/sudoku.js?v=e271b8ebc9",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
@@ -52,7 +52,7 @@
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
       "./sudoku-view.js": "./sudoku-view.js?v=3aed889d04",
       "./task-ui.js": "./task-ui.js?v=6c8d6c079c",
-      "./ui.js": "./ui.js?v=2cb6db559a",
+      "./ui.js": "./ui.js?v=a73fec073d",
       "./worksheet-view.js": "./worksheet-view.js?v=706ee771ff"
     }
   }
@@ -110,16 +110,21 @@
 
       <section id="view-backpack" data-view="backpack" hidden>
         <h2>Ryggsäck</h2>
-        <h3>Hemlig kod</h3>
-        <ol id="code-boxes" class="code-boxes" aria-label="Hemlig kod"></ol>
-        <h3>Items</h3>
-        <ul id="backpack-items" class="backpack-items">
-          <li class="backpack-item">
-            <img src="./images/theme/chokladboll.webp" alt="">
-            <span class="backpack-item-count" id="backpack-chokladbollar">0</span>
-            <span class="backpack-item-name">Chokladbollar</span>
-          </li>
-        </ul>
+        <p class="backpack-empty">Din ryggsäck är tom. Börja klara luckor för att samla ledtrådar.</p>
+        <div class="code-part">
+          <h3 class="code-title">Hemlig kod</h3>
+          <ol id="code-boxes" class="code-boxes" aria-label="Kod"></ol>
+        </div>
+        <div class="items-part">
+          <h3>Items</h3>
+          <ul id="backpack-items" class="backpack-items">
+            <li id="backpack-chokladboll" class="backpack-item backpack-item--chokladboll" data-count="0">
+              <img src="./images/theme/chokladboll.webp" alt="">
+              <span class="backpack-item-count" id="backpack-chokladbollar">0</span>
+              <span class="backpack-item-name">Chokladbollar</span>
+            </li>
+          </ul>
+        </div>
       </section>
 
       <section id="view-sidequests" data-view="sidequests" hidden>

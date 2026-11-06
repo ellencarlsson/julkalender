@@ -2517,3 +2517,29 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 #view-backpack h3:has(+ .backpack-items) {
   text-align: left;
 }
+
+/* Backpack clues (#164): the code shows part by part as clues are found; empty until then. */
+#view-backpack:not(.has-code-title) .code-title,
+#view-backpack:not(.has-code-start, .has-code-end, .has-code-title) .code-part,
+.backpack-item--chokladboll[data-count="0"],
+.items-part:not(:has(.backpack-item--reward, .backpack-item--chokladboll:not([data-count="0"]))) {
+  display: none;
+}
+
+/* A half not found yet keeps its place, so the boxes never move or change size. */
+#view-backpack:not(.has-code-start) .code-box--start,
+#view-backpack:not(.has-code-end) .code-box--end {
+  visibility: hidden;
+}
+
+.backpack-empty {
+  margin: 1rem 0 0.5rem;
+  color: var(--cream-muted);
+  font-family: var(--hand-font);
+  font-size: 1.3rem;
+}
+
+#view-backpack:is(.has-code-start, .has-code-end, .has-code-title) .backpack-empty,
+#view-backpack:has(.backpack-item--reward, .backpack-item--chokladboll:not([data-count="0"])) .backpack-empty {
+  display: none;
+}
