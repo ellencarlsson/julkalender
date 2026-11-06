@@ -2007,3 +2007,8 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   font-size: 1.2rem;
   line-height: 1.4;
 }
+
+/* A solved quiz keeps the answer in ink, with the green check beside it. */
+#view-door .quiz-solved-answer {
+  color: var(--cream);
+}
