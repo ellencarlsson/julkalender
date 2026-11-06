@@ -31,8 +31,8 @@ check_sign_out_in_footer() {
 
 check "index.html exists" test -f index.html
 check "page shows the Haris Julkalender title image" grep -q '<img src="./images/theme/title.png" alt="Haris Julkalender"' index.html
-check "wide screens get the one-line title" grep -q 'media="(min-width: 48rem)" srcset="./images/theme/title-wide.png"' index.html
-check "one-line title image exists" test -f images/theme/title-wide.png
+check "wide screens get the one-line title" grep -q 'media="(min-width: 48rem)" srcset="./images/theme/title-wide-v2.png"' index.html
+check "one-line title image exists" test -f images/theme/title-wide-v2.png
 check "title image exists" test -f images/theme/title.png
 check "browser tab title is Haris Julkalender" grep -q "<title>Haris Julkalender</title>" index.html
 check "title has no Santa hats" bash -c '! grep -q "class=\"hat\"" index.html && ! grep -q "\.hat" style.css'
