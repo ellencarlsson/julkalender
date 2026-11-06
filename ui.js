@@ -22,10 +22,8 @@ function renderDoorGrid() {
   }
 }
 
-/** "Lucka" next to the door number in a small frosted tile, like the door that was opened. */
 function showDoorTitle(door) {
-  const tile = Object.assign(document.createElement("span"), { className: "door-number-tile", textContent: door });
-  element("door-title").replaceChildren("Lucka ", tile);
+  element("door-title").textContent = `Lucka ${door}`;
 }
 
 function showRoute(route) {
