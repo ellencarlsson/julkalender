@@ -33,10 +33,11 @@ body {
 }
 
 /* Fixed layer instead of background-attachment: fixed, which iOS Safari ignores. */
+/* Slightly larger than the screen so the blur behind an open door never shows soft edges. */
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: -12px;
   z-index: -2;
   background: var(--bg) url("./images/theme/winter-desktop-v2.jpg") center bottom / cover no-repeat;
 }
@@ -884,7 +885,6 @@ button.small {
 /* Softens the winter scene behind the parchment so the task is in focus. */
 body:has(#view-door:not([hidden]))::before {
   filter: blur(3px) brightness(0.8);
-  transform: scale(1.04);
 }
 
 #view-door .door-header {
