@@ -2103,7 +2103,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 #view-door .exam-blank:focus {
   outline: none;
-  border-bottom-color: var(--knit-red);
 }
 
 #view-door .exam-answer {
@@ -2129,6 +2128,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 #view-door .task:has(.exam-blank) .quiz-form {
   justify-content: flex-end;
   align-items: flex-end;
+  text-align: right;
 }
 
 /* A molecular formula shown where a picture would be, about as big as the drawn molecules. */
@@ -2306,10 +2306,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-family: var(--hand-font);
   font-size: 1.4rem;
   font-weight: normal;
-}
-
-#view-door .task:has(.exam-blank) .quiz-form button[type="submit"]:hover {
-  background: rgba(58, 39, 22, 0.08);
 }
 
 /* Backpack: the gift card code as boxes that fill in, and the items collected so far. */
