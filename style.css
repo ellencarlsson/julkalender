@@ -2082,23 +2082,21 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: var(--cream-muted);
 }
 
-/* Exam-style quiz (door 22): the answer is written on a line, and a right answer gets the teacher's red tick. */
+/* Exam-style quiz (door 22): the answer is written on a line, and a right answer gets the teacher's red R. */
 #view-door .exam-blank,
-#view-door .exam-answer {
-  border-bottom: 2px solid var(--cream);
-  color: var(--cream);
-  font-family: var(--hand-font);
-  font-size: 1.9rem;
-}
-
-#view-door .exam-blank {
+#view-door .exam-line {
+  box-sizing: border-box;
   flex: 1 1 9rem;
   max-width: 16rem;
   padding: 0 0.25rem 0.1rem;
-  border-top: none;
-  border-inline: none;
+  border: none;
+  border-bottom: 2px solid var(--cream);
   border-radius: 0;
   background: none;
+  color: var(--cream);
+  font-family: var(--hand-font);
+  font-size: 1.9rem;
+  text-align: left;
 }
 
 #view-door .exam-blank:focus {
@@ -2107,21 +2105,28 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 #view-door .exam-answer {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: fit-content;
-  margin: 0 0 0 auto;
-  padding: 0 0.25rem 0.1rem;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin: 0;
 }
 
-.exam-tick {
-  width: 2.4rem;
-  height: 2.4rem;
-  background: var(--knit-red);
-  -webkit-mask: var(--tick-mask) center / contain no-repeat;
-  mask: var(--tick-mask) center / contain no-repeat;
+/* The R and the Rätta button share one width, so the answer line keeps its length after answering. */
+#view-door .task:has(.exam-blank) .quiz-form button[type="submit"],
+#view-door .exam-mark {
+  flex: none;
+  width: 5.5rem;
+  height: 2.9rem;
+}
+
+#view-door .exam-mark {
+  color: var(--knit-red);
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 2.9rem;
+  text-align: center;
   transform: rotate(-8deg);
-  --tick-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 13.5c2 1.6 3.6 3.6 5 6.5 3-7 7-12.5 12-16.5'/></svg>");
 }
 
 /* The answer line sits under the picture, on the right, like a printed test. */
