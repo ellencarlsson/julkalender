@@ -210,7 +210,8 @@ function rewardErrors(reward) {
   if (hasDigit && !(isDigit(reward.digit) && isCodePosition(reward.position))) {
     errors.push(`reward needs both digit ("0"-"9") and position (1-${CODE_LENGTH})`);
   }
-  if (reward.item !== undefined && !isNonEmptyString(reward.item)) errors.push("reward.item must be a non-empty string");
+  const validItem = isPlainObject(reward.item) && isNonEmptyString(reward.item.name) && IMAGE_PATH.test(reward.item.image ?? "");
+  if (reward.item !== undefined && !validItem) errors.push('reward.item must be { "name": "...", "image": "images/..." }');
   if (!hasDigit && reward.item === undefined) errors.push("reward must have a digit, an item or both");
   return errors;
 }
