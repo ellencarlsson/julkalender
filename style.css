@@ -510,6 +510,74 @@ button.small {
   border-radius: 0.5rem;
 }
 
+/* Image cards show the picture as it is, without a box behind it. */
+.match-card:has(img) {
+  min-height: 0;
+  padding: 0;
+  border: 3px solid transparent;
+  background: none;
+  box-shadow: none;
+}
+
+/* On phones the picture is as tall as a name card, so every picture lines up with a name. */
+.match-card:has(img) img {
+  width: auto;
+  height: 4.5rem;
+  margin: 0 auto;
+  border-radius: 0.4rem;
+}
+
+.match-column-target > .match-card {
+  min-height: 4.5rem;
+}
+
+/* On wider screens items and names run in two horizontal rows instead of two columns. */
+@media (min-width: 36rem) {
+  .match-board {
+    grid-template-columns: 1fr;
+  }
+
+  .match-column {
+    flex-direction: row;
+  }
+
+  .match-column > .match-card {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .match-card:has(img) img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.block-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.block-title {
+  margin: 0;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.block-arrow {
+  min-width: 2.75rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.block-arrow:disabled {
+  visibility: hidden;
+}
+
 .match-card[aria-pressed="true"] {
   border: 2px solid var(--gold);
 }

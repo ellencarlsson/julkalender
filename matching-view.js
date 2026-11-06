@@ -4,7 +4,7 @@ import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på något i vänstra kolumnen och sedan på det det hör till.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck först på något och sedan på det det hör till.";
 
 function sideContent(side) {
   if (!side.image) return [document.createTextNode(side.text)];
@@ -57,7 +57,7 @@ function selectItem(ctx, button) {
 
 function tryTarget(ctx, target) {
   const item = ctx.selected;
-  if (!item) return (ctx.status.textContent = "Välj först något i vänstra kolumnen.");
+  if (!item) return (ctx.status.textContent = "Välj först något att para ihop.");
   selectItem(ctx, item);
   if (!isCorrectPair(Number(item.dataset.pair), Number(target.dataset.pair))) return bounce(ctx, item, target);
   ctx.status.textContent = "";
