@@ -170,3 +170,9 @@ test("matching needs at least two pairs, each side either text or an image", () 
   const bad = [{ item: { text: "a", image: "images/x.jpg" }, target: { text: "b" } }, { item: {}, target: { image: "https://x.se/y.jpg" } }];
   assert.equal(validateDoor(matchingDoor(bad)).length, 3);
 });
+
+test("images may live in a subfolder of images/, but not outside it", () => {
+  const pairs = (image) => [{ item: { image }, target: { text: "Arthur" } }, { item: { text: "b" }, target: { text: "c" } }];
+  assert.deepEqual(validateDoor(matchingDoor(pairs("images/door-1/hatt-cowboy.png"))), []);
+  assert.match(validateDoor(matchingDoor(pairs("images/../secret.png"))).join(), /either text or an image/);
+});
