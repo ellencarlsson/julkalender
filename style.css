@@ -1454,6 +1454,16 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   color: #7a4a1f;
 }
 
+/* Matched pairs use the parchment's green solved colour; red stays for the current selection. */
+#view-door .match-card.match-done {
+  border-color: #2c6a3f;
+  background: rgba(44, 106, 63, 0.2);
+}
+
+#view-door .match-card.match-done:has(img) {
+  background: none;
+}
+
 #view-door .cw--solved input {
   background: rgba(44, 106, 63, 0.2);
 }
