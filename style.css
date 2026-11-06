@@ -345,37 +345,16 @@ button.small {
   position: relative;
 }
 
-/* A red wax seal in the corner of completed doors, like the seal on a Christmas letter. The uneven
-   edge comes from a ring of small bumps around the disc. */
-.door[data-completed="true"]::before {
-  content: "";
-  position: absolute;
-  top: 0.3rem;
-  right: 0.3rem;
-  width: 1.45rem;
-  height: 1.45rem;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), transparent 45%),
-    radial-gradient(circle, #b8241c 55%, #8f1a14 72%, #7a140f 100%);
-  box-shadow:
-    0 0 0 2px #a01d16,
-    0 2px 4px rgba(60, 10, 5, 0.45),
-    inset 0 -2px 3px rgba(60, 10, 5, 0.4);
-}
-
-/* The light checkmark pressed into the seal. */
+/* A red wax seal in the corner of completed doors, like the seal on a Christmas letter. */
 .door[data-completed="true"]::after {
   content: "";
   position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  width: 0.85rem;
-  height: 0.85rem;
-  background: #f6dfc4;
-  --tick-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.5l4.5 4.5 9.5-10'/></svg>");
-  -webkit-mask: var(--tick-mask) center / contain no-repeat;
-  mask: var(--tick-mask) center / contain no-repeat;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  background: url("./images/theme/wax-seal.webp") center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(60, 10, 5, 0.4));
 }
 
 .door-header {
@@ -795,18 +774,11 @@ button.small {
     font-size: 3rem;
   }
 
-  .door[data-completed="true"]::before {
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 2.6rem;
-    height: 2.6rem;
-  }
-
   .door[data-completed="true"]::after {
-    top: 1.05rem;
-    right: 1.05rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    top: 0.35rem;
+    right: 0.35rem;
+    width: 2.9rem;
+    height: 2.9rem;
   }
 }
 
