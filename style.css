@@ -1257,7 +1257,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   margin-top: 1rem;
 }
 
-#view-door[hidden] + .door-tools {
+#view-door[hidden] + .door-tools,
+#view-sidequests[hidden] + .door-tools {
   display: none;
 }
 
