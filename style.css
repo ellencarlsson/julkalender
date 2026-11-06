@@ -1000,3 +1000,63 @@ body:has(#view-door:not([hidden]))::before {
     padding: 0.5rem 1.25rem 1rem;
   }
 }
+
+/* Periodic table tiles for code-word sums: category colours as in a classic periodic table. */
+.pt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.pt-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.4rem;
+  border: 1.5px solid #2b2b2b;
+  border-radius: 0.2rem;
+  background: #f4f4f4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  color: #1d1d1d;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: none;
+}
+
+.pt-number {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.pt-symbol {
+  margin-top: 0.4rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.pt-tile:not(.pt-letter) .pt-symbol {
+  opacity: 0.35;
+}
+
+.pt-operator {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.pt-reactive-nonmetal { background: #f0ff8f; }
+.pt-alkali-metal { background: #ff8a80; }
+.pt-alkaline-earth-metal { background: #ffdead; }
+.pt-transition-metal { background: #ffc0c0; }
+.pt-post-transition-metal { background: #cccccc; }
+.pt-metalloid { background: #cccc99; }
+.pt-halogen { background: #eeee8a; }
+.pt-noble-gas { background: #c0ffff; }
+.pt-lanthanide { background: #ffbfff; }
+.pt-actinide { background: #ff99cc; }
+.pt-letter { background: #f3e9d6; }

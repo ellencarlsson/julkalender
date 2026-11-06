@@ -1,6 +1,7 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
+import { createPeriodicTiles } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
 import { doneState, paragraph } from "./task-ui.js";
 
@@ -85,7 +86,9 @@ async function submitAnswer(ctx) {
  *   The elements to append to the card.
  */
 export function createQuiz({ task, key, progress, card }) {
-  if (progress.isCompleted(key)) return [doneState(QUIZ_DONE_LABEL)];
+  if (progress.isCompleted(key)) {
+    return task.tiles ? [createPeriodicTiles(task.tiles), doneState(QUIZ_DONE_LABEL)] : [doneState(QUIZ_DONE_LABEL)];
+  }
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const field = task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
   const button = Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
@@ -97,6 +100,6 @@ export function createQuiz({ task, key, progress, card }) {
     event.preventDefault();
     submitAnswer(ctx);
   });
-  const hint = createQuizHint({ task, key, progress });
-  return hint ? [hint, form] : [form];
+  const extras = [task.tiles ? createPeriodicTiles(task.tiles) : null, createQuizHint({ task, key, progress })];
+  return [...extras.filter(Boolean), form];
 }
