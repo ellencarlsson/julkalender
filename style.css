@@ -1368,6 +1368,8 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   margin: 0;
   border: 2px solid var(--cream);
   border-radius: 0.3rem;
+  /* Inputs do not inherit colour, and the tick is drawn in currentColor. */
+  color: var(--cream);
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -1378,7 +1380,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   content: "";
   position: absolute;
   inset: -0.35rem;
-  background: var(--cream);
+  background: currentColor;
   -webkit-mask: var(--check-mask) center / contain no-repeat;
   mask: var(--check-mask) center / contain no-repeat;
 }
