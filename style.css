@@ -1816,3 +1816,31 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     font-size: 1.1rem;
   }
 }
+
+/* Shown by CSS alone once every task card is done, so it appears the moment the last task is
+   solved. Phones have no room beside the title arrows, so it sits centered above the title there. */
+#view-door .door-done {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin: 0;
+  color: #2c6a3f;
+  font-family: var(--hand-font);
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+#view-door:has(.task):not(:has(.task:not(.task--done))) .door-done {
+  display: flex;
+}
+
+/* Wider screens: in the top-left corner, mirroring the chokladboll on the right. */
+@media (min-width: 36rem) {
+  #view-door .door-done {
+    position: absolute;
+    top: calc(var(--hint-top) + 0.6rem);
+    left: var(--hint-right);
+    z-index: 1;
+  }
+}
