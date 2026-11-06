@@ -2543,3 +2543,57 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task--done:has(.pt-row)::after {
   content: none;
 }
+
+/* Sudoku pencil marks: small digits, each in its own spot of a 3×3 grid inside the cell. */
+.sdk-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 1px;
+  box-sizing: border-box;
+  color: rgba(58, 39, 22, 0.75);
+  font: max(11px, 0.85rem) / 1 var(--hand-font);
+}
+
+@media (min-width: 64rem) {
+  .sdk-notes {
+    font-size: 1rem;
+  }
+}
+
+.sdk-notes > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Siffra / Anteckning switch above the digit pad. */
+.sdk-mode {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0 auto 0.5rem;
+}
+
+#view-door .sdk-mode-button {
+  padding: 0.3rem 0.9rem;
+  border: 1.5px solid rgba(58, 39, 22, 0.55);
+  border-radius: 0.5rem;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font: max(16px, 1.1rem) var(--hand-font);
+}
+
+#view-door .sdk-mode-button[aria-pressed="true"] {
+  border-color: rgba(43, 29, 18, 0.9);
+  background: rgba(176, 120, 52, 0.25);
+}
+
+/* In note mode the pad digits are drawn small, like the pencil marks they write. */
+.sdk-pad--notes .sdk-key:not(:last-child) {
+  font-size: max(15px, 1.15rem);
+  color: rgba(58, 39, 22, 0.75);
+}

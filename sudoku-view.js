@@ -1,9 +1,12 @@
 /**
- * Sudoku task: tap a cell, then a digit on the pad (or type it). Clashing digits turn red, the grid
- * is saved as you go, and it is solved when every cell matches the solution. A chokladboll fills in
- * three random empty cells.
+ * Sudoku task: tap a cell, then a digit on the pad (or type it). In note mode the digit is written as a
+ * small pencil mark instead. Clashing digits turn red, the grid is saved as you go, and it is solved
+ * when every cell matches the solution. A chokladboll fills in three random empty cells.
  */
-import { conflicts, decodeRows, encodeRows, isSolved, parseGrid, peers, pickHintCells, SIZE } from "./lib/sudoku.js";
+import {
+  conflicts, decodeNotes, decodeRows, eliminateNotes, emptyNotes, encodeNotes, encodeRows, isSolved, parseGrid, peers,
+  pickHintCells, SIZE,
+} from "./lib/sudoku.js";
 import { chokladbollIcon, doneState, paragraph } from "./task-ui.js";
 
 const SAVE_DELAY_MS = 600;
@@ -29,13 +32,21 @@ function cellButton(ctx, index) {
   return cell;
 }
 
+/** A placed digit, or the cell's pencil marks in a small 3×3 grid (each digit in its own spot). */
+function renderCell(cell, value, notes) {
+  if (value || notes.size === 0) return cell.replaceChildren(value ? String(value) : "");
+  const marks = element("span", "sdk-notes");
+  for (let digit = 1; digit <= SIZE; digit++) marks.append(element("span", "", notes.has(digit) ? String(digit) : ""));
+  cell.replaceChildren(marks);
+}
+
 /** Highlights the selected cell, its row/column/box and every cell with the same digit. */
 function refresh(ctx) {
   const clashing = conflicts(ctx.values);
   const related = new Set(ctx.selected === null ? [] : peers(ctx.selected));
   const digit = ctx.selected === null ? 0 : ctx.values[ctx.selected];
   ctx.cells.forEach((cell, index) => {
-    cell.textContent = ctx.values[index] || "";
+    renderCell(cell, ctx.values[index], ctx.notes[index]);
     cell.classList.toggle("sdk-selected", index === ctx.selected);
     cell.classList.toggle("sdk-related", related.has(index));
     cell.classList.toggle("sdk-same", Boolean(digit) && ctx.values[index] === digit);
@@ -49,14 +60,34 @@ function select(ctx, index) {
   refresh(ctx);
 }
 
+/** The 9 grid rows plus one row of pencil marks. */
+function savedRows(ctx) {
+  return [...encodeRows(ctx.values, ctx.hinted), encodeNotes(ctx.notes)];
+}
+
 function scheduleSave(ctx) {
   clearTimeout(ctx.saveTimer);
-  ctx.saveTimer = setTimeout(() => ctx.progress.saveCrossword?.(ctx.key, encodeRows(ctx.values, ctx.hinted)), SAVE_DELAY_MS);
+  ctx.saveTimer = setTimeout(() => ctx.progress.saveCrossword?.(ctx.key, savedRows(ctx)), SAVE_DELAY_MS);
+}
+
+function toggleNote(ctx, index, digit) {
+  if (ctx.values[index]) return;
+  const notes = ctx.notes[index];
+  if (notes.has(digit)) notes.delete(digit);
+  else notes.add(digit);
+}
+
+/** Erasing (digit 0) clears the cell's own notes too. */
+function placeDigit(ctx, index, digit) {
+  ctx.values[index] = digit;
+  if (digit) eliminateNotes(ctx.notes, index, digit);
+  else ctx.notes[index].clear();
 }
 
 function setDigit(ctx, digit) {
   if (ctx.done || ctx.selected === null || isLocked(ctx, ctx.selected)) return;
-  ctx.values[ctx.selected] = digit;
+  if (ctx.noteMode && digit) toggleNote(ctx, ctx.selected, digit);
+  else placeDigit(ctx, ctx.selected, digit);
   ctx.status.textContent = "";
   refresh(ctx);
   scheduleSave(ctx);
@@ -73,6 +104,7 @@ function onKey(ctx, event) {
   if (/^[1-9]$/.test(event.key)) setDigit(ctx, Number(event.key));
   else if (["Backspace", "Delete", "0"].includes(event.key)) setDigit(ctx, 0);
   else if (event.key.startsWith("Arrow")) moveSelection(ctx, event.key);
+  else if (event.key.toLowerCase() === "n") setMode(ctx, !ctx.noteMode);
   else return;
   event.preventDefault();
 }
@@ -82,6 +114,26 @@ function digitPad(ctx) {
   for (let digit = 1; digit <= SIZE; digit++) pad.append(padButton(String(digit), () => setDigit(ctx, digit)));
   pad.append(padButton("⌫", () => setDigit(ctx, 0), "Sudda"));
   return pad;
+}
+
+function setMode(ctx, noteMode) {
+  if (!ctx.modeButtons) return;
+  ctx.noteMode = noteMode;
+  ctx.modeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.notes === String(noteMode))));
+  ctx.pad.classList.toggle("sdk-pad--notes", noteMode);
+}
+
+/** Siffra writes the real digit, Anteckning writes a pencil mark; N on the keyboard switches. */
+function modeSwitch(ctx) {
+  const wrap = element("div", "sdk-mode");
+  ctx.modeButtons = [["✏️ Siffra", false], ["📝 Anteckning", true]].map(([text, notes]) => {
+    const button = padButton(text, () => setMode(ctx, notes));
+    button.className = "sdk-mode-button";
+    button.dataset.notes = String(notes);
+    return button;
+  });
+  wrap.append(...ctx.modeButtons);
+  return wrap;
 }
 
 function padButton(text, onClick, label) {
@@ -108,6 +160,7 @@ async function complete(ctx) {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
     ctx.pad.remove();
+    ctx.mode.remove();
     ctx.lamp?.remove();
     const label = ctx.xp ? `Sudokut är löst! 🎉 +${ctx.xp} XP` : "Sudokut är löst!";
     ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
@@ -146,11 +199,11 @@ async function useHint(ctx) {
     return showNote(ctx, MESSAGES.failed);
   }
   for (const index of pickHintCells(ctx.values, HINT_CELLS)) {
-    ctx.values[index] = ctx.solution[index];
+    placeDigit(ctx, index, ctx.solution[index]);
     ctx.hinted.add(index);
   }
   refresh(ctx);
-  await ctx.progress.saveCrossword?.(ctx.key, encodeRows(ctx.values, ctx.hinted));
+  await ctx.progress.saveCrossword?.(ctx.key, savedRows(ctx));
   checkSolved(ctx);
 }
 
@@ -180,8 +233,9 @@ function hintControls(ctx) {
 
 /** Puzzle digits, then whatever the player had saved on top of them. */
 function savedValues(puzzle, key, progress) {
-  const saved = decodeRows(progress.crosswordEntries?.(key));
-  return { values: puzzle.map((given, index) => given || saved.values[index]), hinted: saved.hinted };
+  const rows = progress.crosswordEntries?.(key);
+  const saved = decodeRows(rows);
+  return { values: puzzle.map((given, index) => given || saved.values[index]), hinted: saved.hinted, notes: decodeNotes(rows) };
 }
 
 function buildGrid(ctx) {
@@ -207,13 +261,15 @@ export function createSudoku({ task, key, progress, card, xp }) {
   const solution = parseGrid(task.solution);
   const givens = new Set(puzzle.flatMap((given, index) => (given ? [index] : [])));
   const done = progress.isCompleted(key);
-  const state = done ? { values: [...solution], hinted: new Set() } : savedValues(puzzle, key, progress);
-  const ctx = { task, key, progress, card, xp, solution, givens, ...state, selected: null, done };
+  const state = done ? { values: [...solution], hinted: new Set(), notes: emptyNotes() } : savedValues(puzzle, key, progress);
+  const ctx = { task, key, progress, card, xp, solution, givens, ...state, selected: null, done, noteMode: false };
   const grid = buildGrid(ctx);
   refresh(ctx);
   if (done) return [grid, doneState("Sudokut är löst!")];
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   ctx.pad = digitPad(ctx);
-  return [...hintControls(ctx), grid, ctx.pad, ctx.status];
+  ctx.mode = modeSwitch(ctx);
+  setMode(ctx, false);
+  return [...hintControls(ctx), grid, ctx.mode, ctx.pad, ctx.status];
 }
