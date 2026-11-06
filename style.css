@@ -2315,6 +2315,12 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-size: 1.35rem;
 }
 
+.backpack-chokladbollar {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 1.35rem;
+}
+
 .backpack-empty {
   margin: 0;
   color: var(--cream-muted);
