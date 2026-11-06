@@ -1743,3 +1743,74 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     max-height: 11rem;
   }
 }
+
+/* Block titles in the same display font as the champion names, with the < > arrows right beside them. */
+.block-nav {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.block-title {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 35.99rem) {
+  .block-title {
+    font-size: 1.15rem;
+  }
+}
+
+/* Names in black squares the same size as the pictures. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  height: auto;
+  margin-inline: auto;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: #151515;
+  color: #f5ecd8;
+  font-size: 0.85rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+@media (max-width: 35.99rem) {
+  .match-column > .match-target {
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+
+  .match-card:has(img) img {
+    width: 6.5rem;
+    height: 6.5rem;
+    object-fit: cover;
+  }
+}
+
+@media (min-width: 36rem) {
+  .match-column > .match-target {
+    width: 100%;
+    max-width: 11rem;
+  }
+
+  .match-card:has(img) img {
+    max-width: 11rem;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+}
+
+@media (min-width: 64rem) {
+  .match-target {
+    font-size: 1.1rem;
+  }
+}

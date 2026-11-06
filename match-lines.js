@@ -9,9 +9,8 @@ export function createLineLayer() {
   return svg;
 }
 
-/** Stacked rows (desktop) join bottom to top; side by side columns (phones) join edge to edge. */
-function endpoints(boardRect, itemRect, targetRect) {
-  const sideways = targetRect.top < itemRect.bottom - 1;
+/** Stacked rows (desktop) join bottom to top; side by side columns (phones) join right edge to left edge. */
+function endpoints(boardRect, itemRect, targetRect, sideways) {
   const x = (rect, edge) => rect[edge] - boardRect.left;
   const y = (rect, edge) => rect[edge] - boardRect.top;
   const midX = (rect) => x(rect, "left") + rect.width / 2;
@@ -19,6 +18,13 @@ function endpoints(boardRect, itemRect, targetRect) {
   return sideways
     ? [x(itemRect, "right"), midY(itemRect), x(targetRect, "left"), midY(targetRect)]
     : [midX(itemRect), y(itemRect, "bottom"), midX(targetRect), y(targetRect, "top")];
+}
+
+/** Decided once for the whole board, so a name one row lower never flips its line to vertical. */
+function columnsSideBySide(board) {
+  const items = board.querySelector(".match-column-item")?.getBoundingClientRect();
+  const targets = board.querySelector(".match-column-target")?.getBoundingClientRect();
+  return Boolean(items && targets) && targets.top < items.bottom - 1;
 }
 
 function line(coords, color) {
@@ -39,10 +45,11 @@ function line(coords, color) {
  */
 export function drawLines(board, svg, pairs) {
   const boardRect = board.getBoundingClientRect();
+  const sideways = columnsSideBySide(board);
   svg.setAttribute("viewBox", `0 0 ${boardRect.width} ${boardRect.height}`);
   svg.replaceChildren(
     ...pairs.map(({ item, target, color }) =>
-      line(endpoints(boardRect, item.getBoundingClientRect(), target.getBoundingClientRect()), color),
+      line(endpoints(boardRect, item.getBoundingClientRect(), target.getBoundingClientRect(), sideways), color),
     ),
   );
 }
