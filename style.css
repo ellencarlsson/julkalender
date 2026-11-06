@@ -1627,3 +1627,8 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 .match-board.match-wrong {
   animation: match-shake 0.3s;
 }
+
+/* An open door shows only the parchment; signing out is done from the other views. */
+#signed-in:has(> #view-door:not([hidden])) .app-footer {
+  display: none;
+}
