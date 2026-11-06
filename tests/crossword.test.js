@@ -15,6 +15,7 @@ import {
   isFilled,
   isLetterCell,
   isSolved,
+  lettersMatch,
   normalizeLetter,
   restoreEntries,
   setEntry,
@@ -170,4 +171,19 @@ test("words through gaps are correct when all letters are", () => {
   const spaced = solutionCells(["STUPID SONG"]);
   const entries = [..."STUPIDSONG"].reduce((e, letter, i) => setEntry(e, 0, i < 6 ? i : i + 1, letter), emptyEntries(spaced));
   assert.deepEqual(correctWordIds(spaced, entries, [{ direction: ACROSS, row: 0, col: 0 }]), ["across-0-0"]);
+});
+
+test("Ü counts as U and other foreign accents as their base letter, but Å, Ä and Ö stay their own", () => {
+  assert.equal(lettersMatch("Ü", "U"), true);
+  assert.equal(lettersMatch("É", "E"), true);
+  assert.equal(lettersMatch("U", "U"), true);
+  assert.equal(lettersMatch("Ä", "A"), false);
+  assert.equal(lettersMatch("A", "Ä"), false);
+  assert.equal(lettersMatch("Ö", "O"), false);
+  assert.equal(lettersMatch("", "U"), false);
+});
+
+test("a crossword with FÜR typed into FUR is solved", () => {
+  const cells = solutionCells(["FUR"]);
+  assert.equal(isSolved(cells, ["FÜR"]), true);
 });
