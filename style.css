@@ -2265,3 +2265,55 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     font-size: 1.1rem;
   }
 }
+
+/* The name already written on the line, in handwriting. */
+.ws-line {
+  min-width: 7rem;
+  width: auto;
+  padding: 0 0.4rem;
+  font: 1.5rem var(--hand-font);
+  line-height: 1;
+}
+
+/* Once the door is solved the letter is stamped as sent and a short message appears. */
+.envelope-sent-stamp,
+.envelope-sent {
+  display: none;
+}
+
+/* In the empty top-left corner, clear of the address. */
+.task--done .envelope-sent-stamp {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.8rem;
+  display: block;
+  padding: 0.15rem 0.6rem;
+  border: 3px solid rgba(184, 52, 42, 0.85);
+  border-radius: 0.3rem;
+  color: rgba(184, 52, 42, 0.85);
+  font: bold 1.3rem Georgia, serif;
+  letter-spacing: 0.12em;
+  transform: rotate(-12deg);
+  animation: letter-stamp 0.5s ease-out;
+}
+
+.task--done .envelope-sent {
+  display: block;
+  margin: 0.9rem 0 0;
+  color: #2c6a3f;
+  font: 1.7rem var(--hand-font);
+  text-align: center;
+}
+
+@keyframes letter-stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-12deg) scale(1.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task--done .envelope-sent-stamp {
+    animation: none;
+  }
+}
