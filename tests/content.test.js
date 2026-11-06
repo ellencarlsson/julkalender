@@ -217,6 +217,11 @@ test("a sudoku needs a valid solution that agrees with the given digits", () => 
   assert.match(validateDoor(sudokuDoor({ puzzle: "5" + SUDOKU_PUZZLE.slice(1) })).join(), /must match the solution/);
 });
 
+test("a quiz may show a formula in place of a picture", () => {
+  assert.deepEqual(validateDoor(quizDoor({ formula: "C₄H₆" })), []);
+  assert.match(validateDoor(quizDoor({ formula: "" })).join(), /formula must be/);
+});
+
 test("exam must be true or false", () => {
   assert.deepEqual(validateDoor(quizDoor({ exam: true })), []);
   assert.match(validateDoor(quizDoor({ exam: "yes" })).join(), /exam must be/);

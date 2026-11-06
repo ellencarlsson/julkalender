@@ -65,7 +65,7 @@ function validateQuiz(task) {
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
   if (task.examplesTable !== undefined) errors.push(...exampleTableErrors(task));
-  for (const field of ["hint", "submitLabel", "solvedAlt"]) {
+  for (const field of ["hint", "submitLabel", "solvedAlt", "formula"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   return errors;

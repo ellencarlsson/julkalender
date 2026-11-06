@@ -69,6 +69,7 @@ function taskCard(task, door, progress, xp) {
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   if (task.image) card.append(taskImage(task));
+  if (task.formula) card.append(paragraph("task-formula", task.formula));
   const key = taskKey(door, task.id);
   if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
