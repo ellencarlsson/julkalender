@@ -32,11 +32,13 @@ function taskImage(task) {
   return image;
 }
 
-function exampleFigure({ image, name }) {
+function exampleFigure({ image, name, formula }) {
   const figure = document.createElement("figure");
   const picture = taskImage({ image, alt: name });
   picture.className = "example-image";
-  figure.append(picture, Object.assign(document.createElement("figcaption"), { textContent: name }));
+  const caption = Object.assign(document.createElement("figcaption"), { textContent: name });
+  if (formula) caption.append(Object.assign(document.createElement("span"), { className: "example-formula", textContent: formula }));
+  figure.append(picture, caption);
   return figure;
 }
 

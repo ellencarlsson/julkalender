@@ -2073,3 +2073,9 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   /* Same handwriting, size and weight as the quest text next to it. */
   font: inherit;
 }
+
+.example-formula {
+  display: block;
+  font-size: 1rem;
+  color: var(--cream-muted);
+}

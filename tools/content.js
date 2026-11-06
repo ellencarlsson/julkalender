@@ -33,9 +33,10 @@ const validTiles = (tiles) => Array.isArray(tiles) && tiles.length > 0 && tiles.
 function exampleErrors(examples) {
   if (!Array.isArray(examples) || examples.length === 0) return ["examples must be a non-empty list"];
   return examples.flatMap((example, index) =>
-    isPlainObject(example) && isNonEmptyString(example.name) && IMAGE_PATH.test(example.image ?? "")
+    isPlainObject(example) && isNonEmptyString(example.name) && IMAGE_PATH.test(example.image ?? "") &&
+    (example.formula === undefined || isNonEmptyString(example.formula))
       ? []
-      : [`examples[${index}] must have a name and an image like images/name.svg`],
+      : [`examples[${index}] must have a name, an image like images/name.svg and optionally a non-empty formula`],
   );
 }
 

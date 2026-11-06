@@ -226,6 +226,12 @@ test("a quiz may show named example pictures", () => {
   assert.deepEqual(validateDoor(quizDoor({ examples })), []);
 });
 
+test("an example may show a molecular formula under its name", () => {
+  const examples = (formula) => [{ image: "images/door-22/metan.svg", name: "metan", formula }];
+  assert.deepEqual(validateDoor(quizDoor({ examples: examples("CH₄") })), []);
+  assert.match(validateDoor(quizDoor({ examples: examples("") })).join(), /examples\[0\]/);
+});
+
 test("examples must be a non-empty list of image + name", () => {
   assert.match(validateDoor(quizDoor({ examples: [] })).join(), /examples must be/);
   assert.match(validateDoor(quizDoor({ examples: [{ image: "images/metan.svg" }] })).join(), /examples\[0\]/);
