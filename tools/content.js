@@ -168,11 +168,13 @@ function validateImage(task) {
 /** Optional school-assignment touches any task may have. */
 function validateWorksheet(task) {
   const errors = [];
-  for (const field of ["worksheet", "worksheetName", "envelopeSent"]) {
+  for (const field of ["worksheet", "worksheetName", "envelopeSent", "letterSent"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   const lines = task.envelope;
   if (lines !== undefined && !(isNonEmptyStringList(lines) && lines.length <= 5)) errors.push("envelope must be 1-5 address lines");
+  const address = task.letterAddress;
+  if (address !== undefined && !(isNonEmptyStringList(address) && address.length <= 5)) errors.push("letterAddress must be 1-5 lines");
   return errors;
 }
 

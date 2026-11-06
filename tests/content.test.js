@@ -286,3 +286,9 @@ test("a worksheet may carry the student's name and a sent-letter message", () =>
   assert.deepEqual(validateDoor(quizDoor({ worksheet: "Matte", worksheetName: "Haris", envelope: ["A"], envelopeSent: "Brevet kom iväg!" })), []);
   assert.match(validateDoor(quizDoor({ worksheetName: "" })).join(), /worksheetName must be/);
 });
+
+test("a task may be a letter on the parchment with an address and a sent message", () => {
+  assert.deepEqual(validateDoor(quizDoor({ letterAddress: ["Till Tomten", "Nordpolen"], letterSent: "Kom iväg!" })), []);
+  assert.match(validateDoor(quizDoor({ letterAddress: [] })).join(), /letterAddress must be/);
+  assert.match(validateDoor(quizDoor({ letterSent: "" })).join(), /letterSent must be/);
+});
