@@ -1,5 +1,6 @@
 /** Validates door and final-message JSON before it is uploaded to Firestore. */
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
+import { isValidSolution, parseGrid } from "../lib/sudoku.js";
 
 const BLOCK = "#";
 const SPACE = " ";
@@ -108,7 +109,25 @@ function pairErrors(pairs) {
   );
 }
 
-const TASK_VALIDATORS = { quiz: validateQuiz, challenge: validateChallenge, crossword: validateCrossword, matching: validateMatching };
+const SUDOKU_PUZZLE = /^[1-9.]{81}$/;
+const SUDOKU_SOLUTION = /^[1-9]{81}$/;
+
+/** The solution must be a valid grid and every given digit must agree with it. */
+function validateSudoku(task) {
+  if (!SUDOKU_PUZZLE.test(task.puzzle ?? "")) return ["puzzle must be 81 characters of 1-9 or ."];
+  if (!SUDOKU_SOLUTION.test(task.solution ?? "")) return ["solution must be 81 digits 1-9"];
+  if (!isValidSolution(parseGrid(task.solution))) return ["solution is not a valid sudoku"];
+  const clash = [...task.puzzle].some((char, index) => char !== "." && char !== task.solution[index]);
+  return clash ? ["puzzle digits must match the solution"] : [];
+}
+
+const TASK_VALIDATORS = {
+  quiz: validateQuiz,
+  challenge: validateChallenge,
+  crossword: validateCrossword,
+  matching: validateMatching,
+  sudoku: validateSudoku,
+};
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
 // Subfolders are allowed (images/door-1/x.png), parent references are not.

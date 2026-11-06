@@ -19,3 +19,8 @@ test("reset plan only picks correct words from this door", () => {
 test("reset plan for a door without tasks is empty", () => {
   assert.deepEqual(doorResetPlan(3, null, ["3-x|a"]), { tasks: [], crosswords: [], words: [] });
 });
+
+test("resetting a door also clears a saved sudoku", () => {
+  const door = { tasks: [{ id: "sudoku", type: "sudoku" }] };
+  assert.deepEqual(doorResetPlan(3, door, []).crosswords, ["3-sudoku"]);
+});

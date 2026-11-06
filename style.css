@@ -1814,3 +1814,92 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     font-size: 1.1rem;
   }
 }
+
+/* Sudoku on the parchment: ink lines, thicker lines around each 3×3 box, handwritten entries. */
+.sdk-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: min(100%, 27rem);
+  margin: 0.5rem auto 1rem;
+  border: 3px solid rgba(43, 29, 18, 0.9);
+  outline: none;
+}
+
+.sdk-cell {
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid rgba(58, 39, 22, 0.3);
+  border-radius: 0;
+  background: rgba(255, 250, 238, 0.55);
+  box-shadow: none;
+  color: #2b4a8b;
+  font: max(16px, 1.5rem) var(--hand-font);
+  line-height: 1;
+  text-shadow: none;
+  cursor: pointer;
+}
+
+.sdk-cell:nth-child(9n + 3),
+.sdk-cell:nth-child(9n + 6) {
+  border-right: 2.5px solid rgba(43, 29, 18, 0.9);
+}
+
+.sdk-cell:nth-child(n + 19):nth-child(-n + 27),
+.sdk-cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 2.5px solid rgba(43, 29, 18, 0.9);
+}
+
+.sdk-cell.sdk-given {
+  color: #2a1a0e;
+  font: bold max(16px, 1.35rem) Georgia, serif;
+}
+
+.sdk-cell.sdk-hinted {
+  color: #7a4a1f;
+}
+
+.sdk-cell.sdk-related {
+  background: rgba(176, 120, 52, 0.14);
+}
+
+.sdk-cell.sdk-same {
+  background: rgba(176, 120, 52, 0.32);
+}
+
+.sdk-cell.sdk-selected {
+  box-shadow: inset 0 0 0 2.5px rgba(43, 29, 18, 0.9);
+}
+
+.sdk-cell.sdk-conflict {
+  color: #c0392b;
+}
+
+.sdk-pad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+  width: min(100%, 22rem);
+  margin: 0 auto 0.75rem;
+}
+
+.sdk-key {
+  aspect-ratio: 1.3;
+  padding: 0;
+  border: 1.5px solid rgba(58, 39, 22, 0.55);
+  border-radius: 0.5rem;
+  background: rgba(255, 250, 238, 0.6);
+  box-shadow: none;
+  color: var(--cream);
+  font: max(16px, 1.5rem) var(--hand-font);
+}
+
+#view-door .task:has(.sdk-grid) {
+  text-align: center;
+}
+
+@media (min-width: 64rem) {
+  .sdk-grid {
+    width: 30rem;
+  }
+}
