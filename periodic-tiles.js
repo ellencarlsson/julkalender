@@ -24,6 +24,13 @@ function elementTile(atomicNumber, mode) {
   return tile;
 }
 
+/** "=" followed by a large "?" for the answer still to find. */
+function unknownResult() {
+  const result = Object.assign(document.createElement("span"), { className: "pt-result" });
+  result.append(operator("="), Object.assign(document.createElement("span"), { className: "pt-unknown", textContent: "?" }));
+  return result;
+}
+
 function resultPicture({ src, alt }) {
   const result = Object.assign(document.createElement("span"), { className: "pt-result" });
   result.append(operator("="), Object.assign(document.createElement("img"), { src, alt: alt ?? "", className: "pt-result-image" }));
@@ -56,7 +63,7 @@ export function createPeriodicTiles(tiles, { mode = "hidden", result = null } = 
     if (index > 0) row.append(operator("+"));
     row.append(typeof tile === "number" ? elementTile(tile, mode) : letterTile(tile));
   });
-  row.append(mode === "solved" && result ? resultPicture(result) : operator("= ?"));
+  row.append(mode === "solved" && result ? resultPicture(result) : unknownResult());
   return row;
 }
 

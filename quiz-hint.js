@@ -41,7 +41,11 @@ function confirmHint(box, task, progress, key) {
 }
 
 function askButton(box, task, progress, key) {
-  return smallButton("💡 Använd ledtråd", () => confirmHint(box, task, progress, key));
+  const button = smallButton("💡", () => confirmHint(box, task, progress, key));
+  button.classList.add("quiz-hint-icon");
+  button.setAttribute("aria-label", "Använd ledtråd");
+  button.title = "Använd ledtråd";
+  return button;
 }
 
 /**
