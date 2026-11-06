@@ -11,6 +11,7 @@ import { unlockLabel } from "./lib/unlock-time.js";
 import { XP_PER_LEVEL, taskXp } from "./lib/level.js";
 import { isItem } from "./lib/rewards.js";
 import { createSudoku } from "./sudoku-view.js";
+import { createTypingRace } from "./typing-view.js";
 import { envelope, letterAddress, letterSent, worksheetHeader } from "./worksheet-view.js";
 
 const element = (id) => document.getElementById(id);
@@ -80,6 +81,7 @@ function taskCard(task, door, progress, xp) {
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card, xp }));
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
+  if (task.type === "typing") card.append(...createTypingRace({ task, key, progress, card, door }));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
   if (task.letterSent) card.append(letterSent(task.letterSent));
   if (progress.isCompleted(key)) card.classList.add("task--done");

@@ -116,6 +116,9 @@ check "exam quizzes get the teacher's cursive R when solved" grep -q "task.exam 
 check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
 check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
 check "backpack has the Items section with the chokladboll first" grep -q "<h3>Items</h3>" index.html
+check "typing-view.js has valid syntax" check_js_syntax typing-view.js
+check "leaderboard.js has valid syntax" check_js_syntax leaderboard.js
+check "leaderboard rules only accept a faster own time" grep -q "request.resource.data.timeMs < resource.data.timeMs" firestore.rules
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

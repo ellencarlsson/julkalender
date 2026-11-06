@@ -2598,3 +2598,95 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-size: max(15px, 1.15rem);
   color: rgba(58, 39, 22, 0.75);
 }
+
+/* Typing race: the text to copy in ink, typed part green, the first mistake red. */
+.typing-target {
+  margin: 0 0 0.75rem;
+  font-family: var(--hand-font);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: left;
+  color: rgba(58, 39, 22, 0.6);
+}
+
+.typing-correct {
+  color: #2c6a3f;
+}
+
+.typing-wrong {
+  border-radius: 0.2rem;
+  background: rgba(192, 57, 43, 0.25);
+  color: #c0392b;
+}
+
+.typing-clock {
+  margin: 0 0 0.5rem;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#view-door .typing-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid rgba(58, 39, 22, 0.55);
+  border-radius: 0.5rem;
+  background: rgba(255, 250, 238, 0.6);
+  color: var(--cream);
+  font: max(16px, 1.3rem) / 1.4 var(--hand-font);
+  resize: none;
+}
+
+#view-door .typing-input:focus {
+  outline: 2px solid rgba(43, 29, 18, 0.6);
+}
+
+#view-door .typing-input--wrong {
+  border-color: #c0392b;
+}
+
+.typing-retry {
+  margin-top: 0.5rem;
+}
+
+.typing-board {
+  margin: 1.25rem auto 0;
+  max-width: 22rem;
+}
+
+.typing-board h3 {
+  margin: 0 0 0.25rem;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 1.8rem;
+}
+
+.typing-list {
+  margin: 0;
+  padding-left: 1.75rem;
+  font-family: var(--hand-font);
+  font-size: 1.25rem;
+  text-align: left;
+}
+
+.typing-list li > span {
+  display: inline-flex;
+}
+
+.typing-list .typing-name {
+  min-width: 10rem;
+}
+
+.typing-list .typing-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.typing-me {
+  font-weight: bold;
+}
+
+.typing-empty {
+  list-style: none;
+  font-style: italic;
+}
