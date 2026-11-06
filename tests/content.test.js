@@ -231,3 +231,10 @@ test("examples must be a non-empty list of image + name", () => {
   assert.match(validateDoor(quizDoor({ examples: [{ image: "images/metan.svg" }] })).join(), /examples\[0\]/);
   assert.match(validateDoor(quizDoor({ examples: [{ image: "https://x/y.svg", name: "metan" }] })).join(), /examples\[0\]/);
 });
+
+test("examples may have a note, but only together with examples", () => {
+  const examples = [{ image: "images/door-22/metan.svg", name: "metan" }];
+  assert.deepEqual(validateDoor(quizDoor({ examples, examplesNote: "1 met · 2 et" })), []);
+  assert.match(validateDoor(quizDoor({ examples, examplesNote: "" })).join(), /examplesNote must be/);
+  assert.match(validateDoor(quizDoor({ examplesNote: "1 met" })).join(), /examplesNote requires examples/);
+});

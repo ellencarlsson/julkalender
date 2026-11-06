@@ -1997,3 +1997,13 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     margin-bottom: 0;
   }
 }
+
+.examples-note {
+  flex-basis: 100%;
+  margin: 0.5rem 0 0;
+  white-space: pre-line;
+  text-align: center;
+  font-family: var(--hand-font);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}

@@ -40,9 +40,10 @@ function exampleFigure({ image, name }) {
   return figure;
 }
 
-function exampleGallery(examples) {
+function exampleGallery(examples, note) {
   const gallery = Object.assign(document.createElement("div"), { className: "task-examples" });
   gallery.append(...examples.map(exampleFigure));
+  if (note) gallery.append(paragraph("examples-note", note));
   return gallery;
 }
 
@@ -66,7 +67,8 @@ function taskCard(task, door, progress, xp) {
 function examplesLayout(tasks, examples, door, progress) {
   const cards = tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   const layout = Object.assign(document.createElement("div"), { className: "examples-layout" });
-  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples));
+  const note = tasks.find((task) => task.examplesNote)?.examplesNote;
+  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples, note));
   return layout;
 }
 
