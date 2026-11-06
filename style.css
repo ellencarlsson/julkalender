@@ -769,7 +769,9 @@ button.small {
     margin-inline: auto;
   }
 
-  /* Keeps all 24 doors on screen and leaves room for the snowman and presents. */
+  /* Keeps all 24 doors on screen and leaves room for the snowman and presents. The header shares
+     the width so its icons line up with the outer edges of the door grid. */
+  #signed-in > .game-header,
   #signed-in > #view-overview {
     max-width: 52rem;
   }
