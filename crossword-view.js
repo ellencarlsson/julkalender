@@ -17,6 +17,7 @@ import {
   solvedEntries,
   stepCell,
   wordAt,
+  wordId,
 } from "./lib/crossword.js";
 import { wordKey } from "./lib/progress.js";
 
@@ -54,8 +55,15 @@ async function flushSave(ctx) {
 
 function setLocked(ctx, locked) {
   ctx.solved = locked;
-  ctx.inputs.forEach((input) => (input.readOnly = locked));
+  ctx.inputs.forEach((input, key) => (input.readOnly = locked || ctx.lockedCells.has(key)));
   ctx.root.classList.toggle("cw--solved", locked);
+}
+
+/** Next cell the player can type in, skipping letters locked by a hint. */
+function nextEditable(ctx, cell, direction, step) {
+  let next = cell && stepCell(ctx.cells, ...cell, direction, step);
+  while (next && ctx.lockedCells.has(cellKey(...next))) next = stepCell(ctx.cells, ...next, direction, step);
+  return next;
 }
 
 async function finish(ctx) {
@@ -136,14 +144,14 @@ function typeLetter(ctx, input, row, col, event) {
   const letter = normalizeLetter(event.data ?? input.value);
   input.value = letter;
   ctx.entries = setEntry(ctx.entries, row, col, letter);
-  if (letter) moveFocus(ctx, stepCell(ctx.cells, row, col, ctx.direction));
+  if (letter) moveFocus(ctx, nextEditable(ctx, [row, col], ctx.direction, 1));
   afterChange(ctx);
 }
 
 /** Backspace in an empty cell clears and moves to the previous cell of the word. */
 function backspace(ctx, event, row, col) {
   event.preventDefault();
-  const previous = stepCell(ctx.cells, row, col, ctx.direction, -1);
+  const previous = nextEditable(ctx, [row, col], ctx.direction, -1);
   if (ctx.solved || !previous) return;
   ctx.entries = setEntry(ctx.entries, ...previous, "");
   ctx.inputs.get(cellKey(...previous)).value = "";
@@ -171,7 +179,7 @@ function wireInput(ctx, input, row, col) {
 function createInput(ctx, row, col, number) {
   const input = document.createElement("input");
   input.value = entryAt(ctx.entries, row, col).trim();
-  input.readOnly = ctx.solved;
+  input.readOnly = ctx.solved || ctx.lockedCells.has(cellKey(row, col));
   input.autocomplete = "off";
   input.spellcheck = false;
   input.setAttribute("autocapitalize", "characters");
@@ -188,6 +196,7 @@ function createCell(ctx, row, col) {
   const cell = createElement("div", "cw-cell");
   const number = ctx.numbers.get(cellKey(row, col));
   if (number) cell.append(createElement("span", "cw-number", String(number)));
+  if (ctx.lockedCells.has(cellKey(row, col))) cell.classList.add("cw-revealed");
   cell.append(createInput(ctx, row, col, number));
   return cell;
 }
@@ -205,7 +214,8 @@ function createClueButton(ctx, clue) {
   button.clue = clue;
   button.addEventListener("click", () => {
     ctx.direction = clue.direction;
-    moveFocus(ctx, [clue.row, clue.col]);
+    const cells = letterCellsOfWord(ctx.cells, clue);
+    moveFocus(ctx, cells.find((cell) => !ctx.lockedCells.has(cellKey(...cell))) ?? cells[0]);
   });
   ctx.clueButtons.push(button);
   return button;
@@ -234,13 +244,101 @@ function flushWhenHidden(ctx) {
   document.addEventListener("visibilitychange", onChange);
 }
 
+const letterCellsOfWord = (cells, clue) =>
+  wordAt(cells, clue.row, clue.col, clue.direction).filter(([r, c]) => isLetterCell(cells, r, c));
+
+/** Cells of words already revealed with a hint point stay locked. */
+function revealedCells(cells, task, key, progress) {
+  const revealed = task.clues.filter((clue) => progress.isWordRevealed?.(wordKey(key, wordId(clue))));
+  return new Set(revealed.flatMap((clue) => letterCellsOfWord(cells, clue)).map((cell) => cellKey(...cell)));
+}
+
+const LAMP_MESSAGES = {
+  noWord: "Markera ett ord i korsordet först.",
+  alreadyRight: "Det ordet är redan rätt, så ingen ledtråd behövs.",
+  noPoints: "Du har inga ledtrådspoäng. Klara ett sidouppdrag för att få fler.",
+  failed: "Kunde inte använda ledtråden. Försök igen.",
+};
+
+function selectedClue(ctx) {
+  if (!ctx.activeKey) return null;
+  const [row, col] = ctx.activeKey.split(",").map(Number);
+  return clueForWord(ctx, wordAt(ctx.cells, row, col, ctx.direction)) ?? null;
+}
+
+function fillWord(ctx, clue) {
+  for (const [r, c] of letterCellsOfWord(ctx.cells, clue)) {
+    const key = cellKey(r, c);
+    ctx.entries = setEntry(ctx.entries, r, c, ctx.cells[r][c]);
+    Object.assign(ctx.inputs.get(key), { value: ctx.cells[r][c], readOnly: true });
+    ctx.inputs.get(key).parentElement.classList.add("cw-revealed");
+    ctx.lockedCells.add(key);
+  }
+}
+
+async function revealSelected(ctx, clue) {
+  ctx.confirm.hidden = true;
+  if (ctx.revealing) return;
+  ctx.revealing = true;
+  try {
+    await ctx.progress.revealWord(wordKey(ctx.key, wordId(clue)));
+    fillWord(ctx, clue);
+    ctx.status.textContent = "";
+    afterChange(ctx);
+  } catch {
+    ctx.status.textContent = LAMP_MESSAGES.failed;
+  } finally {
+    ctx.revealing = false;
+  }
+}
+
+/** Checks everything that must not cost a hint point before asking for confirmation. */
+function onLamp(ctx) {
+  if (ctx.solved) return;
+  const clue = selectedClue(ctx);
+  if (!clue) return (ctx.status.textContent = LAMP_MESSAGES.noWord);
+  if (correctWordIds(ctx.cells, ctx.entries, [clue]).length > 0) return (ctx.status.textContent = LAMP_MESSAGES.alreadyRight);
+  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return (ctx.status.textContent = LAMP_MESSAGES.noPoints);
+  ctx.status.textContent = "";
+  ctx.pendingClue = clue;
+  ctx.confirm.hidden = false;
+}
+
+function confirmButton(text, onClick) {
+  const button = createElement("button", "small", text);
+  button.type = "button";
+  button.addEventListener("click", onClick);
+  return button;
+}
+
+function createLamp(ctx) {
+  const lamp = createElement("button", "cw-lamp", "💡");
+  lamp.type = "button";
+  lamp.setAttribute("aria-label", "Använd en ledtråd för det markerade ordet");
+  lamp.addEventListener("click", () => onLamp(ctx));
+  ctx.confirm = createElement("div", "cw-confirm");
+  ctx.confirm.hidden = true;
+  ctx.confirm.append(
+    createElement("p", null, "Vill du använda en ledtråd för detta ordet?"),
+    confirmButton("Ja", () => revealSelected(ctx, ctx.pendingClue)),
+    confirmButton("Nej", () => (ctx.confirm.hidden = true)),
+  );
+  return ctx.solved ? [] : [lamp, ctx.confirm];
+}
+
 function createContext({ task, key, progress, card }) {
   const cells = solutionCells(task.grid);
   const solved = progress.isCompleted(key);
   const entries = solved ? solvedEntries(cells) : restoreEntries(cells, progress.crosswordEntries(key));
   const numbers = clueNumbers(task.clues);
+  const lockedCells = revealedCells(cells, task, key, progress);
+  // Revealed words are stored on their own, so they show even if the latest letters were never saved.
+  const filled = [...lockedCells].reduce((rows, cell) => {
+    const [r, c] = cell.split(",").map(Number);
+    return setEntry(rows, r, c, cells[r][c]);
+  }, entries);
   return {
-    task, key, progress, card, cells, solved, entries, numbers,
+    task, key, progress, card, cells, solved, entries: filled, numbers, lockedCells,
     inputs: new Map(),
     clueButtons: [],
     pendingWords: new Set(),
@@ -263,11 +361,13 @@ export function createCrossword(options) {
   liveViews.set(options.key, ctx);
   ctx.root = createElement("div", "cw");
   ctx.currentClue = createElement("p", "cw-current-clue");
+  const toolbar = createElement("div", "cw-toolbar");
+  toolbar.append(ctx.currentClue, ...createLamp(ctx));
   ctx.status = createElement("p", "task-status", ctx.solved ? "Korsordet är löst!" : "");
   ctx.status.setAttribute("role", "status");
   const clues = createElement("div", "cw-clues");
   clues.append(...createClueGroup(ctx, ACROSS), ...createClueGroup(ctx, DOWN));
-  ctx.root.append(ctx.currentClue, createGrid(ctx), clues, ctx.status);
+  ctx.root.append(toolbar, createGrid(ctx), clues, ctx.status);
   ctx.root.classList.toggle("cw--solved", ctx.solved);
   flushWhenHidden(ctx);
   return ctx.root;

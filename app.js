@@ -67,6 +67,7 @@ function withLevelUpdates(progress) {
       await progress.markWordsCorrect(keys);
       levels.refresh({ celebrate: true });
     },
+    hintBalance: () => hints.balance(),
     async revealWord(key) {
       await progress.revealWord(key);
       hints.refresh();
