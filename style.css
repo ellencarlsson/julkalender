@@ -2127,6 +2127,7 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 /* The answer line sits under the picture, on the right, like a printed test. */
 #view-door .task:has(.exam-blank) .quiz-form {
   justify-content: flex-end;
+  align-items: flex-end;
 }
 
 /* A molecular formula shown where a picture would be, about as big as the drawn molecules. */
@@ -2316,4 +2317,21 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   .task--done .envelope-sent-stamp {
     animation: none;
   }
+}
+
+/* Exam "Rätta" button: drawn in ink on the parchment instead of the red pill. */
+#view-door .task:has(.exam-blank) .quiz-form button[type="submit"] {
+  padding: 0.2rem 0.9rem;
+  border: 1.5px solid var(--cream);
+  border-radius: 0.4rem;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font-family: var(--hand-font);
+  font-size: 1.4rem;
+  font-weight: normal;
+}
+
+#view-door .task:has(.exam-blank) .quiz-form button[type="submit"]:hover {
+  background: rgba(58, 39, 22, 0.08);
 }
