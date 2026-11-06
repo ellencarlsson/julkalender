@@ -1966,3 +1966,18 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   height: auto;
   margin: 0 auto 0.25rem;
 }
+
+/* Bigger champion names (#131), after the black-square rules so these sizes win. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  font-size: 1.05rem;
+}
+
+@media (min-width: 64rem) {
+  .match-target,
+  #view-door .match-target,
+  #view-door .match-target.match-done {
+    font-size: 1.4rem;
+  }
+}
