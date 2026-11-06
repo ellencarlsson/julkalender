@@ -39,9 +39,16 @@ function exampleErrors(examples) {
   );
 }
 
-function exampleNoteErrors(task) {
-  if (task.examples === undefined) return ["examplesNote requires examples"];
-  return isNonEmptyString(task.examplesNote) ? [] : ["examplesNote must be a non-empty string"];
+const isStringList = (value) => Array.isArray(value) && value.every((cell) => typeof cell === "string");
+
+function exampleTableErrors(task) {
+  if (task.examples === undefined) return ["examplesTable requires examples"];
+  const { title, headers, rows } = isPlainObject(task.examplesTable) ? task.examplesTable : {};
+  const errors = isNonEmptyString(title) ? [] : ["examplesTable.title must be a non-empty string"];
+  if (!isNonEmptyStringList(headers)) return [...errors, "examplesTable.headers must be a non-empty list of strings"];
+  if (!Array.isArray(rows) || rows.length === 0) return [...errors, "examplesTable.rows must be a non-empty list"];
+  const badRows = rows.flatMap((row, index) => (isStringList(row) && row.length === headers.length ? [] : [index]));
+  return [...errors, ...badRows.map((index) => `examplesTable.rows[${index}] must be ${headers.length} strings`)];
 }
 
 function validateQuiz(task) {
@@ -55,7 +62,7 @@ function validateQuiz(task) {
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
-  if (task.examplesNote !== undefined) errors.push(...exampleNoteErrors(task));
+  if (task.examplesTable !== undefined) errors.push(...exampleTableErrors(task));
   for (const field of ["hint", "submitLabel", "solvedAlt"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }

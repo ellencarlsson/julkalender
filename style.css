@@ -2048,19 +2048,46 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
     height: 6rem;
   }
 
-  .examples-layout .examples-note {
+  .examples-layout .examples-table {
     grid-column: 1 / -1;
   }
 }
 
-.examples-note {
+/* Reference table under the examples, handwritten in ink on the parchment. */
+.examples-table {
   flex-basis: 100%;
-  margin: 0.5rem 0 0;
-  white-space: pre-line;
-  text-align: center;
+  margin: 0.75rem auto 0;
+  border-collapse: collapse;
   font-family: var(--hand-font);
-  font-size: 1.2rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  text-align: left;
+}
+
+.examples-table caption {
+  margin-bottom: 0.25rem;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+
+.examples-table th,
+.examples-table td {
+  padding: 0.1rem 0.4rem;
+}
+
+/* Headers break at their soft hyphens (Enkel-/bindning) so the table fits a phone. */
+.examples-table th {
+  max-width: 6.5rem;
+  vertical-align: bottom;
+  border-bottom: 1.5px solid var(--line);
+  font-weight: normal;
+  font-size: 0.95rem;
+  color: var(--cream-muted);
+}
+
+.examples-table td:first-child,
+.examples-table th:first-child {
+  text-align: center;
 }
 
 /* A solved quiz keeps the answer in ink, with the green check beside it. */

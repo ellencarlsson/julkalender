@@ -40,10 +40,24 @@ function exampleFigure({ image, name }) {
   return figure;
 }
 
-function exampleGallery(examples, note) {
+function tableRow(cells, tag) {
+  const row = document.createElement("tr");
+  row.append(...cells.map((text) => Object.assign(document.createElement(tag), { textContent: text })));
+  return row;
+}
+
+function exampleTable({ title, headers, rows }) {
+  const table = Object.assign(document.createElement("table"), { className: "examples-table" });
+  table.createCaption().textContent = title;
+  table.createTHead().append(tableRow(headers, "th"));
+  table.createTBody().append(...rows.map((cells) => tableRow(cells, "td")));
+  return table;
+}
+
+function exampleGallery(examples, table) {
   const gallery = Object.assign(document.createElement("div"), { className: "task-examples" });
   gallery.append(...examples.map(exampleFigure));
-  if (note) gallery.append(paragraph("examples-note", note));
+  if (table) gallery.append(exampleTable(table));
   return gallery;
 }
 
@@ -67,8 +81,8 @@ function taskCard(task, door, progress, xp) {
 function examplesLayout(tasks, examples, door, progress) {
   const cards = tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   const layout = Object.assign(document.createElement("div"), { className: "examples-layout" });
-  const note = tasks.find((task) => task.examplesNote)?.examplesNote;
-  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples, note));
+  const table = tasks.find((task) => task.examplesTable)?.examplesTable;
+  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples, table));
   return layout;
 }
 
