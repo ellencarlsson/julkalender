@@ -146,6 +146,13 @@ h1 {
   filter: drop-shadow(0 4px 8px rgba(10, 16, 40, 0.45));
 }
 
+/* One-line title art from tablet width up, so the doors start higher on the page. */
+@media (min-width: 48rem) {
+  .site-title img {
+    width: min(100%, 44rem);
+  }
+}
+
 a {
   color: var(--cream);
 }
