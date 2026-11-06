@@ -768,7 +768,7 @@ button.small {
 
   /* Keeps all 24 doors on screen and leaves room for the snowman and presents. */
   #signed-in > #view-overview {
-    max-width: 44rem;
+    max-width: 52rem;
   }
 
   .door-grid {
@@ -1519,4 +1519,11 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
   border: 2px solid rgba(58, 39, 22, 0.6);
   border-radius: 50%;
   background: rgba(255, 250, 238, 0.6);
+}
+
+/* Desktop: 24 doors as four rows of six (after the tablet rule so it wins on wide screens). */
+@media (min-width: 64rem) {
+  .door-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
