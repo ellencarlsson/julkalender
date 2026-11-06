@@ -861,27 +861,25 @@ button.small {
   font-style: italic;
 }
 
-/* Door view: a frosted-glass panel in the same style as the frosted doors. The palette variables
-   are overridden here so every task type gets dark ink on light frost. */
+/* Door view: the content sits on an old parchment. The 9-slice border image keeps the torn edges
+   intact while the middle stretches to any content height. The palette variables are overridden
+   so every task type gets ink-brown text on paper. */
 #view-door:not([hidden]) {
-  --cream: #26304f;
-  --cream-muted: rgba(38, 48, 79, 0.7);
-  --line: rgba(38, 48, 79, 0.22);
-  --surface: rgba(255, 255, 255, 0.55);
-  --surface-raised: rgba(255, 255, 255, 0.75);
-  --cell: rgba(248, 250, 255, 0.92);
-  --word: rgba(184, 52, 42, 0.16);
-  --solved: rgba(44, 106, 63, 0.24);
+  --cream: #3a2716;
+  --cream-muted: rgba(58, 39, 22, 0.72);
+  --line: rgba(90, 60, 30, 0.35);
+  --surface: rgba(255, 248, 232, 0.5);
+  --surface-raised: rgba(255, 250, 238, 0.75);
+  --cell: rgba(255, 251, 242, 0.92);
+  --word: rgba(184, 52, 42, 0.14);
+  --solved: rgba(44, 106, 63, 0.22);
   --gold: #b8342a;
-  padding: 1.25rem 1rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 1.75rem;
-  background: rgba(226, 234, 250, 0.74);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.55), 0 12px 32px rgba(10, 16, 40, 0.35);
+  border: 1.6rem solid transparent;
+  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  padding: 0.25rem 0.5rem 0.75rem;
   color: var(--cream);
   text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.45));
   animation: door-open 0.45s ease-out;
 }
 
@@ -898,7 +896,7 @@ button.small {
   }
 }
 
-/* Softens the winter scene behind the panel so the task is in focus. */
+/* Softens the winter scene behind the parchment so the task is in focus. */
 body:has(#view-door:not([hidden]))::before {
   filter: blur(3px) brightness(0.8);
   transform: scale(1.04);
@@ -924,8 +922,9 @@ body:has(#view-door:not([hidden]))::before {
   width: 2.8rem;
   height: 2.8rem;
   border-radius: 0.7rem;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.9), 0 3px 8px rgba(10, 16, 40, 0.2);
+  border: 1px solid var(--line);
+  background: var(--cell);
+  box-shadow: 0 2px 6px rgba(90, 60, 30, 0.2);
   font-size: 1.7rem;
 }
 
@@ -939,8 +938,9 @@ body:has(#view-door:not([hidden]))::before {
 #view-door .task {
   padding: 1.25rem;
   border-radius: 1.1rem;
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 2px 10px rgba(30, 40, 80, 0.12);
+  border: 1px solid rgba(90, 60, 30, 0.18);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(90, 60, 30, 0.12);
   line-height: 1.5;
 }
 
@@ -955,29 +955,29 @@ body:has(#view-door:not([hidden]))::before {
 
 #view-door .quiz-hint button.small {
   border: 1px dashed rgba(184, 52, 42, 0.6);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-raised);
   color: var(--gold);
 }
 
 #view-door .quiz-hint-confirm {
   border-color: rgba(184, 52, 42, 0.5);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-raised);
 }
 
 #view-door .quiz-input {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--cell);
 }
 
-/* Letter boxes look like small frosted doors and shrink to fit one line where they can. */
+/* Letter boxes look like small paper tiles and shrink to fit one line where they can. */
 #view-door .quiz-letter {
   flex: 1 1 0;
   min-width: 1.7rem;
   max-width: 2.6rem;
   height: 3rem;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line);
   border-radius: 0.6rem;
-  background: rgba(240, 245, 255, 0.95);
-  box-shadow: inset 0 0 8px rgba(200, 215, 240, 0.9), 0 2px 5px rgba(10, 16, 40, 0.15);
+  background: var(--cell);
+  box-shadow: inset 0 0 6px rgba(214, 180, 130, 0.45), 0 2px 4px rgba(90, 60, 30, 0.15);
   font: max(16px, 1.7rem) var(--hand-font);
 }
 
@@ -995,6 +995,8 @@ body:has(#view-door:not([hidden]))::before {
 
 @media (min-width: 36rem) {
   #view-door:not([hidden]) {
-    padding: 1.5rem 1.75rem 1.75rem;
+    border-width: 2.5rem;
+    border-image-width: 2.5rem;
+    padding: 0.5rem 1.25rem 1rem;
   }
 }
