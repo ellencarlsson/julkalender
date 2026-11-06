@@ -282,6 +282,8 @@ test("door rewards: a code digit with its position and/or an item", () => {
   assert.equal(validateDoor(door({ digit: "77", position: 3 })).length, 1);
   assert.equal(validateDoor(door({ digit: "7", position: 12 })).length, 1);
   assert.equal(validateDoor(door({})).length, 1);
+  assert.deepEqual(validateDoor(door({ clue: "code-title" })), []);
+  assert.equal(validateDoor(door({ clue: "code-middle" })).length, 1);
   assert.deepEqual(toDoorDocument(door({ item: popcorn })).reward, { item: popcorn });
   assert.equal("reward" in toDoorDocument(quizDoor()), false);
 });

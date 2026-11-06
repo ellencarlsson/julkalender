@@ -1,11 +1,12 @@
 /** Backpack view: the gift card code boxes and the items collected from completed doors. */
-import { CODE_LENGTH } from "./lib/rewards.js";
+import { CLUES, CODE_LENGTH, FIRST_HALF } from "./lib/rewards.js";
 
 const element = (id) => document.getElementById(id);
 const REWARD_ITEM = "backpack-item--reward";
 
-function codeBox(digit) {
-  const box = Object.assign(document.createElement("li"), { className: `code-box${digit ? "" : " code-box--missing"}` });
+function codeBox(digit, index) {
+  const half = index < FIRST_HALF ? "code-box--start" : "code-box--end";
+  const box = Object.assign(document.createElement("li"), { className: `code-box ${half}${digit ? "" : " code-box--missing"}` });
   box.textContent = digit ?? "?";
   return box;
 }
@@ -32,7 +33,9 @@ function itemTile(item) {
  *   rewards: { code, items } from collectRewards, or null while progress is loading.
  */
 export function renderBackpack(rewards) {
-  const { code, items } = rewards ?? { code: Array(CODE_LENGTH).fill(null), items: [] };
+  const { code, items, clues } = rewards ?? { code: Array(CODE_LENGTH).fill(null), items: [], clues: new Set() };
+  // Which parts of the code show is styled from these flags on the section.
+  CLUES.forEach((clue) => element("view-backpack").classList.toggle(`has-${clue}`, clues.has(clue)));
   element("code-boxes").replaceChildren(...code.map(codeBox));
   element("code-boxes").setAttribute("aria-label", `Hemlig kod: ${code.filter(Boolean).length} av ${CODE_LENGTH} siffror hittade`);
   const list = element("backpack-items");
