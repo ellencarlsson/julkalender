@@ -907,13 +907,18 @@ body:has(#view-door:not([hidden]))::before {
 
 
 
+/* Tasks sit directly on the parchment; several tasks in one door are split by a dashed line. */
 #view-door .task {
-  padding: 1.25rem;
-  border-radius: 1.1rem;
-  border: 1px solid rgba(90, 60, 30, 0.18);
-  background: var(--surface);
-  box-shadow: 0 2px 8px rgba(90, 60, 30, 0.12);
+  padding: 1rem 0.25rem;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
   line-height: 1.5;
+}
+
+#view-door .task + .task {
+  border-top: 2px dashed var(--line);
 }
 
 #view-door .quiz-form button[type="submit"],
