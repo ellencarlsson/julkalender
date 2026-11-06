@@ -2042,3 +2042,9 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 #view-door .quiz-solved-answer {
   color: var(--cream);
 }
+
+/* The side quest reward in chocolate-brown ink, so it reads as a reward rather than a warning. */
+#view-sidequests .sq-reward {
+  color: #6b3a1e;
+  font-weight: bold;
+}
