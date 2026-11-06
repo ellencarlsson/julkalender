@@ -22,8 +22,19 @@ function renderDoorGrid() {
   }
 }
 
+const [FIRST_DOOR, LAST_DOOR] = [1, 24];
+
+/** Points an arrow at a neighbouring door, or hides it past the first or last door. */
+function setDoorArrow(id, door) {
+  const arrow = element(id);
+  arrow.hidden = door < FIRST_DOOR || door > LAST_DOOR;
+  arrow.href = doorHash(door);
+}
+
 function showDoorTitle(door) {
   element("door-title").textContent = `Lucka ${door}`;
+  setDoorArrow("prev-door", door - 1);
+  setDoorArrow("next-door", door + 1);
 }
 
 function showRoute(route) {
