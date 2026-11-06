@@ -113,6 +113,7 @@ check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answ
 check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
 check "exam quizzes get the teacher's tick when solved" grep -q "task.exam ? examTick() : checkIcon()" quiz-view.js
 check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
+check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

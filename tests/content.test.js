@@ -281,3 +281,8 @@ test("door rewards: a code digit with its position and/or an item", () => {
   assert.deepEqual(toDoorDocument(door({ item: "🥤 Dricka" })).reward, { item: "🥤 Dricka" });
   assert.equal("reward" in toDoorDocument(quizDoor()), false);
 });
+
+test("a worksheet may carry the student's name and a sent-letter message", () => {
+  assert.deepEqual(validateDoor(quizDoor({ worksheet: "Matte", worksheetName: "Haris", envelope: ["A"], envelopeSent: "Brevet kom iväg!" })), []);
+  assert.match(validateDoor(quizDoor({ worksheetName: "" })).join(), /worksheetName must be/);
+});
