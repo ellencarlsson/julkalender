@@ -1,0 +1,58 @@
+/** Quiz task: a typed answer checked against the accepted answers. */
+import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
+import { isCorrectAnswer } from "./lib/quiz.js";
+import { doneState, paragraph } from "./task-ui.js";
+
+function answerInput() {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "quiz-input";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+  input.setAttribute("aria-label", "Ditt svar");
+  input.setAttribute("enterkeyhint", "done");
+  return input;
+}
+
+async function submitAnswer(ctx) {
+  if (!ctx.input.value.trim()) return;
+  if (!isCorrectAnswer(ctx.input.value, ctx.task.answers)) {
+    ctx.status.textContent = QUIZ_WRONG_LABEL;
+    ctx.input.select();
+    return;
+  }
+  ctx.button.disabled = true;
+  ctx.status.textContent = "Sparar…";
+  try {
+    await ctx.progress.complete(ctx.key);
+    ctx.card.classList.add("task--done");
+    ctx.form.replaceWith(doneState(QUIZ_DONE_LABEL));
+  } catch {
+    ctx.button.disabled = false;
+    ctx.status.textContent = "Kunde inte spara. Försök igen.";
+  }
+}
+
+/**
+ * Builds the answer form for a quiz task.
+ *
+ * Args:
+ *   options: { task, key, progress, card } where card is the task card to mark as done.
+ * Returns:
+ *   The elements to append to the card.
+ */
+export function createQuiz({ task, key, progress, card }) {
+  if (progress.isCompleted(key)) return [doneState(QUIZ_DONE_LABEL)];
+  const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
+  const input = answerInput();
+  const button = Object.assign(document.createElement("button"), { type: "submit", textContent: "Svara" });
+  const status = paragraph("task-status", "");
+  status.setAttribute("role", "status");
+  form.append(input, button, status);
+  const ctx = { task, key, progress, card, form, input, button, status };
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitAnswer(ctx);
+  });
+  return [form];
+}

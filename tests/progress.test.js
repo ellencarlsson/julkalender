@@ -1,7 +1,7 @@
 /** Tests for progress keys and parsing the users/{uid} document. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, PHOTO_SENT_LABEL, completedTaskSet, correctWordSet, savedCrosswords, taskKey, wordKey } from "../lib/progress.js";
+import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL, PHOTO_SENT_LABEL, completedTaskSet, correctWordSet, savedCrosswords, taskKey, wordKey } from "../lib/progress.js";
 
 test("task keys include the door so equal task ids in different doors differ", () => {
   assert.equal(taskKey(3, "baka"), "3-baka");
@@ -23,6 +23,8 @@ test("challenge texts match the agreed wording", () => {
   assert.equal(PHOTO_INSTRUCTION, "Skicka en bild till spelledaren och tryck sedan på knappen.");
   assert.equal(PHOTO_SENT_LABEL, "📸 Jag har skickat bilden till spelledaren!");
   assert.equal(CHALLENGE_DONE_LABEL, "Klart!");
+  assert.equal(QUIZ_DONE_LABEL, "Rätt svar!");
+  assert.equal(QUIZ_WRONG_LABEL, "Inte rätt, försök igen.");
 });
 
 test("saved crosswords are read per task key", () => {
