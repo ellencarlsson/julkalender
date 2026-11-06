@@ -2071,5 +2071,6 @@ body:has(:is(#view-door, #view-sidequests):not([hidden]))::before {
 /* The side quest reward in chocolate-brown ink, so it reads as a reward rather than a warning. */
 #view-sidequests .sq-reward {
   color: #6b3a1e;
-  font-weight: bold;
+  /* Same handwriting, size and weight as the quest text next to it. */
+  font: inherit;
 }
