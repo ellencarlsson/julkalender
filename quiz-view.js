@@ -83,10 +83,16 @@ async function submitAnswer(ctx) {
 }
 
 /** The answer stays visible with a check beside it; only completion is stored, so a reload shows the first accepted answer. */
+function examTick() {
+  const tick = Object.assign(document.createElement("span"), { className: "exam-tick" });
+  tick.setAttribute("aria-hidden", "true");
+  return tick;
+}
+
 function solvedAnswer(task, typed) {
   const text = typed?.trim() || task.answers[0];
-  const row = paragraph("task-done-state quiz-solved-answer", `${text} `);
-  row.append(checkIcon());
+  const row = paragraph(`task-done-state ${task.exam ? "exam-answer" : "quiz-solved-answer"}`, `${text} `);
+  row.append(task.exam ? examTick() : checkIcon());
   row.setAttribute("role", "status");
   row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
   return row;
@@ -102,7 +108,10 @@ function solvedState(task, typed) {
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
 function answerField(task) {
   if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
-  return task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
+  if (task.letters) return letterBoxes(codeWordLength(task.answers));
+  const input = answerInput();
+  if (task.exam) input.classList.add("exam-blank");
+  return input;
 }
 
 const AUTO_CHECK_DELAY_MS = 700;
