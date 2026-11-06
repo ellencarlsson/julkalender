@@ -157,3 +157,16 @@ test("duplicate side quest ids are rejected", () => {
 test("no sidequests file means sideQuests is null, so existing side quests are left alone", () => {
   assert.equal(parseContentFiles([file("door-1.json", quizDoor())]).sideQuests, null);
 });
+
+const matchingDoor = (pairs) => ({ door: 11, tasks: [{ id: "hattar", type: "matching", pairs }] });
+
+test("a matching task with text and image sides is valid", () => {
+  const pairs = [{ item: { text: "Sorteringshatten" }, target: { text: "Harry" } }, { item: { text: "Cowboyhatt" }, target: { image: "images/arthur.jpg" } }];
+  assert.deepEqual(validateDoor(matchingDoor(pairs)), []);
+});
+
+test("matching needs at least two pairs, each side either text or an image", () => {
+  assert.match(validateDoor(matchingDoor([{ item: { text: "a" }, target: { text: "b" } }])).join(), /at least 2 pairs/);
+  const bad = [{ item: { text: "a", image: "images/x.jpg" }, target: { text: "b" } }, { item: {}, target: { image: "https://x.se/y.jpg" } }];
+  assert.equal(validateDoor(matchingDoor(bad)).length, 3);
+});
