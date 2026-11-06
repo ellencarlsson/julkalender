@@ -61,7 +61,10 @@ check "level ring is a progressbar" grep -qE 'id="level-ring"[^>]*role="progress
 check "doors icon button in nav" grep -qE '<a href="#/"[^>]*class="icon-button"[^>]*aria-label="Luckor"' index.html
 check "no greeting in header" bash -c '! sed -n "/<header/,/<\/header>/p" index.html | grep -q "Hej,"'
 check "signed-in name in footer" bash -c 'sed -n "/<footer/,/<\/footer>/p" index.html | grep -q "Inloggad som: <span id=\"user-name\">"'
-check "hint points shown in backpack" grep -q 'id="backpack-hint-points"' index.html
+check "hint points circle links to the side quests" grep -qE '<a href="#/sidequests" id="hint-circle"' index.html
+check "backpack no longer shows hint points" bash -c '! sed -n "/view-backpack/,/<\/section>/p" index.html | grep -qi "ledtrådspoäng"'
+check "side quests view exists" grep -q 'data-view="sidequests"' index.html
+check "sidequest-view.js has valid syntax" check_js_syntax sidequest-view.js
 check "title comes before the header controls" bash -c '[ "$(grep -n "<h1" index.html | cut -d: -f1)" -lt "$(grep -n "<header" index.html | cut -d: -f1)" ]'
 check "header is not pulled out of the page flow" bash -c '! sed -n "/^\.game-header {/,/}/p" style.css | grep -q "position: absolute"'
 check "door overview grid exists" grep -q 'id="door-grid"' index.html

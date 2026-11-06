@@ -1,9 +1,9 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { createCrossword } from "./crossword-view.js";
 import { createQuiz } from "./quiz-view.js";
-import { doneState, paragraph } from "./task-ui.js";
+import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
-import { CHALLENGE_DONE_LABEL, PHOTO_INSTRUCTION, PHOTO_SENT_LABEL, taskKey } from "./lib/progress.js";
+import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 
@@ -21,40 +21,6 @@ function taskPrompt(task) {
   return null;
 }
 
-async function completeChallenge(card, button, status, save) {
-  button.disabled = true;
-  status.textContent = "Sparar…";
-  try {
-    await save();
-    card.classList.add("task--done");
-    card.querySelector(".task-instruction")?.remove();
-    status.remove();
-    button.replaceWith(doneState(CHALLENGE_DONE_LABEL));
-  } catch {
-    button.disabled = false;
-    status.textContent = "Kunde inte spara. Försök igen.";
-  }
-}
-
-/** Real-life challenges are completed once the player says the photo has been sent. */
-function photoSentButton(card, key, progress) {
-  if (progress.isCompleted(key)) return [doneState(CHALLENGE_DONE_LABEL)];
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "photo-sent";
-  button.textContent = PHOTO_SENT_LABEL;
-  const status = paragraph("task-status", "");
-  status.setAttribute("role", "status");
-  button.addEventListener("click", () => completeChallenge(card, button, status, () => progress.complete(key)));
-  return [paragraph("task-instruction", PHOTO_INSTRUCTION), button, status];
-}
-
-function taskImage(task) {
-  const image = Object.assign(document.createElement("img"), { src: task.image, alt: task.alt ?? "", className: "task-image" });
-  image.loading = "lazy";
-  return image;
-}
-
 function taskCard(task, door, progress) {
   const card = document.createElement("article");
   card.className = "task";
@@ -62,7 +28,7 @@ function taskCard(task, door, progress) {
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
   const key = taskKey(door, task.id);
-  if (task.type === "challenge") card.append(...photoSentButton(card, key, progress));
+  if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
   if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
   if (progress.isCompleted(key)) card.classList.add("task--done");

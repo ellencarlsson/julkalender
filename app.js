@@ -19,6 +19,7 @@ import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { doorResetPlan } from "./lib/test-reset.js";
 import { loadProgress } from "./progress.js";
+import { renderSideQuests } from "./sidequest-view.js";
 import { readSideQuests } from "./sidequests.js";
 import { createShell, hideLevelUp } from "./ui.js";
 
@@ -29,15 +30,27 @@ const doors = createDoorReader(db);
 let progressReady = null;
 const levels = createLevelTracker();
 const hints = createHintTracker();
-const showShell = createShell({ onDoorOpen: openDoor });
+const showShell = createShell({ onDoorOpen: openDoor, onSideQuestsOpen: openSideQuests });
 const element = (id) => document.getElementById(id);
+
+let loadedProgress = null;
+
+function showSideQuestsIfOpen() {
+  if (parseRoute(location.hash).view === "sidequests") openSideQuests();
+}
+
+function openSideQuests() {
+  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress));
+}
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
 function startProgressLoad(uid) {
   const loading = loadProgress(db, uid);
   loading.then((progress) => {
+    loadedProgress = progress;
     levels.setProgress(progress);
     hints.setProgress(progress);
+    showSideQuestsIfOpen();
   }, () => {});
   return loading;
 }
@@ -131,10 +144,14 @@ onAuthStateChanged(auth, (user) => {
   showUser(user);
   levels.reset();
   hints.reset();
+  loadedProgress = null;
   progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
   if (user) loadDoorStates();
-  if (user) readSideQuests(db).then(hints.setSideQuests, () => {});
+  if (user) readSideQuests(db).then((quests) => {
+    hints.setSideQuests(quests);
+    showSideQuestsIfOpen();
+  }, () => {});
 });
 
 // Lets the load-error fallback in index.html know the app started; errors after this point are not load failures.

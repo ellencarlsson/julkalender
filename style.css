@@ -116,6 +116,43 @@ button.small {
   margin-bottom: 1.5rem;
 }
 
+.hint-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: 4rem;
+  height: 4rem;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.hint-circle[aria-current="page"] {
+  background: var(--surface-raised);
+}
+
+.hint-number {
+  font-size: 1.35rem;
+  font-weight: bold;
+}
+
+.hint-bulb {
+  font-size: 1rem;
+}
+
+.sidequests-intro {
+  color: var(--cream-muted);
+}
+
+.sidequest-reward {
+  margin-top: 0;
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+
 .level-ring {
   --progress: 0;
   display: grid;
