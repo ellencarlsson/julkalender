@@ -73,16 +73,23 @@ async function submitAnswer(ctx) {
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
-    ctx.form.replaceWith(doneState(QUIZ_DONE_LABEL));
+    ctx.form.replaceWith(...solvedState(ctx.task));
   } catch {
     ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
 }
 
+/** A solved tile quiz shows the real symbols and its picture; any quiz shows "Rätt svar!". */
+function solvedState(task) {
+  if (!task.tiles) return [doneState(QUIZ_DONE_LABEL)];
+  const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
+  return [createPeriodicTiles(task.tiles, { mode: "solved", result }), doneState(QUIZ_DONE_LABEL)];
+}
+
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
 function answerField(task) {
-  if (task.tiles) return createPeriodicTiles(task.tiles, { editable: true });
+  if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
   return task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
 }
 
@@ -95,9 +102,7 @@ function answerField(task) {
  *   The elements to append to the card.
  */
 export function createQuiz({ task, key, progress, card }) {
-  if (progress.isCompleted(key)) {
-    return task.tiles ? [createPeriodicTiles(task.tiles), doneState(QUIZ_DONE_LABEL)] : [doneState(QUIZ_DONE_LABEL)];
-  }
+  if (progress.isCompleted(key)) return solvedState(task);
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const field = answerField(task);
   const button = Object.assign(document.createElement("button"), { type: "submit", textContent: task.submitLabel ?? "Svara" });
