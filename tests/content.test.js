@@ -269,3 +269,15 @@ test("a task may look like a worksheet and carry an envelope", () => {
   assert.match(validateDoor(quizDoor({ envelope: [] })).join(), /envelope must be/);
   assert.match(validateDoor(quizDoor({ envelope: ["a", "b", "c", "d", "e", "f"] })).join(), /envelope must be/);
 });
+
+test("door rewards: a code digit with its position and/or an item", () => {
+  const door = (reward) => ({ ...quizDoor(), reward });
+  assert.deepEqual(validateDoor(door({ digit: "7", position: 3, item: "🍿 Popcorn" })), []);
+  assert.deepEqual(validateDoor(door({ item: "🥤 Dricka" })), []);
+  assert.equal(validateDoor(door({ digit: "7" })).length, 1);
+  assert.equal(validateDoor(door({ digit: "77", position: 3 })).length, 1);
+  assert.equal(validateDoor(door({ digit: "7", position: 12 })).length, 1);
+  assert.equal(validateDoor(door({})).length, 1);
+  assert.deepEqual(toDoorDocument(door({ item: "🥤 Dricka" })).reward, { item: "🥤 Dricka" });
+  assert.equal("reward" in toDoorDocument(quizDoor()), false);
+});

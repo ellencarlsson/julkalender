@@ -1,5 +1,6 @@
 /** Validates door and final-message JSON before it is uploaded to Firestore. */
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
+import { CODE_LENGTH, isCodePosition, isDigit } from "../lib/rewards.js";
 import { isValidSolution, parseGrid } from "../lib/sudoku.js";
 
 const BLOCK = "#";
@@ -197,6 +198,19 @@ function duplicateIdErrors(tasks) {
   return duplicates.map((id) => `task id "${id}" is used more than once`);
 }
 
+function rewardErrors(reward) {
+  if (reward === undefined) return [];
+  if (!isPlainObject(reward)) return ["reward must be an object"];
+  const errors = [];
+  const hasDigit = reward.digit !== undefined || reward.position !== undefined;
+  if (hasDigit && !(isDigit(reward.digit) && isCodePosition(reward.position))) {
+    errors.push(`reward needs both digit ("0"-"9") and position (1-${CODE_LENGTH})`);
+  }
+  if (reward.item !== undefined && !isNonEmptyString(reward.item)) errors.push("reward.item must be a non-empty string");
+  if (!hasDigit && reward.item === undefined) errors.push("reward must have a digit, an item or both");
+  return errors;
+}
+
 export function validateDoor(source) {
   if (!isPlainObject(source)) return ["door must be a JSON object"];
   const errors = [];
@@ -205,7 +219,7 @@ export function validateDoor(source) {
   if (!Array.isArray(source.tasks) || source.tasks.length === 0) {
     return [...errors, "tasks must be a non-empty list"];
   }
-  return [...errors, ...source.tasks.flatMap(validateTask), ...duplicateIdErrors(source.tasks)];
+  return [...errors, ...rewardErrors(source.reward), ...source.tasks.flatMap(validateTask), ...duplicateIdErrors(source.tasks)];
 }
 
 export function validateFinal(source) {
@@ -293,7 +307,8 @@ export function parseContentFiles(files) {
 }
 
 export function toDoorDocument(source) {
-  return { door: source.door, title: source.title ?? "", tasks: source.tasks };
+  const document = { door: source.door, title: source.title ?? "", tasks: source.tasks };
+  return source.reward ? { ...document, reward: source.reward } : document;
 }
 
 export function toFinalDocument(source) {

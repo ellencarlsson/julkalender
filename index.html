@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=3eb86827d9">
+  <link rel="stylesheet" href="./style.css?v=cd758166bf">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -18,7 +18,8 @@
   <script type="importmap">
   {
     "imports": {
-      "./app.js": "./app.js?v=d33f1fb67a",
+      "./app.js": "./app.js?v=60882ee084",
+      "./backpack-view.js": "./backpack-view.js?v=6196009f4d",
       "./block-pager.js": "./block-pager.js?v=93a97a2d06",
       "./crossword-view.js": "./crossword-view.js?v=2c258ce5c6",
       "./door-view.js": "./door-view.js?v=2bccaed459",
@@ -26,7 +27,7 @@
       "./final-message.js": "./final-message.js?v=227146e48e",
       "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
       "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
-      "./level-tracker.js": "./level-tracker.js?v=946e898f66",
+      "./level-tracker.js": "./level-tracker.js?v=90e8ae4227",
       "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
       "./lib/door-state.js": "./lib/door-state.js?v=91df6ae122",
       "./lib/hints.js": "./lib/hints.js?v=43e3f72143",
@@ -35,6 +36,7 @@
       "./lib/periodic.js": "./lib/periodic.js?v=d765f90375",
       "./lib/progress.js": "./lib/progress.js?v=2bc2af29b5",
       "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
+      "./lib/rewards.js": "./lib/rewards.js?v=6340c2604d",
       "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/sudoku.js": "./lib/sudoku.js?v=e271b8ebc9",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
@@ -55,7 +57,7 @@
     }
   }
   </script>
-  <script type="module" src="./app.js?v=d33f1fb67a"></script>
+  <script type="module" src="./app.js?v=60882ee084"></script>
 </head>
 <body>
   <main>
@@ -108,11 +110,11 @@
 
       <section id="view-backpack" data-view="backpack" hidden>
         <h2>Ryggsäck</h2>
-        <div class="panel">
-          <h3>Ledtrådar</h3>
-          <ul id="clue-list"></ul>
-          <p id="clues-empty">Inga ledtrådar än.</p>
-        </div>
+        <h3>Hemlig kod</h3>
+        <ol id="code-boxes" class="code-boxes" aria-label="Hemlig kod"></ol>
+        <h3>Saker</h3>
+        <ul id="backpack-items" class="backpack-items"></ul>
+        <p id="backpack-empty" class="backpack-empty">Klara luckor för att hitta saker.</p>
       </section>
 
       <section id="view-sidequests" data-view="sidequests" hidden>
