@@ -22,6 +22,12 @@ function renderDoorGrid() {
   }
 }
 
+/** "Lucka" next to the door number in a small frosted tile, like the door that was opened. */
+function showDoorTitle(door) {
+  const tile = Object.assign(document.createElement("span"), { className: "door-number-tile", textContent: door });
+  element("door-title").replaceChildren("Lucka ", tile);
+}
+
 function showRoute(route) {
   for (const section of document.querySelectorAll("[data-view]")) {
     section.hidden = section.dataset.view !== route.view;
@@ -30,7 +36,7 @@ function showRoute(route) {
     if (link.dataset.nav === route.view) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   }
-  if (route.view === "door") element("door-title").textContent = `Lucka ${route.door}`;
+  if (route.view === "door") showDoorTitle(route.door);
   window.scrollTo(0, 0);
 }
 
