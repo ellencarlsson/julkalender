@@ -2815,6 +2815,19 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   transform: translate(-50%, -50%);
 }
 
+/* A text card being dragged: drawn like the paper card it came from. */
+.drag-ghost--card {
+  width: auto;
+  height: auto;
+  padding: 0.4rem 0.7rem;
+  border: 1.5px solid #3a2716;
+  border-radius: 0.6rem;
+  background: #fbf3e2;
+  color: #3a2716;
+  font: max(15px, 1.1rem) var(--hand-font);
+  box-shadow: 0 6px 14px rgba(58, 39, 22, 0.35);
+}
+
 /* Wider screens: all eight slots on one line to the right of the sun. */
 @media (min-width: 36rem) {
   .ord-slots {
@@ -3444,40 +3457,78 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   width: auto;
 }
 
-/* Grouping: items as paper cards in a grid; found groups become rows with their category name. */
-.grp-solved {
-  display: grid;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+/* Grouping: the loose items on top, one box per group below; found boxes turn green with their name. */
+.grp-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 3rem;
+  padding: 0.5rem;
+  border: 1.5px dashed rgba(58, 39, 22, 0.35);
+  border-radius: 0.7rem;
 }
 
-.grp-solved-row {
-  padding: 0.5rem 0.75rem;
-  border: 1.5px solid rgba(44, 106, 63, 0.6);
-  border-radius: 0.6rem;
-  background: rgba(44, 106, 63, 0.14);
+.grp-boxes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.grp-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 7.5rem;
+  padding: 0.45rem;
+  border: 2px solid rgba(58, 39, 22, 0.5);
+  border-radius: 0.7rem;
+  background: rgba(255, 250, 238, 0.35);
+}
+
+.grp-box-title {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 1.1rem;
   text-align: center;
+  color: var(--cream-muted);
+}
+
+.grp-box-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.grp-box--found {
+  border-color: rgba(44, 106, 63, 0.7);
+  background: rgba(44, 106, 63, 0.14);
   animation: grp-found 0.35s ease-out;
 }
 
-.grp-solved-name {
-  margin: 0;
+.grp-box--found .grp-box-title {
   font-family: "Cinzel", Georgia, serif;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  line-height: 1.25;
+  color: var(--cream);
 }
 
-.grp-solved-items {
-  margin: 0.15rem 0 0;
-  font-family: var(--hand-font);
-  font-size: 1.15rem;
+.grp-box--wrong {
+  border-color: rgba(184, 52, 42, 0.7);
+  animation: grp-shake 0.35s ease;
 }
 
-.grp-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--grp-cols, 4), minmax(0, 1fr));
-  gap: 0.45rem;
+.grp-box--wrong .grp-box-title {
+  color: #b8342a;
+}
+
+@media (min-width: 64rem) {
+  .grp-boxes {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 #view-door .grp-item {
@@ -3487,34 +3538,25 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   justify-content: center;
   gap: 0.2rem;
   min-width: 0;
-  min-height: 4.2rem;
-  padding: 0.35rem;
+  padding: 0.35rem 0.6rem;
   border: 1.5px solid rgba(58, 39, 22, 0.45);
   border-radius: 0.6rem;
-  background: rgba(255, 250, 238, 0.7);
+  background: rgba(255, 250, 238, 0.85);
   box-shadow: none;
   color: var(--cream);
   font: max(15px, 1.1rem) / 1.15 var(--hand-font);
-  hyphens: auto;
-  overflow-wrap: break-word;
-}
-
-/* Phones: smaller text and less padding so whole words fit four to a row. */
-@media (max-width: 35.99rem) {
-  .grp-grid {
-    gap: 0.3rem;
-  }
-
-  #view-door .grp-item {
-    padding: 0.25rem 0.15rem;
-    font-size: 13px;
-  }
+  touch-action: none;
+  cursor: grab;
 }
 
 #view-door .grp-item--selected {
   border-color: #3a2716;
   background: rgba(176, 120, 52, 0.35);
   transform: scale(0.96);
+}
+
+#view-door .grp-item:disabled {
+  cursor: default;
 }
 
 .grp-image {
@@ -3545,10 +3587,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .grp-status {
   text-align: center;
-}
-
-.grp-grid--shake {
-  animation: grp-shake 0.35s ease;
 }
 
 @keyframes grp-shake {
