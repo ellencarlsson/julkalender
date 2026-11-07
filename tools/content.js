@@ -215,6 +215,25 @@ function validatePuzzle(task) {
   return errors;
 }
 
+function groupItemErrors(item, where) {
+  if (!isPlainObject(item)) return [`${where} must be an object`];
+  const hasImage = item.image !== undefined;
+  if (hasImage && !IMAGE_PATH.test(item.image)) return [`${where}.image must be a path like images/name.webp`];
+  return hasImage || isNonEmptyString(item.text) ? [] : [`${where} must have text or an image`];
+}
+
+/** At least two groups, each with a name and the same number (2 or more) of items. */
+function validateGrouping(task) {
+  if (!Array.isArray(task.groups) || task.groups.length < 2) return ["groups must be a list of at least 2 groups"];
+  const size = task.groups[0]?.items?.length;
+  return task.groups.flatMap((group, g) => {
+    const where = `groups[${g}]`;
+    if (!isPlainObject(group) || !isNonEmptyString(group.name)) return [`${where} must have a name`];
+    if (!Array.isArray(group.items) || group.items.length < 2 || group.items.length !== size) return [`${where}.items must be a list of ${size ?? 2}+ items, as many as the first group`];
+    return group.items.flatMap((item, i) => groupItemErrors(item, `${where}.items[${i}]`));
+  });
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
@@ -227,6 +246,7 @@ const TASK_VALIDATORS = {
   typing: validateTyping,
   catch: validateCatch,
   puzzle: validatePuzzle,
+  grouping: validateGrouping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 

@@ -3443,3 +3443,119 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   height: 2.1rem;
   width: auto;
 }
+
+/* Grouping: items as paper cards in a grid; found groups become rows with their category name. */
+.grp-solved {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.grp-solved-row {
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid rgba(44, 106, 63, 0.6);
+  border-radius: 0.6rem;
+  background: rgba(44, 106, 63, 0.14);
+  text-align: center;
+  animation: grp-found 0.35s ease-out;
+}
+
+.grp-solved-name {
+  margin: 0;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.grp-solved-items {
+  margin: 0.15rem 0 0;
+  font-family: var(--hand-font);
+  font-size: 1.15rem;
+}
+
+.grp-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grp-cols, 4), minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+#view-door .grp-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-width: 0;
+  min-height: 4.2rem;
+  padding: 0.35rem;
+  border: 1.5px solid rgba(58, 39, 22, 0.45);
+  border-radius: 0.6rem;
+  background: rgba(255, 250, 238, 0.7);
+  box-shadow: none;
+  color: var(--cream);
+  font: max(15px, 1.1rem) / 1.15 var(--hand-font);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* Phones: smaller text and less padding so whole words fit four to a row. */
+@media (max-width: 35.99rem) {
+  .grp-grid {
+    gap: 0.3rem;
+  }
+
+  #view-door .grp-item {
+    padding: 0.25rem 0.15rem;
+    font-size: 13px;
+  }
+}
+
+#view-door .grp-item--selected {
+  border-color: #3a2716;
+  background: rgba(176, 120, 52, 0.35);
+  transform: scale(0.96);
+}
+
+.grp-image {
+  width: 100%;
+  max-height: 5rem;
+  object-fit: contain;
+}
+
+.grp-controls:not([hidden]) {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+#view-door .grp-check {
+  padding: 0.3rem 1.4rem;
+  border: 1.5px solid var(--cream);
+  border-radius: 0.5rem;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font: max(16px, 1.3rem) var(--hand-font);
+}
+
+#view-door .grp-check:disabled {
+  opacity: 0.45;
+}
+
+.grp-status {
+  text-align: center;
+}
+
+.grp-grid--shake {
+  animation: grp-shake 0.35s ease;
+}
+
+@keyframes grp-shake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes grp-found {
+  from { transform: scale(0.95); opacity: 0; }
+}
