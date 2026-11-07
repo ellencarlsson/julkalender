@@ -404,16 +404,6 @@ button.small {
   white-space: pre-line;
 }
 
-.check-icon {
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  vertical-align: -0.15em;
-  background: currentColor;
-  -webkit-mask: var(--tick-mask) center / contain no-repeat;
-  mask: var(--tick-mask) center / contain no-repeat;
-}
-
 .task-instruction {
   font-style: italic;
 }
@@ -2063,11 +2053,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   text-align: center;
 }
 
-/* A solved quiz keeps the answer in ink, with the green check beside it. */
-#view-door .quiz-solved-answer {
-  color: var(--cream);
-}
-
 /* The side quest reward reads like the quest text, not as a warning. */
 #view-sidequests .sq-reward {
   /* Same ink, handwriting, size and weight as the quest text next to it. */
@@ -2081,7 +2066,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: var(--cream-muted);
 }
 
-/* Exam-style quiz (door 22): the answer is written on a line, and a right answer gets the teacher's red R. */
+/* Exam-style quiz: the answer is written on a line, and a right answer gets the teacher's red R. */
 #view-door .exam-blank,
 #view-door .exam-line {
   box-sizing: border-box;
@@ -3429,7 +3414,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 /* The unlocked ticket already shows the code, so the typed answer line below it is left out. */
-.task:has(.ticket) .quiz-solved-answer {
+.task:has(.ticket) .exam-answer {
   display: none;
 }
 

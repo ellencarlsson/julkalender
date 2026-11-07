@@ -16,14 +16,6 @@ export function paragraph(className, text) {
   return Object.assign(document.createElement("p"), { className, textContent: text });
 }
 
-/** Theme-colored square checkmark; an emoji would look different on every device. */
-export function checkIcon() {
-  const icon = document.createElement("span");
-  icon.className = "check-icon";
-  icon.setAttribute("aria-hidden", "true");
-  return icon;
-}
-
 /** The task's done text, signed in script at the bottom right of the card. */
 export function doneState(label) {
   const done = paragraph("task-done-state task-done-signed", label);
