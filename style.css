@@ -3193,3 +3193,39 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     white-space: nowrap;
   }
 }
+
+/* Matching (#200): every name stays on one line in a wide rectangle; phones give the names all the
+   width the pictures do not need. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 35.99rem) {
+  .match-board {
+    grid-template-columns: auto 1fr;
+    column-gap: 1.5rem;
+  }
+
+  .match-target,
+  #view-door .match-target,
+  #view-door .match-target.match-done {
+    max-width: none;
+    padding-inline: 0.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 36rem) {
+  .match-target,
+  #view-door .match-target,
+  #view-door .match-target.match-done {
+    max-width: none;
+    padding-inline: 0.35rem;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+}
