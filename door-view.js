@@ -77,6 +77,9 @@ function exampleGallery(examples, table) {
   return gallery;
 }
 
+/** A plain picture question (not an exam sheet or tile sum) gets its answer beside the picture. */
+const isPictureQuiz = (task) => task.type === "quiz" && task.image && !task.exam && !task.tiles && !task.worksheet;
+
 /** Each task type's own controls; every builder returns the elements to append to the card. */
 const TASK_BUILDERS = {
   challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)),
@@ -110,6 +113,7 @@ function taskCard(task, door, progress, xp) {
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
   if (task.letterSent) card.append(letterSent(task.letterSent));
   if (progress.isCompleted(key)) card.classList.add("task--done");
+  if (isPictureQuiz(task)) card.classList.add("task--picture-quiz");
   return card;
 }
 
