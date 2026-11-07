@@ -8,11 +8,12 @@ import {
   pickKind, spawnX,
 } from "./lib/catch.js";
 
-// Where the bucket rim is drawn: the bucket sits at the bottom and its rim is about 29% down the picture.
-const RIM_Y = 79;
+// Where the bucket rim is drawn: the bucket sits at the bottom of the tall field and its rim is about
+// 29% down the bucket picture.
+const RIM_Y = 86;
 const KEY_SPEED = 70;
-const CROWN_TOP = 12;
-const CROWN_HEIGHT = 36;
+const CROWN_TOP = 6;
+const CROWN_HEIGHT = 38;
 
 const element = (tag, className, text) => Object.assign(document.createElement(tag), { className, ...(text !== undefined && { textContent: text }) });
 
