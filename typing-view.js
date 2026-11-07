@@ -30,14 +30,14 @@ function onInput(ctx) {
   if (progress.done) finish(ctx, Math.round(performance.now() - ctx.startedAt));
 }
 
-const INSTRUCTIONS = "Skriv av texten så snabbt du kan – klockan startar när du börjar skriva. Du måste slå Ellens rekord för att klara luckan.";
+const INSTRUCTIONS = "Skriv av texten så snabbt du kan, klockan startar när du börjar skriva. Du måste slå Ellens rekord för att klara luckan.";
 
 const ellenBest = (results) => topResults(results.filter((result) => result.ellen))[0]?.timeMs ?? null;
 
-/** The player's result line: passed, Ellen setting the time, or how fast they need to be. */
+/** The player's result line: passed or how fast they need to be; Ellen's own run needs no line. */
 function resultMessage(ctx, timeMs) {
   const best = ellenBest(ctx.results);
-  if (ctx.board.isEllen) return `Din tid: ${formatTime(timeMs)}. Nu ska de andra försöka slå den!`;
+  if (ctx.board.isEllen) return "";
   if (best === null) return `Din tid: ${formatTime(timeMs)}. Ellen har inte satt någon tid än.`;
   if (beatsEllen(timeMs, best)) return `Du slog Ellen! 🎉 ${formatTime(timeMs)}`;
   return `${formatTime(timeMs)} – försök igen, slå Ellens tid ${formatTime(best)}`;
