@@ -4,7 +4,7 @@ import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
-import { checkIcon, paragraph } from "./task-ui.js";
+import { paragraph } from "./task-ui.js";
 
 function answerInput() {
   const input = document.createElement("input");
@@ -103,8 +103,7 @@ function examAnswer(text) {
 /** Only completion is stored, so a reload shows the first accepted answer. */
 function solvedAnswer(task, typed) {
   const text = typed?.trim() || task.answers[0];
-  const row = task.exam ? examAnswer(text) : paragraph("task-done-state quiz-solved-answer", `${text} `);
-  if (!task.exam) row.append(checkIcon());
+  const row = examAnswer(text);
   row.setAttribute("role", "status");
   row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
   return row;
@@ -126,7 +125,7 @@ function answerField(task) {
   if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
   if (task.letters) return letterBoxes(codeWordLength(task.answers), /^\d+$/.test(task.answers[0] ?? ""));
   const input = answerInput();
-  if (task.exam) input.classList.add("exam-blank");
+  input.classList.add("exam-blank");
   return input;
 }
 

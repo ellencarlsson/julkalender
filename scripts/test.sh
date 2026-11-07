@@ -45,7 +45,7 @@ check "version stamps are up to date" node scripts/stamp-versions.mjs --check
 check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --surface-raised --cell --gold --cream; do grep -q "^  $v:" style.css || exit 1; done'
 check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
 check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js style.css index.html'
-check "check icon is a plain ink tick, no green box" bash -c '! grep -q "check-mask" style.css && sed -n "/^\.check-icon {/,/^}/p" style.css | grep -q "tick-mask"'
+check "solved typed answers show no check mark" bash -c '! grep -q "check-icon" style.css quiz-view.js task-ui.js'
 check "footer is pushed to the bottom of the page" bash -c 'sed -n "/^\.app-footer {/,/^}/p" style.css | grep -q "margin-top: auto"'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
@@ -113,7 +113,7 @@ check "doors with examples page their tasks beside the examples" grep -q "^funct
 check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
 check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answer)" quiz-view.js
 check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
-check "exam quizzes get the teacher's cursive R when solved" grep -q "task.exam ? examAnswer(text)" quiz-view.js
+check "every typed answer gets the exam line and the teacher's cursive R" bash -c 'grep -q "const row = examAnswer(text);" quiz-view.js && grep -q "input.classList.add(\"exam-blank\")" quiz-view.js && ! grep -q "task.exam" quiz-view.js'
 check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
 check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
 check "backpack has the Items section with the chokladboll first" grep -q "<h3>Items</h3>" index.html
