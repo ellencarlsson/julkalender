@@ -30,7 +30,7 @@ function onInput(ctx) {
   if (progress.done) finish(ctx, Math.round(performance.now() - ctx.startedAt));
 }
 
-const INSTRUCTIONS = "Skriv av texten så snabbt du kan – klockan startar när du börjar skriva. Du måste slå Ellens rekord för att klara luckan.";
+const INSTRUCTIONS = "Skriv av texten så snabbt du kan, klockan startar när du börjar skriva. Du måste slå Ellens rekord för att klara luckan.";
 
 const ellenBest = (results) => topResults(results.filter((result) => result.ellen))[0]?.timeMs ?? null;
 
