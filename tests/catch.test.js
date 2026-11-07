@@ -26,17 +26,21 @@ test("apples come with the given chance, buns otherwise", () => {
   assert.equal(pickKind(() => 0.5, 0.3), "good");
 });
 
-test("items start inside the tree's crown and fall faster as buns are caught", () => {
+test("items start inside the tree's crown", () => {
   assert.ok(spawnX(() => 0) > 0 && spawnX(() => 0.999) < 100);
-  assert.ok(fallSpeed(10) > fallSpeed(0));
+});
+
+test("a level falls at its own fixed speed and spawn rate", () => {
+  assert.equal(fallSpeed(2), levelSettings(2).speed);
+  assert.equal(typeof levelSettings(2).spawn, "number");
 });
 
 test("every level is harder than the one before", () => {
   for (let level = 2; level <= LEVEL_COUNT; level++) {
     const [easier, harder] = [levelSettings(level - 1), levelSettings(level)];
     assert.ok(harder.badChance > easier.badChance);
-    assert.ok(fallSpeed(0, level) > fallSpeed(0, level - 1));
-    assert.ok(harder.spawn[0] < easier.spawn[0]);
+    assert.ok(fallSpeed(level) > fallSpeed(level - 1));
+    assert.ok(harder.spawn < easier.spawn);
   }
 });
 

@@ -197,10 +197,11 @@ function validateTyping(task) {
 const CATCH_IMAGES = ["background", "bucket", "good"];
 const isImageList = (value) => Array.isArray(value) && value.length > 0 && value.every((path) => IMAGE_PATH.test(path));
 
-/** bad is one picture or a list of pictures; any of them falls as a thing not to catch. */
+/** bad is one picture or a list of pictures; any of them falls as a thing not to catch. large lists the pictures that fall big. */
 function validateCatch(task) {
   const errors = CATCH_IMAGES.filter((field) => !IMAGE_PATH.test(task[field] ?? "")).map((field) => `${field} must be a path like images/name.webp`);
   if (!IMAGE_PATH.test(task.bad ?? "") && !isImageList(task.bad)) errors.push("bad must be a picture path or a list of them");
+  if (task.large !== undefined && !isImageList(task.large)) errors.push("large must be a list of picture paths");
   if (!(Number.isInteger(task.goal) && task.goal > 0)) errors.push("goal must be a positive whole number");
   if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
   return errors;

@@ -240,6 +240,8 @@ test("a catch game needs its four pictures and a goal", () => {
   assert.deepEqual(validateDoor(catchDoor({})), []);
   assert.match(validateDoor(catchDoor({ bad: "https://x/apple.png" })).join(), /bad must be/);
   assert.match(validateDoor(catchDoor({ goal: 0 })).join(), /goal must be/);
+  assert.deepEqual(validateDoor(catchDoor({ large: ["images/door-3/mamma-mu.webp"] })), []);
+  assert.match(validateDoor(catchDoor({ large: "images/door-3/mamma-mu.webp" })).join(), /large must be/);
   assert.deepEqual(validateDoor(catchDoor({ bad: ["images/door-3/apple.svg", "images/door-3/skruv.svg"] })), []);
   assert.match(validateDoor(catchDoor({ bad: [] })).join(), /bad must be/);
 });
