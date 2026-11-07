@@ -9,6 +9,7 @@ import { paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
 const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till.";
+const TEXT_INSTRUCTION = "Para ihop rätt saker. Tryck först på ett namn och sedan på det det hör till.";
 const NOT_YET = "Inte rätt än – byt några par och försök igen.";
 
 const card = (ctx, role, pair) => ctx.root.querySelector(`.match-${role}[data-pair="${pair}"]`);
@@ -156,5 +157,6 @@ export function createMatching({ task, key, progress, card: taskCard }) {
     lockAll(ctx);
     return [ctx.root];
   }
-  return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  const instruction = task.pairs.some((pair) => pair.item.image) ? INSTRUCTION : TEXT_INSTRUCTION;
+  return [paragraph("task-instruction", instruction), ctx.root, ctx.status];
 }
