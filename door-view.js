@@ -11,7 +11,7 @@ import { recipeCard } from "./recipe-view.js";
 import { ticketPicture } from "./ticket-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
-import { taskKey } from "./lib/progress.js";
+import { CHALLENGE_DONE_LABEL, taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 import { doorXp, taskXp } from "./lib/level.js";
@@ -112,6 +112,8 @@ function taskCard(task, door, progress, xp) {
   card.append(...(TASK_BUILDERS[task.type]?.({ task, key, progress, card, xp, door }) ?? []));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
   if (task.letterSent) card.append(letterSent(task.letterSent));
+  // Shown by CSS once the card is done, so every task type ends with the same signed "Klart!".
+  card.append(paragraph("task-done-state task-done-signed task-done-mark", CHALLENGE_DONE_LABEL));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   if (isPictureQuiz(task)) card.classList.add("task--picture-quiz");
   return card;
