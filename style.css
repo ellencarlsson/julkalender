@@ -3246,3 +3246,36 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     min-width: max-content;
   }
 }
+
+/* Recipe card (#204): ingredients and steps side by side on wider screens, stacked on phones. */
+.recipe-card {
+  display: grid;
+  gap: 1rem 2rem;
+  margin: 0.5rem 0 1.25rem;
+  text-align: left;
+}
+
+.recipe-title {
+  margin: 0 0 0.4rem;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+
+.recipe-list {
+  margin: 0;
+  padding-left: 1.4rem;
+  font-family: var(--hand-font);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.recipe-list li + li {
+  margin-top: 0.3rem;
+}
+
+@media (min-width: 36rem) {
+  .recipe-card {
+    grid-template-columns: minmax(10rem, 2fr) 3fr;
+  }
+}
