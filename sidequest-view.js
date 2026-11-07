@@ -36,7 +36,7 @@ function questItem(quest, progress) {
 /** TEST_RESET_SIDEQUESTS: button below the list that clears the player's own ticked side quests. */
 function resetButton(onReset) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: "reset-door small" });
-  button.textContent = "🧹 Rensa sidequests";
+  button.textContent = "Rensa sidequests";
   button.addEventListener("click", async () => {
     if (!confirm("Rensa dina avbockade sidequests? Bara för testning.")) return;
     button.disabled = true;

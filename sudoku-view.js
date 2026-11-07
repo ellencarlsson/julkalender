@@ -136,7 +136,7 @@ function setMode(ctx, noteMode) {
 /** Siffra writes the real digit, Anteckning writes a pencil mark; N on the keyboard switches. */
 function modeSwitch(ctx) {
   const wrap = element("div", "sdk-mode");
-  ctx.modeButtons = [["✏️ Siffra", false], ["📝 Anteckning", true]].map(([text, notes]) => {
+  ctx.modeButtons = [["Siffra", false], ["Anteckning", true]].map(([text, notes]) => {
     const button = padButton(text, () => setMode(ctx, notes));
     button.className = "sdk-mode-button";
     button.dataset.notes = String(notes);
@@ -172,7 +172,7 @@ async function complete(ctx) {
     ctx.pad.remove();
     ctx.mode.remove();
     ctx.lamp?.remove();
-    const label = ctx.xp ? `Sudokut är löst! 🎉 +${ctx.xp} XP` : "Sudokut är löst!";
+    const label = ctx.xp ? `Sudokut är löst! +${ctx.xp} XP` : "Sudokut är löst!";
     ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
   } catch {
     ctx.done = false;

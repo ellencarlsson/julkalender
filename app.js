@@ -156,8 +156,8 @@ async function completeCalendar() {
 
 function showCalendarTestTools() {
   element("calendar-tools").replaceChildren(
-    testButton("🧹 Rensa hela kalendern", "Rensa din progress i alla luckor? Sidequests sparas. Bara för testning.", resetCalendar),
-    testButton("⭐ Klara hela kalendern", "Klara alla uppgifter i alla luckor? Bara för testning.", completeCalendar),
+    testButton("Rensa hela kalendern", "Rensa din progress i alla luckor? Sidequests sparas. Bara för testning.", resetCalendar),
+    testButton("Klara hela kalendern", "Klara alla uppgifter i alla luckor? Bara för testning.", completeCalendar),
   );
 }
 
