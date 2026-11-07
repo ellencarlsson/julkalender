@@ -30,6 +30,8 @@ function onInput(ctx) {
   if (progress.done) finish(ctx, Math.round(performance.now() - ctx.startedAt));
 }
 
+const INSTRUCTIONS = "Skriv av texten så snabbt du kan – klockan startar när du börjar skriva. Du måste slå Ellens rekord för att klara luckan.";
+
 const ellenBest = (results) => topResults(results.filter((result) => result.ellen))[0]?.timeMs ?? null;
 
 /** The player's result line: passed, Ellen setting the time, or how fast they need to be. */
@@ -139,5 +141,5 @@ export function createTypingRace({ task, key, progress, card, door }) {
   const board = leaderboardBox(ctx);
   if (ctx.board) loadLeaderboard(ctx);
   const done = progress.isCompleted(key) ? [doneState("Lucka avklarad!")] : [];
-  return [ctx.targetView, ctx.clock, ctx.input, ctx.status, ...done, ctx.retry, board];
+  return [paragraph("typing-instructions", INSTRUCTIONS), ctx.targetView, ctx.clock, ctx.input, ctx.status, ...done, ctx.retry, board];
 }

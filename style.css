@@ -2658,8 +2658,16 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .typing-board h3 {
   margin: 0 0 0.25rem;
-  font-family: "Dancing Script", var(--hand-font), cursive;
-  font-size: 1.8rem;
+  font-family: var(--hand-font);
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+.typing-instructions {
+  margin: 0 0 0.5rem;
+  font-style: italic;
+  text-align: left;
 }
 
 .typing-list {
