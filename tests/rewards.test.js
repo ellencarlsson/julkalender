@@ -41,3 +41,8 @@ test("clues from completed doors reveal parts of the code", () => {
   const doors = [[1, door({ clue: "code-start" })], [2, door({ clue: "code-title" })], [3, door({ clue: "nope" })]];
   assert.deepEqual([...collectRewards(doors, progressWith("1-a", "3-a")).clues], ["code-start"]);
 });
+
+test("an item keeps its note and wide flag, like the cinema ticket", () => {
+  const ticket = { name: "Biobiljett", image: "images/door-24/biobiljett.webp", note: "123", wide: true };
+  assert.deepEqual(collectRewards([[24, door({ item: ticket })]], progressWith("24-a")).items, [ticket]);
+});
