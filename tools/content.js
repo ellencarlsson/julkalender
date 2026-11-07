@@ -73,7 +73,12 @@ function validateQuiz(task) {
 }
 
 function validateChallenge(task) {
-  return isNonEmptyString(task.description) ? [] : ["description must be a non-empty string"];
+  const errors = isNonEmptyString(task.description) ? [] : ["description must be a non-empty string"];
+  const recipe = task.recipe;
+  if (recipe !== undefined && !(isPlainObject(recipe) && isNonEmptyStringList(recipe.ingredients) && isNonEmptyStringList(recipe.steps))) {
+    errors.push('recipe must be { "ingredients": ["..."], "steps": ["..."] }');
+  }
+  return errors;
 }
 
 function validateGrid(grid) {

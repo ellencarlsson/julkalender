@@ -128,6 +128,7 @@ check "drag.js has valid syntax" check_js_syntax drag.js
 check "pick-view.js has valid syntax" check_js_syntax pick-view.js
 check "catch-view.js has valid syntax" check_js_syntax catch-view.js
 check "catch game stars pick a level" grep -q "chooseLevel(ctx, level)" catch-view.js
+check "recipe-view.js has valid syntax" check_js_syntax recipe-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
