@@ -2713,3 +2713,124 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-size: 1rem;
   line-height: 1;
 }
+
+/* Ordering task (#179): the anchor (sun) on the left, numbered slots beside it, pictures below. */
+.ord-board {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.ord-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ord-anchor {
+  flex: none;
+  width: clamp(3.5rem, 16vw, 7rem);
+  height: auto;
+  margin-left: -1rem;
+}
+
+.ord-slots {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+.ord-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 2px dashed rgba(58, 39, 22, 0.45);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ord-slot-number {
+  position: absolute;
+  top: -0.2rem;
+  left: 0.1rem;
+  color: var(--cream-muted);
+  font-family: var(--hand-font);
+  font-size: 0.95rem;
+}
+
+.ord-slot--right {
+  border-style: solid;
+  border-color: #2c6a3f;
+}
+
+.ord-slot--wrong {
+  border-color: #b8342a;
+  animation: match-shake 0.3s;
+}
+
+.ord-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 4rem;
+}
+
+.ord-item {
+  display: grid;
+  place-items: center;
+  width: clamp(3.2rem, 15vw, 5rem);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  background: none;
+  box-shadow: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.ord-slot .ord-item {
+  width: 100%;
+}
+
+.ord-item[aria-pressed="true"] {
+  border-color: #b8342a;
+}
+
+.ord-item--dragging {
+  opacity: 0.3;
+}
+
+.ord-item:disabled {
+  cursor: default;
+}
+
+.ord-picture,
+.ord-ghost {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* The picture following the finger while dragging. */
+.ord-ghost {
+  position: fixed;
+  z-index: 50;
+  width: 4.5rem;
+  height: 4.5rem;
+  transform: translate(-50%, -50%);
+}
+
+/* Wider screens: all eight slots on one line to the right of the sun. */
+@media (min-width: 36rem) {
+  .ord-slots {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .ord-anchor {
+    margin-left: -1.5rem;
+  }
+}

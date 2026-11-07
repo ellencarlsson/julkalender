@@ -126,6 +126,18 @@ function validateMatching(task) {
   return promptErrors.concat(pairErrors(task.pairs));
 }
 
+function validateOrdering(task) {
+  const isPicture = (item) => isPlainObject(item) && isNonEmptyString(item.name) && IMAGE_PATH.test(item.image ?? "");
+  const errors = [];
+  if (!Array.isArray(task.items) || task.items.length < 2 || !task.items.every(isPicture)) {
+    errors.push('items must be at least 2 { "name": "...", "image": "images/..." } in the right order');
+  }
+  if (task.anchor !== undefined && !(isPlainObject(task.anchor) && IMAGE_PATH.test(task.anchor.image ?? ""))) {
+    errors.push('anchor must be { "image": "images/...", "alt": "..." }');
+  }
+  return errors;
+}
+
 function pairErrors(pairs) {
   return pairs.flatMap((pair, index) =>
     isPlainObject(pair)
@@ -156,6 +168,7 @@ const TASK_VALIDATORS = {
   crossword: validateCrossword,
   matching: validateMatching,
   sudoku: validateSudoku,
+  ordering: validateOrdering,
   typing: validateTyping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
@@ -208,6 +221,14 @@ function duplicateIdErrors(tasks) {
   return duplicates.map((id) => `task id "${id}" is used more than once`);
 }
 
+/** A task may wait for another task in the same door ("requires": its id) before it can be played. */
+function requiresErrors(tasks) {
+  const ids = new Set(tasks.map((task) => task?.id));
+  return tasks
+    .filter((task) => task?.requires !== undefined && !(isNonEmptyString(task.requires) && ids.has(task.requires) && task.requires !== task.id))
+    .map((task) => `task "${task.id}" requires must be the id of another task in this door`);
+}
+
 function rewardErrors(reward) {
   if (reward === undefined) return [];
   if (!isPlainObject(reward)) return ["reward must be an object"];
@@ -235,7 +256,7 @@ export function validateDoor(source) {
   if (!Array.isArray(source.tasks) || source.tasks.length === 0) {
     return [...errors, "tasks must be a non-empty list"];
   }
-  return [...errors, ...rewardErrors(source.reward), ...source.tasks.flatMap(validateTask), ...duplicateIdErrors(source.tasks)];
+  return [...errors, ...rewardErrors(source.reward), ...source.tasks.flatMap(validateTask), ...duplicateIdErrors(source.tasks), ...requiresErrors(source.tasks)];
 }
 
 export function validateFinal(source) {
