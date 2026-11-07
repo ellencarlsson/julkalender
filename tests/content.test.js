@@ -364,3 +364,8 @@ test("a challenge may carry a recipe with ingredients and steps", () => {
   assert.deepEqual(validateDoor(bake({ ingredients: ["3 ägg"], steps: ["Knäck i 3 ägg."] })), []);
   assert.equal(validateDoor(bake({ ingredients: [], steps: ["x"] })).length, 1);
 });
+
+test("a quiz may show a ticket picture that unlocks with the code", () => {
+  assert.deepEqual(validateDoor(quizDoor({ ticket: { image: "images/door-24/biobiljett.webp" } })), []);
+  assert.equal(validateDoor(quizDoor({ ticket: { image: "biljett.webp" } })).length, 1);
+});

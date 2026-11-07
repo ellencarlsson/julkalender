@@ -3363,3 +3363,76 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     margin-block: 0;
   }
 }
+
+/* Cinema ticket (#208): text printed in the ticket's empty middle, in the same red as its logo. */
+.ticket {
+  position: relative;
+  max-width: 34rem;
+  margin: 0.5rem auto 1.25rem;
+  transform: rotate(-2deg);
+}
+
+.ticket-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(58, 39, 22, 0.35));
+}
+
+.ticket-print {
+  position: absolute;
+  inset: 22% 8% 22% 36%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: #9b2a20;
+  text-align: center;
+  transform: rotate(-3deg);
+}
+
+.ticket-lock {
+  font-size: clamp(1.4rem, 6vw, 2.2rem);
+}
+
+.ticket-line {
+  font-family: var(--hand-font);
+  font-size: clamp(0.95rem, 3.6vw, 1.35rem);
+  line-height: 1.2;
+}
+
+.ticket-heading {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1rem, 4.2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ticket-code {
+  font-family: "Courier New", monospace;
+  font-size: clamp(1.1rem, 4.8vw, 1.9rem);
+  font-weight: bold;
+  letter-spacing: 0.12em;
+}
+
+.ticket--unlocked .ticket-image {
+  animation: ticket-unlock 0.6s ease-out;
+}
+
+@keyframes ticket-unlock {
+  40% {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket--unlocked .ticket-image {
+    animation: none;
+  }
+}
+
+/* The unlocked ticket already shows the code, so the typed answer line below it is left out. */
+.task:has(.ticket) .quiz-solved-answer {
+  display: none;
+}
