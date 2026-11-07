@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=ca88478d54">
+  <link rel="stylesheet" href="./style.css?v=cc266c4308">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -19,7 +19,7 @@
   {
     "imports": {
       "./app.js": "./app.js?v=c9d71f5cfc",
-      "./backpack-view.js": "./backpack-view.js?v=2589d4ef6a",
+      "./backpack-view.js": "./backpack-view.js?v=e161b8eb27",
       "./block-pager.js": "./block-pager.js?v=fef50d885e",
       "./catch-view.js": "./catch-view.js?v=bc88533df5",
       "./crafting-view.js": "./crafting-view.js?v=a1e2779257",
@@ -47,7 +47,7 @@
       "./lib/progress.js": "./lib/progress.js?v=2bc2af29b5",
       "./lib/puzzle.js": "./lib/puzzle.js?v=55b6138674",
       "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
-      "./lib/rewards.js": "./lib/rewards.js?v=8cdfe28019",
+      "./lib/rewards.js": "./lib/rewards.js?v=cffed97478",
       "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/sudoku.js": "./lib/sudoku.js?v=2d4b5caa54",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
@@ -142,6 +142,14 @@
               <span class="backpack-item-name">Chokladbollar</span>
             </li>
           </ul>
+        </div>
+        <div id="backpack-prize" class="prize-part" hidden>
+          <h3>Din vinst</h3>
+          <div class="prize-ticket">
+            <img id="prize-image" alt="Biobiljett">
+            <span id="prize-code" class="prize-code"></span>
+          </div>
+          <p id="prize-text" class="prize-text"></p>
         </div>
       </section>
 
