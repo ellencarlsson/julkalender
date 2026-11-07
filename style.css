@@ -3732,3 +3732,32 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     font-size: 0.75rem;
   }
 }
+
+/* Test tools (#219): "Rensa lucka" and "Klara lucka" side by side, and the whole-calendar tools to
+   the right of the door grid where there is room, otherwise below it. */
+.door-tools {
+  gap: 0.5rem;
+}
+
+.calendar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 75rem) {
+  #signed-in > #view-overview {
+    position: relative;
+  }
+
+  .calendar-tools {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    flex-direction: column;
+    width: 10rem;
+    margin: 0 0 0 1rem;
+  }
+}

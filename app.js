@@ -21,7 +21,8 @@ import { DOOR_STATE } from "./lib/door-state.js";
 import { collectRewards } from "./lib/rewards.js";
 import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
-import { doorResetPlan } from "./lib/test-reset.js";
+import { calendarTaskKeys, doorResetPlan } from "./lib/test-reset.js";
+import { testButton } from "./test-tools.js";
 import { loadProgress } from "./progress.js";
 import { createLeaderboard } from "./leaderboard.js";
 import { renderSideQuests } from "./sidequest-view.js";
@@ -114,16 +115,50 @@ function withLevelUpdates(progress) {
   };
 }
 
-/** TEST_RESET_DOOR: clears the signed-in user's own progress in one door and shows it fresh. */
-function resetHandler(number, door, progress) {
-  return async () => {
-    doorResetPlan(number, door, []).crosswords.forEach(discardPendingCrossword);
-    await progress.resetDoor(number, door);
-    hideLevelUp();
-    levels.refresh();
-    hints.refresh();
+/** Shows the new level, hints and backpack after a test tool changed progress behind the views' backs. */
+function refreshAfterTestTool() {
+  hideLevelUp();
+  levels.refresh();
+  hints.refresh();
+}
+
+/** TEST_RESET_DOOR / TEST_COMPLETE_DOOR: clear or finish the signed-in user's own progress in one door. */
+function doorTestTools(number, door, progress) {
+  const tasks = doorResetPlan(number, door, []);
+  const thenReopen = (change) => async () => {
+    await change();
+    refreshAfterTestTool();
     openDoor(number);
   };
+  return {
+    onReset: thenReopen(() => {
+      tasks.crosswords.forEach(discardPendingCrossword);
+      return progress.resetDoor(number, door);
+    }),
+    onComplete: thenReopen(() => progress.completeTasks(tasks.tasks)),
+  };
+}
+
+/** TEST_RESET_CALENDAR: clears the signed-in user's progress in every door (side quests are kept). */
+async function resetCalendar() {
+  const [results, progress] = await Promise.all([doors.readAllDoors(), progressReady]);
+  calendarTaskKeys(results).forEach(discardPendingCrossword);
+  await progress.resetCalendar();
+  refreshAfterTestTool();
+}
+
+/** TEST_COMPLETE_CALENDAR: marks every task in every readable door as done. */
+async function completeCalendar() {
+  const [results, progress] = await Promise.all([doors.readAllDoors(), progressReady]);
+  await progress.completeTasks(calendarTaskKeys(results));
+  refreshAfterTestTool();
+}
+
+function showCalendarTestTools() {
+  element("calendar-tools").replaceChildren(
+    testButton("🧹 Rensa hela kalendern", "Rensa din progress i alla luckor? Sidequests sparas. Bara för testning.", resetCalendar),
+    testButton("⭐ Klara hela kalendern", "Klara alla uppgifter i alla luckor? Bara för testning.", completeCalendar),
+  );
 }
 
 /** Re-reads the door on every open so a door that unlocked since page load shows up. */
@@ -135,8 +170,8 @@ async function openDoor(number) {
     const [result, progress] = await Promise.all([doors.readDoor(number), progressReady]);
     markDoor(number, result.state);
     levels.setDoor(number, result);
-    const onReset = result.door && resetHandler(number, result.door, progress);
-    if (parseRoute(location.hash).door === number) showDoorContent(number, result, { ...withLevelUpdates(progress), leaderboard: createLeaderboard(db, user) }, onReset);
+    const testTools = result.door && doorTestTools(number, result.door, progress);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, result, { ...withLevelUpdates(progress), leaderboard: createLeaderboard(db, user) }, testTools);
   } catch {
     progressReady = startProgressLoad(user.uid);
     if (parseRoute(location.hash).door === number) showDoorContent(number, { state: DOOR_STATE.ERROR });
@@ -184,6 +219,8 @@ onAuthStateChanged(auth, (user) => {
   progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
   if (user) loadDoorStates();
+  element("calendar-tools").replaceChildren();
+  if (user) showCalendarTestTools();
   if (user) readSideQuests(db).then((quests) => {
     hints.setSideQuests(quests);
     showSideQuestsIfOpen();
