@@ -325,3 +325,12 @@ test("ordering tasks list pictures in order and may require another task", () =>
   assert.equal(validateDoor({ door: 6, tasks: [ordering({ items: [item("a")] })] }).length, 1);
   assert.equal(validateDoor({ door: 6, tasks: [naming, ordering({ requires: "saknas" })] }).length, 1);
 });
+
+test("crafting tasks need pictured ingredients, a result and a pattern of their ids", () => {
+  const plank = { id: "plank", name: "Plankor", image: "images/mc/plank.svg" };
+  const task = (extra) => ({ id: "c", type: "crafting", ingredients: [plank], result: { name: "Bänk", image: "images/mc/bank.svg" }, pattern: [["plank", "plank"], ["plank", "plank"]], ...extra });
+  assert.deepEqual(validateDoor({ door: 1, tasks: [task()] }), []);
+  assert.equal(validateDoor({ door: 1, tasks: [task({ pattern: [["stick"]] })] }).length, 1);
+  assert.equal(validateDoor({ door: 1, tasks: [task({ pattern: [[null]] })] }).length, 1);
+  assert.equal(validateDoor({ door: 1, tasks: [task({ result: { name: "Bänk" } })] }).length, 1);
+});
