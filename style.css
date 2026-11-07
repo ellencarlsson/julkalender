@@ -890,7 +890,7 @@ button.small {
   --solved: rgba(44, 106, 63, 0.22);
   --gold: #b8342a;
   border: 1.6rem solid transparent;
-  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.6rem round;
   padding: 0.25rem 0.5rem 0.75rem;
   color: var(--cream);
   text-shadow: none;
@@ -1815,7 +1815,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .final-message:not([hidden]) {
   margin: 0 0 1.5rem;
   border: 1.6rem solid transparent;
-  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.6rem round;
   padding: 0.25rem 0.75rem 0.75rem;
   color: #3a2716;
   text-align: center;
