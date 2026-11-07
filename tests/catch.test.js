@@ -1,7 +1,7 @@
 /** Tests for the catch game: landing in the bucket, bucket bounds, spawning and speed. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { BUCKET_WIDTH, clampBucket, crossesRim, fallSpeed, isOverBucket, pickKind, spawnX } from "../lib/catch.js";
+import { BUCKET_WIDTH, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone, pickKind, spawnX } from "../lib/catch.js";
 
 test("an item lands only in the frame it passes the bucket rim", () => {
   assert.equal(crossesRim(78, 82, 80), true);
@@ -29,4 +29,25 @@ test("apples come with the given chance, buns otherwise", () => {
 test("items start inside the tree's crown and fall faster as buns are caught", () => {
   assert.ok(spawnX(() => 0) > 0 && spawnX(() => 0.999) < 100);
   assert.ok(fallSpeed(10) > fallSpeed(0));
+});
+
+test("every level is harder than the one before", () => {
+  for (let level = 2; level <= LEVEL_COUNT; level++) {
+    const [easier, harder] = [levelSettings(level - 1), levelSettings(level)];
+    assert.ok(harder.badChance > easier.badChance);
+    assert.ok(fallSpeed(0, level) > fallSpeed(0, level - 1));
+    assert.ok(harder.spawn[0] < easier.spawn[0]);
+  }
+});
+
+test("levels outside 1-4 use the nearest real level", () => {
+  assert.deepEqual(levelSettings(0), levelSettings(1));
+  assert.deepEqual(levelSettings(9), levelSettings(LEVEL_COUNT));
+});
+
+test("the finished levels round-trip through the saved row", () => {
+  assert.equal(levelsDone(encodeLevels(2)), 2);
+  assert.equal(levelsDone(null), 0);
+  assert.equal(levelsDone(["9"]), LEVEL_COUNT);
+  assert.equal(levelsDone(["x"]), 0);
 });

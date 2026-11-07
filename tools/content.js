@@ -188,10 +188,13 @@ function validateTyping(task) {
   return isNonEmptyStringList(task.sentences) ? [] : ["sentences must be a non-empty list of sentences"];
 }
 
-const CATCH_IMAGES = ["background", "bucket", "good", "bad"];
+const CATCH_IMAGES = ["background", "bucket", "good"];
+const isImageList = (value) => Array.isArray(value) && value.length > 0 && value.every((path) => IMAGE_PATH.test(path));
 
+/** bad is one picture or a list of pictures; any of them falls as a thing not to catch. */
 function validateCatch(task) {
   const errors = CATCH_IMAGES.filter((field) => !IMAGE_PATH.test(task[field] ?? "")).map((field) => `${field} must be a path like images/name.webp`);
+  if (!IMAGE_PATH.test(task.bad ?? "") && !isImageList(task.bad)) errors.push("bad must be a picture path or a list of them");
   if (!(Number.isInteger(task.goal) && task.goal > 0)) errors.push("goal must be a positive whole number");
   if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
   return errors;

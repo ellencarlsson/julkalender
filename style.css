@@ -3108,3 +3108,27 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: #3a2716;
   font: max(16px, 1.3rem) var(--hand-font);
 }
+
+/* Catch game levels: four stars in the top-right corner, filled up to the current level. */
+.catch-stars {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 250, 238, 0.85);
+  font-size: max(16px, 1.4rem);
+  line-height: 1.3;
+}
+
+.catch-star {
+  color: rgba(58, 39, 22, 0.25);
+}
+
+.catch-star--on {
+  color: #e0a526;
+  text-shadow: 0 0 2px rgba(122, 74, 18, 0.6);
+}

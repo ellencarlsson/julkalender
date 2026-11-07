@@ -1,13 +1,15 @@
 /**
- * Catch game: buns and apples fall from a tree and the player moves a bucket under them. Catching
- * the goal number of buns completes the task; catching a single apple ends the round.
+ * Catch game: buns and other things fall from a tree and the player moves a bucket under them. Four
+ * levels, each faster than the last: catch the goal number of buns to finish a level, but catching
+ * anything else restarts it. The finished levels are saved; level 4 completes the task.
  */
-import { BUCKET_WIDTH, clampBucket, crossesRim, fallSpeed, isOverBucket, pickKind, spawnX } from "./lib/catch.js";
+import {
+  BUCKET_WIDTH, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
+  pickKind, spawnX,
+} from "./lib/catch.js";
 
 // Where the bucket rim is drawn: the bucket sits at the bottom and its rim is about 29% down the picture.
 const RIM_Y = 79;
-const BAD_CHANCE = 0.3;
-const SPAWN_EVERY_S = [1.0, 0.55];
 const KEY_SPEED = 70;
 const CROWN_TOP = 12;
 const CROWN_HEIGHT = 36;
@@ -25,18 +27,21 @@ function place(node, x, y) {
   node.style.top = `${y}%`;
 }
 
+const badPictures = (task) => [task.bad].flat();
+const randomOf = (list) => list[Math.floor(Math.random() * list.length)];
+
 function spawn(ctx) {
-  const kind = pickKind(Math.random, BAD_CHANCE);
+  const kind = pickKind(Math.random, levelSettings(ctx.level).badChance);
   const item = { kind, x: spawnX(Math.random), y: CROWN_TOP + Math.random() * CROWN_HEIGHT };
-  item.node = picture(kind === "good" ? ctx.task.good : ctx.task.bad, `catch-item catch-item--${kind}`);
+  item.node = picture(kind === "good" ? ctx.task.good : randomOf(badPictures(ctx.task)), `catch-item catch-item--${kind}`);
   place(item.node, item.x, item.y);
   ctx.field.append(item.node);
   ctx.items.push(item);
 }
 
-/** Spawns come quicker as the round goes on, from one a second down to about two a second. */
+/** Spawns come quicker as the level goes on, within the level's own range. */
 function spawnDelay(ctx) {
-  const [slow, fast] = SPAWN_EVERY_S;
+  const [slow, fast] = levelSettings(ctx.level).spawn;
   return slow - (slow - fast) * Math.min(1, ctx.caught / ctx.goal);
 }
 
@@ -44,12 +49,12 @@ function land(ctx, item) {
   if (item.kind === "bad") return lose(ctx);
   ctx.caught++;
   ctx.count.textContent = `${ctx.caught} / ${ctx.goal}`;
-  if (ctx.caught >= ctx.goal) win(ctx);
+  if (ctx.caught >= ctx.goal) finishLevel(ctx);
 }
 
 /** Moves every item down; items that pass the rim above the bucket are caught, the rest fall away. */
 function moveItems(ctx, dt) {
-  const speed = fallSpeed(ctx.caught);
+  const speed = fallSpeed(ctx.caught, ctx.level);
   for (const item of [...ctx.items]) {
     const previous = item.y;
     item.y += speed * dt;
@@ -107,18 +112,35 @@ function showOverlay(ctx, text, buttonText) {
 }
 
 function lose(ctx) {
-  showOverlay(ctx, "Oj! Du fångade ett äpple 🍎 Börja om och fånga bara kanelbullar.", "Försök igen");
+  showOverlay(ctx, `Oj! Det där var ingen kanelbulle. Börja om nivå ${ctx.level}.`, "Försök igen");
 }
 
-async function win(ctx) {
-  clearItems(ctx);
-  showOverlay(ctx, `Du fångade ${ctx.goal} kanelbullar! 🎉`, "Spela igen");
-  if (ctx.progress.isCompleted(ctx.key)) return;
-  try {
+/** One star per level, filled up to the level being played (all four once the game is done). */
+function renderStars(ctx) {
+  ctx.stars.replaceChildren(...Array.from({ length: LEVEL_COUNT }, (_, index) => element("span", index < ctx.level ? "catch-star catch-star--on" : "catch-star", "★")));
+  ctx.stars.setAttribute("aria-label", `Nivå ${ctx.level} av ${LEVEL_COUNT}`);
+}
+
+async function saveProgress(ctx) {
+  await ctx.progress.saveCrossword?.(ctx.key, encodeLevels(ctx.done));
+  if (ctx.done === LEVEL_COUNT && !ctx.progress.isCompleted(ctx.key)) {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
+  }
+}
+
+async function finishLevel(ctx) {
+  clearItems(ctx);
+  const finished = ctx.level;
+  ctx.done = Math.max(ctx.done, finished);
+  if (finished < LEVEL_COUNT) ctx.level = finished + 1;
+  renderStars(ctx);
+  if (finished < LEVEL_COUNT) showOverlay(ctx, `Nivå ${finished} klar! ⭐ Nästa nivå går lite fortare.`, `Starta nivå ${ctx.level}`);
+  else showOverlay(ctx, `Alla ${LEVEL_COUNT} nivåer klara! 🎉`, "Spela nivå 4 igen");
+  try {
+    await saveProgress(ctx);
   } catch {
-    ctx.overlayText.textContent = "Kunde inte spara. Spela igen och försök på nytt.";
+    ctx.overlayText.textContent = "Kunde inte spara. Försök igen.";
   }
 }
 
@@ -140,16 +162,17 @@ function addControls(ctx) {
   });
 }
 
-function overlay(ctx, done) {
+function overlay(ctx) {
+  const allDone = ctx.done === LEVEL_COUNT;
   ctx.overlay = element("div", "catch-overlay");
-  ctx.overlayText = element("p", "", done ? `Du har redan fångat ${ctx.goal} kanelbullar!` : `Fånga ${ctx.goal} kanelbullar!`);
-  ctx.overlayButton = Object.assign(element("button", "catch-start", done ? "Spela igen" : "Starta"), { type: "button" });
+  ctx.overlayText = element("p", "", allDone ? `Du har klarat alla ${LEVEL_COUNT} nivåer!` : `Nivå ${ctx.level}: fånga ${ctx.goal} kanelbullar!`);
+  ctx.overlayButton = Object.assign(element("button", "catch-start", allDone ? "Spela nivå 4 igen" : `Starta nivå ${ctx.level}`), { type: "button" });
   ctx.overlayButton.addEventListener("click", () => start(ctx));
   ctx.overlay.append(ctx.overlayText, ctx.overlayButton);
   return ctx.overlay;
 }
 
-function buildField(ctx, done) {
+function buildField(ctx) {
   ctx.field = element("div", "catch-field");
   ctx.field.tabIndex = 0;
   ctx.field.setAttribute("aria-label", "Fånga kanelbullar med hinken. Styr med musen, fingret eller piltangenterna.");
@@ -158,7 +181,9 @@ function buildField(ctx, done) {
   ctx.count = element("span", "", `0 / ${ctx.goal}`);
   ctx.counter = element("p", "catch-counter");
   ctx.counter.append(picture(ctx.task.good, "catch-counter-icon"), ctx.count);
-  ctx.field.append(picture(ctx.task.background, "catch-background"), ctx.bucket, ctx.counter, overlay(ctx, done));
+  ctx.stars = element("p", "catch-stars");
+  renderStars(ctx);
+  ctx.field.append(picture(ctx.task.background, "catch-background"), ctx.bucket, ctx.counter, ctx.stars, overlay(ctx));
   moveBucket(ctx, 50);
   addControls(ctx);
   return ctx.field;
@@ -168,11 +193,14 @@ function buildField(ctx, done) {
  * Builds a catch game task.
  *
  * Args:
- *   options: { task, key, progress, card } with task.background, bucket, good, bad and goal.
+ *   options: { task, key, progress, card } with task.background, bucket, good, bad (one picture or a
+ *   list) and goal (buns per level).
  * Returns:
  *   The elements to append to the card.
  */
 export function createCatchGame({ task, key, progress, card }) {
-  const ctx = { task, key, progress, card, goal: task.goal, items: [], caught: 0, running: false, keyDirection: 0, bucketX: 50 };
-  return [buildField(ctx, progress.isCompleted(key))];
+  const done = progress.isCompleted(key) ? LEVEL_COUNT : levelsDone(progress.crosswordEntries?.(key));
+  const level = Math.min(LEVEL_COUNT, done + 1);
+  const ctx = { task, key, progress, card, goal: task.goal, done, level, items: [], caught: 0, running: false, keyDirection: 0, bucketX: 50 };
+  return [buildField(ctx)];
 }
