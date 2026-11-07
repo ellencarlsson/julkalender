@@ -222,14 +222,13 @@ function groupItemErrors(item, where) {
   return hasImage || isNonEmptyString(item.text) ? [] : [`${where} must have text or an image`];
 }
 
-/** At least two groups, each with a name and the same number (2 or more) of items. */
+/** At least two groups, each with a name and 2 or more items; groups may differ in size. */
 function validateGrouping(task) {
   if (!Array.isArray(task.groups) || task.groups.length < 2) return ["groups must be a list of at least 2 groups"];
-  const size = task.groups[0]?.items?.length;
   return task.groups.flatMap((group, g) => {
     const where = `groups[${g}]`;
     if (!isPlainObject(group) || !isNonEmptyString(group.name)) return [`${where} must have a name`];
-    if (!Array.isArray(group.items) || group.items.length < 2 || group.items.length !== size) return [`${where}.items must be a list of ${size ?? 2}+ items, as many as the first group`];
+    if (!Array.isArray(group.items) || group.items.length < 2) return [`${where}.items must be a list of at least 2 items`];
     return group.items.flatMap((item, i) => groupItemErrors(item, `${where}.items[${i}]`));
   });
 }

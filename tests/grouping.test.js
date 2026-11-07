@@ -1,7 +1,7 @@
 /** Tests for the grouping task: checking a selection, saving found groups and shuffling. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkSelection, decodeFound, encodeFound, groupSize, itemId, shuffledItems } from "../lib/grouping.js";
+import { checkSelection, decodeFound, encodeFound, itemId, shuffledItems } from "../lib/grouping.js";
 
 const groups = [
   { name: "Frukt", items: [{ text: "äpple" }, { text: "päron" }, { text: "kiwi" }] },
@@ -12,15 +12,20 @@ test("a selection of one whole group finds that group", () => {
   assert.deepEqual(checkSelection(groups, ["0-0", "0-2", "0-1"]), { group: 0, almost: false });
 });
 
-test("one item away is almost, anything else is wrong", () => {
+test("one item away is almost: one swapped, one missing or one extra", () => {
   assert.deepEqual(checkSelection(groups, ["1-0", "1-1", "0-2"]), { group: null, almost: true });
-  assert.deepEqual(checkSelection(groups, ["1-0", "0-1", "0-2"]), { group: null, almost: true });
+  assert.deepEqual(checkSelection(groups, ["1-0", "1-1"]), { group: null, almost: true });
+  assert.deepEqual(checkSelection(groups, ["1-0", "1-1", "1-2", "0-0"]), { group: null, almost: true });
   const four = [{ name: "a", items: [1, 2, 3, 4].map((n) => ({ text: `a${n}` })) }, { name: "b", items: [1, 2, 3, 4].map((n) => ({ text: `b${n}` })) }];
   assert.deepEqual(checkSelection(four, ["0-0", "0-1", "1-0", "1-1"]), { group: null, almost: false });
 });
 
-test("the group size is the size of the first group", () => {
-  assert.equal(groupSize(groups), 3);
+test("groups of different sizes are found by their exact items", () => {
+  const mixed = [{ name: "tre", items: [{ text: "a" }, { text: "b" }, { text: "c" }] }, { name: "fem", items: [1, 2, 3, 4, 5].map((n) => ({ text: `f${n}` })) }];
+  assert.deepEqual(checkSelection(mixed, ["0-2", "0-0", "0-1"]), { group: 0, almost: false });
+  assert.deepEqual(checkSelection(mixed, ["1-0", "1-1", "1-2", "1-3", "1-4"]), { group: 1, almost: false });
+  assert.deepEqual(checkSelection(mixed, []), { group: null, almost: false });
+  assert.deepEqual(checkSelection(mixed, ["1-0", "1-1", "1-2"]), { group: null, almost: false });
 });
 
 test("shuffled items keep every item exactly once", () => {

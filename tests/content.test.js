@@ -251,13 +251,14 @@ test("a puzzle needs a picture and 2-8 columns and rows", () => {
   assert.match(validateDoor(puzzleDoor({ picture: "jul.webp" })).join(), /picture must be/);
 });
 
-test("grouping needs 2+ named groups of the same size, items as text or pictures", () => {
+test("grouping needs 2+ named groups of 2+ items, as text or pictures, sizes may differ", () => {
   const group = (name, items) => ({ name, items });
   const door = (groups) => ({ door: 15, tasks: [{ id: "g", type: "grouping", groups }] });
   const fruit = group("Frukt", [{ text: "äpple" }, { text: "päron" }]);
   assert.deepEqual(validateDoor(door([fruit, group("Djur", [{ image: "images/door-15/ko.webp", alt: "Ko" }, { text: "katt" }])])), []);
   assert.match(validateDoor(door([fruit])).join(), /at least 2 groups/);
-  assert.match(validateDoor(door([fruit, group("Djur", [{ text: "ko" }])])).join(), /as many as the first group/);
+  assert.match(validateDoor(door([fruit, group("Djur", [{ text: "ko" }])])).join(), /at least 2 items/);
+  assert.deepEqual(validateDoor(door([fruit, group("Tre", [{ text: "a" }, { text: "b" }, { text: "c" }])])), []);
   assert.match(validateDoor(door([fruit, group("", [{ text: "a" }, { text: "b" }])])).join(), /must have a name/);
   assert.match(validateDoor(door([fruit, group("Djur", [{ text: "ko" }, {}])])).join(), /text or an image/);
 });

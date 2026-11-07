@@ -4,7 +4,7 @@
  * reveal their category, wrong ones keep their items so they can be moved.
  */
 import { enableDrag, isStrayClick } from "./drag.js";
-import { checkSelection, decodeFound, encodeFound, groupSize, itemId, shuffledItems } from "./lib/grouping.js";
+import { checkSelection, decodeFound, encodeFound, itemId, shuffledItems } from "./lib/grouping.js";
 import { paragraph } from "./task-ui.js";
 
 const POOL = "pool";
@@ -35,10 +35,10 @@ function select(ctx, id) {
   render(ctx);
 }
 
-/** Moves an item into a box (if it has room) or back to the pool; any earlier verdicts are cleared. */
+/** Moves an item into an open box or back to the pool; any earlier verdicts are cleared. */
 function moveItem(ctx, id, destination) {
   const box = ctx.boxes[destination];
-  if (box && (box.found !== null || box.items.length >= ctx.size)) return;
+  if (box?.found != null) return;
   ctx.boxes.forEach((other) => {
     other.items = other.items.filter((item) => item !== id);
     other.verdict = "";
@@ -75,7 +75,8 @@ function render(ctx) {
   ctx.pool.hidden = loose.length === 0 && ctx.boxes.every((box) => box.found !== null);
   ctx.boxArea.replaceChildren(...ctx.boxes.map((box, index) => boxElement(ctx, box, index)));
   const open = ctx.boxes.filter((box) => box.found === null);
-  ctx.check.disabled = open.length === 0 || open.some((box) => box.items.length < ctx.size);
+  // Groups differ in size, so a box is never "full": checking waits until every item is in a box.
+  ctx.check.disabled = open.length === 0 || loose.length > 0;
   ctx.controls.hidden = open.length === 0;
 }
 
@@ -136,7 +137,7 @@ function startBoxes(ctx) {
 export function createGrouping({ task, key, progress, card }) {
   const all = task.groups.map((_, index) => index);
   const found = progress.isCompleted(key) ? all : decodeFound(progress.crosswordEntries?.(key), task.groups.length);
-  const ctx = { task, key, progress, card, found, size: groupSize(task.groups), items: shuffledItems(task.groups), selected: null };
+  const ctx = { task, key, progress, card, found, items: shuffledItems(task.groups), selected: null };
   ctx.boxes = startBoxes(ctx);
   ctx.pool = element("div", "grp-pool");
   ctx.pool.addEventListener("click", (event) => onAreaClick(ctx, POOL, event));
