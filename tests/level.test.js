@@ -158,3 +158,9 @@ test("a sudoku gives XP for every digit placed everywhere it belongs", async () 
   const progress = { isCompleted: () => false, crosswordEntries: () => encodeRows(values, new Set()) };
   assert.equal(doorXp(3, door, progress), 25);
 });
+
+test("a catch game gives a quarter of its XP for every finished level", () => {
+  const door = { tasks: [{ id: "c", type: "catch" }] };
+  const progress = { isCompleted: () => false, crosswordEntries: () => ["2"] };
+  assert.equal(doorXp(3, door, progress), 50);
+});
