@@ -3334,3 +3334,32 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     max-width: 60rem;
   }
 }
+
+/* Text-only matching (#207, door 23 powers): longer texts wrap inside their boxes instead of
+   running out of them, and every box grows to fit its text. */
+.match-board:not(:has(img)) .match-target,
+#view-door .match-board:not(:has(img)) .match-target,
+#view-door .match-board:not(:has(img)) .match-target.match-done {
+  white-space: normal;
+  overflow-wrap: break-word;
+  min-width: 0;
+  height: auto;
+  min-height: 3.25rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
+}
+
+/* Phones: both columns use one row height, so every name lines up with a box. */
+@media (max-width: 35.99rem) {
+  .match-board:not(:has(img)) .match-column {
+    gap: 0.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-column > .match-card,
+  #view-door .match-board:not(:has(img)) .match-column > .match-card {
+    height: 4.25rem;
+    min-height: 0;
+    margin-block: 0;
+  }
+}
