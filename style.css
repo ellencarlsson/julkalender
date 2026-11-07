@@ -3944,3 +3944,10 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: var(--cream-muted);
   font-size: 1.15rem;
 }
+
+/* Every finished task part ends with the signed "Klart!" (#238); task types that sign their own done
+   text keep theirs instead. */
+#view-door .task:not(.task--done) > .task-done-mark,
+#view-door .task:has(.task-done-signed:not(.task-done-mark)) > .task-done-mark {
+  display: none;
+}
