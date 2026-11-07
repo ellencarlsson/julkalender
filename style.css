@@ -3763,8 +3763,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   gap: 0.4rem;
 }
 
-.match-slot:empty {
-  display: none;
+.match-slot {
+  min-height: var(--match-slot, 0);
 }
 
 .match-slot > .match-target,
@@ -3847,4 +3847,26 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 /* Door 6 constellations (#230): a bit smaller than other task pictures. */
 .task-image[src*="images/door-6/"] {
   max-width: 22rem;
+}
+
+/* Wider screens (#229): the name row keeps its height until the board is solved, even after the last
+   name has moved up under a picture. */
+@media (min-width: 36rem) {
+  .match-board:not(:has(.match-done)) .match-column-target {
+    min-height: var(--match-slot, 0);
+  }
+}
+
+/* The "not right yet" line has its room from the start, so it does not push the paper longer. */
+.match-board + .task-status,
+.match-board + .task-status:empty {
+  display: block;
+  min-height: 1lh;
+}
+
+@media (max-width: 35.99rem) {
+  .match-board + .task-status,
+  .match-board + .task-status:empty {
+    min-height: 2lh;
+  }
 }
