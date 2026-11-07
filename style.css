@@ -3134,8 +3134,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   text-shadow: 0 0 2px rgba(122, 74, 18, 0.6);
 }
 
-/* Matching (#193): thin black ink lines, a neutral lift for the chosen picture, and names on
-   wooden signs instead of black squares. */
+/* Matching (#193, #196): thin black ink lines, a neutral lift for the chosen picture, and names in
+   rectangles with a transparent fill and a thin dark frame. */
 .match-line {
   stroke: #1a120b;
   stroke-width: 2;
@@ -3149,46 +3149,28 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .match-target,
 #view-door .match-target,
 #view-door .match-target.match-done {
-  position: relative;
-  padding: 0.6rem 0.5rem;
-  border: 3px solid #4a2c14;
-  border-radius: 0.35rem;
-  background:
-    repeating-linear-gradient(
-      178deg,
-      rgba(255, 255, 255, 0.06) 0 2px,
-      transparent 2px 9px,
-      rgba(0, 0, 0, 0.07) 9px 11px,
-      transparent 11px 18px
-    ),
-    linear-gradient(180deg, #a8743f 0%, #8a5a2b 55%, #74481f 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 230, 190, 0.35),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.25),
-    0 3px 6px rgba(0, 0, 0, 0.35);
-  color: #fbf1dc;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 220, 170, 0.25);
+  aspect-ratio: auto;
+  width: 100%;
+  max-width: 11rem;
+  height: auto;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #2b1a0c;
+  border-radius: 0.25rem;
+  background: transparent;
+  box-shadow: none;
+  color: var(--cream);
+  text-shadow: none;
 }
 
-/* Two nails holding the sign. */
-.match-target::before,
-.match-target::after {
-  content: "";
-  position: absolute;
-  top: 0.4rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #d9d2c5, #5b544b);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-}
-
-.match-target::before {
-  left: 0.4rem;
-}
-
-.match-target::after {
-  right: 0.4rem;
+/* Phones: the sign is shorter than the picture beside it, so it is centred in the same row height. */
+@media (max-width: 35.99rem) {
+  .match-column > .match-target,
+  #view-door .match-column > .match-target {
+    width: 100%;
+    height: 3.5rem;
+    margin-block: 1.5rem;
+  }
 }
 
 /* Phones: a long formula line (like the door 19 rebus) shrinks to fit instead of wrapping oddly. */
