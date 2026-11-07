@@ -14,6 +14,7 @@ import { doorXp, taskXp } from "./lib/level.js";
 import { isItem } from "./lib/rewards.js";
 import { createSudoku } from "./sudoku-view.js";
 import { createTypingRace } from "./typing-view.js";
+import { createCatchGame } from "./catch-view.js";
 import { envelope, letterAddress, letterSent, worksheetHeader } from "./worksheet-view.js";
 
 const element = (id) => document.getElementById(id);
@@ -27,7 +28,7 @@ const STATE_MESSAGES = {
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
-  if (task.type === "matching") return task.prompt ?? null;
+  if (task.type === "matching" || task.type === "catch") return task.prompt ?? null;
   return null;
 }
 
@@ -68,6 +69,19 @@ function exampleGallery(examples, table) {
   return gallery;
 }
 
+/** Each task type's own controls; every builder returns the elements to append to the card. */
+const TASK_BUILDERS = {
+  challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)),
+  crossword: (options) => [createCrossword(options)],
+  quiz: createQuiz,
+  matching: createMatching,
+  sudoku: createSudoku,
+  crafting: createCrafting,
+  ordering: createOrdering,
+  typing: createTypingRace,
+  catch: createCatchGame,
+};
+
 function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
   card.className = task.worksheet ? "task task--worksheet" : "task";
@@ -78,14 +92,7 @@ function taskCard(task, door, progress, xp) {
   if (task.image) card.append(taskImage(task));
   if (task.formula) card.append(paragraph("task-formula", task.formula));
   const key = taskKey(door, task.id);
-  if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
-  if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
-  if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card, xp }));
-  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
-  if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
-  if (task.type === "crafting") card.append(...createCrafting({ task, key, progress, card, xp }));
-  if (task.type === "ordering") card.append(...createOrdering({ task, key, progress, card, xp, door }));
-  if (task.type === "typing") card.append(...createTypingRace({ task, key, progress, card, door }));
+  card.append(...(TASK_BUILDERS[task.type]?.({ task, key, progress, card, xp, door }) ?? []));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
   if (task.letterSent) card.append(letterSent(task.letterSent));
   if (progress.isCompleted(key)) card.classList.add("task--done");
