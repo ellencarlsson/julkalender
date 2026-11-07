@@ -103,3 +103,10 @@ shows "Något gick fel när sidan laddades" with a reload button instead of goin
 ```sh
 scripts/test.sh
 ```
+
+## Image credits
+
+- `images/door-11/hatt-sorteringshatten.webp` — cropped from "The Sorting Hat" by Chad Sparkes, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:The_Sorting_Hat_(16263996296).jpg)
+- `images/door-11/hatt-tomteluva.webp` — cropped from "Santa Claus cap" by Tuphuggy, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Santa_Claus_cap.jpg); this crop is shared under the same licence
+- `images/door-11/hatt-twisted-fate.webp`, `images/door-11/hatt-teemo.webp`, `images/lol/*` — League of Legends art © Riot Games, used under Riot's [Legal Jibber Jabber](https://www.riotgames.com/en/legal) fan content policy
+- `images/door-17/flagga-*.svg` — [flag-icons](https://github.com/lipis/flag-icons) (MIT); `images/door-17/kontur-*.svg` drawn from [Natural Earth](https://www.naturalearthdata.com/) (public domain)
