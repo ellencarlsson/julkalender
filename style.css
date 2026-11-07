@@ -3663,37 +3663,37 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   white-space: pre-line;
 }
 
-/* Enchanted books (#218): the enchantment name written on the book's purple cover. */
+/* Enchanted books (#218, #223): the book picture on top and the enchantment name written below it. */
 .match-card--backdrop,
 #view-door .match-card--backdrop,
 .match-board:not(:has(img)) .match-column > .match-card--backdrop,
 #view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop {
-  display: grid;
+  display: flex;
   flex: 0 0 auto;
-  place-items: center;
+  align-items: flex-end;
+  justify-content: center;
   width: 8.5rem;
   max-width: none;
-  height: auto;
+  height: 8.2rem;
   min-height: 0;
-  aspect-ratio: 26 / 18;
   margin: 0 auto;
-  padding: 0 1.1rem 1.4rem;
+  padding: 0 0.2rem 0.1rem;
   border: none;
   background-color: transparent;
-  background-size: 100% 100%;
+  background-position: top center;
+  background-size: auto calc(100% - 1.6rem);
   background-repeat: no-repeat;
   box-shadow: none;
-  color: #fbf3ff;
+  color: #3b2414;
   font-family: "Cinzel", Georgia, serif;
   font-size: 0.85rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1.1;
   overflow-wrap: normal;
-  white-space: normal;
-  word-break: keep-all;
-  image-rendering: pixelated;
+  white-space: nowrap;
   text-align: center;
-  text-shadow: 0 1px 0 #3b2414;
+  text-shadow: 0 1px 0 rgba(255, 244, 220, 0.7);
 }
 
 .match-card--backdrop[aria-pressed="true"] {
@@ -3701,14 +3701,23 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   outline-offset: 2px;
 }
 
-/* Phones: the book is exactly one row high, so every book lines up with its box. */
+/* Phones: book and name fit in one row height, so every book lines up with its box. */
 @media (max-width: 35.99rem) {
+  .match-board:has(.match-card--backdrop) {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.75rem;
+  }
+
   .match-board:not(:has(img)) .match-column > .match-card--backdrop,
-  #view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop {
+  #view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop,
+  .match-board:not(:has(img)) .match-cell > .match-card--backdrop,
+  #view-door .match-board:not(:has(img)) .match-cell > .match-card--backdrop {
     width: auto;
     height: 4.25rem;
-    padding: 0 0.7rem 0.9rem;
-    font-size: 0.75rem;
+    padding: 0 0.1rem;
+    background-size: auto calc(100% - 1.1rem);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
   }
 }
 
@@ -3770,12 +3779,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     height: 4.25rem;
   }
 
-  .match-board:not(:has(img)) .match-cell > .match-card--backdrop,
-  #view-door .match-board:not(:has(img)) .match-cell > .match-card--backdrop {
-    width: auto;
-    padding: 0 0.7rem 0.9rem;
-    font-size: 0.75rem;
-  }
 
   .match-slot > .match-target,
   #view-door .match-slot > .match-target {

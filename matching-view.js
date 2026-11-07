@@ -24,7 +24,7 @@ function sideButton(side, role) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: `match-card match-${role}` });
   button.dataset.pair = side.pair;
   button.append(...sideContent(side));
-  // A backdrop picture (like an enchanted book) sits behind the text; as a CSS background it keeps
+  // A backdrop picture (like an enchanted book) is drawn above the text; as a CSS background it keeps
   // the board a text board, so long names still wrap.
   if (side.backdrop) {
     button.classList.add("match-card--backdrop");
