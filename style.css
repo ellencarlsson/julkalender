@@ -3826,6 +3826,15 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   }
 }
 
+/* A name too long for its box (#227, "Förvrängd svamp") wraps between words, never inside a word. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
 /* Done text (#226): signed in script at the bottom right of the task card. */
 #view-door .task-done-signed {
   margin: 0.75rem 0 0;
