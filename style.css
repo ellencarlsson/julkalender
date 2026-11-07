@@ -3229,3 +3229,20 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     letter-spacing: 0.02em;
   }
 }
+
+/* Desktop boards with many pairs (#203, the planets): a wider door, tighter gaps so the pictures
+   grow, and name boxes as wide as their text. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.match-column > :nth-child(7)) {
+    max-width: 80rem;
+  }
+
+  .match-column:has(> :nth-child(7)) {
+    gap: 0.5rem;
+  }
+
+  .match-column-target:has(> :nth-child(7)) > .match-target {
+    flex: 1 1 auto;
+    min-width: max-content;
+  }
+}
