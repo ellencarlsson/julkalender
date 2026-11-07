@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=cc266c4308">
+  <link rel="stylesheet" href="./style.css?v=3f165368cb">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -18,13 +18,13 @@
   <script type="importmap">
   {
     "imports": {
-      "./app.js": "./app.js?v=c9d71f5cfc",
+      "./app.js": "./app.js?v=5d43ce196e",
       "./backpack-view.js": "./backpack-view.js?v=e161b8eb27",
       "./block-pager.js": "./block-pager.js?v=fef50d885e",
       "./catch-view.js": "./catch-view.js?v=bc88533df5",
       "./crafting-view.js": "./crafting-view.js?v=a1e2779257",
       "./crossword-view.js": "./crossword-view.js?v=48709be238",
-      "./door-view.js": "./door-view.js?v=d701cb7e65",
+      "./door-view.js": "./door-view.js?v=b2d95ba083",
       "./doors.js": "./doors.js?v=2b6119d4d8",
       "./drag.js": "./drag.js?v=f380d64305",
       "./final-message.js": "./final-message.js?v=227146e48e",
@@ -51,7 +51,7 @@
       "./lib/router.js": "./lib/router.js?v=d520c19738",
       "./lib/sudoku.js": "./lib/sudoku.js?v=2d4b5caa54",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
-      "./lib/test-reset.js": "./lib/test-reset.js?v=84fa8ce292",
+      "./lib/test-reset.js": "./lib/test-reset.js?v=355af39536",
       "./lib/typing.js": "./lib/typing.js?v=dfe53f62e7",
       "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
       "./match-lines.js": "./match-lines.js?v=856f22d583",
@@ -59,7 +59,7 @@
       "./ordering-view.js": "./ordering-view.js?v=427a6ca628",
       "./periodic-tiles.js": "./periodic-tiles.js?v=16fcd305c5",
       "./pick-view.js": "./pick-view.js?v=7e02802497",
-      "./progress.js": "./progress.js?v=9574bf14db",
+      "./progress.js": "./progress.js?v=7840a1b0b8",
       "./puzzle-view.js": "./puzzle-view.js?v=96b1efd668",
       "./quiz-hint.js": "./quiz-hint.js?v=793502a0ec",
       "./quiz-view.js": "./quiz-view.js?v=ee58b6abac",
@@ -68,6 +68,7 @@
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
       "./sudoku-view.js": "./sudoku-view.js?v=7309493972",
       "./task-ui.js": "./task-ui.js?v=6c8d6c079c",
+      "./test-tools.js": "./test-tools.js?v=14928fb41f",
       "./ticket-view.js": "./ticket-view.js?v=878674fc80",
       "./typing-view.js": "./typing-view.js?v=4e3de1fbe8",
       "./ui.js": "./ui.js?v=a73fec073d",
@@ -75,7 +76,7 @@
     }
   }
   </script>
-  <script type="module" src="./app.js?v=c9d71f5cfc"></script>
+  <script type="module" src="./app.js?v=5d43ce196e"></script>
 </head>
 <body>
   <main>
@@ -112,6 +113,7 @@
           <p id="final-message-text"></p>
         </article>
         <ol id="door-grid" class="door-grid"></ol>
+        <div id="calendar-tools" class="calendar-tools"></div>
       </section>
 
       <section id="view-door" data-view="door" hidden>

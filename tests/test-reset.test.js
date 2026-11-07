@@ -1,7 +1,7 @@
 /** Tests for the temporary "Rensa lucka" tool (TEST_RESET_DOOR). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { doorResetPlan } from "../lib/test-reset.js";
+import { calendarTaskKeys, doorResetPlan } from "../lib/test-reset.js";
 
 const DOOR = { tasks: [{ id: "korsord", type: "crossword" }, { id: "baka", type: "challenge" }] };
 
@@ -38,4 +38,9 @@ test("resetting a door also clears a saved puzzle", () => {
 test("resetting a door also clears found groups", () => {
   const door = { tasks: [{ id: "kategori", type: "grouping" }] };
   assert.deepEqual(doorResetPlan(15, door, []).crosswords, ["15-kategori"]);
+});
+
+test("calendar task keys cover every task in every readable door", () => {
+  const results = [{ door: DOOR }, { door: null }, { door: { tasks: [{ id: "quiz", type: "quiz" }] } }];
+  assert.deepEqual(calendarTaskKeys(results), ["1-korsord", "1-baka", "3-quiz"]);
 });

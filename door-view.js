@@ -1,4 +1,5 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
+import { testButton } from "./test-tools.js";
 import { blockPager, isPagedDoor } from "./block-pager.js";
 import { createCrafting } from "./crafting-view.js";
 import { createCrossword } from "./crossword-view.js";
@@ -163,21 +164,12 @@ export function showDoorLoading() {
   showMessage(STATE_MESSAGES.loading);
 }
 
-/** TEST_RESET_DOOR: button that clears the player's own progress in this door after a confirm. */
-function resetButton(number, onReset) {
-  const button = Object.assign(document.createElement("button"), { type: "button", className: "reset-door small" });
-  button.textContent = "🧹 Rensa lucka";
-  button.addEventListener("click", async () => {
-    if (!confirm(`Rensa din progress i lucka ${number}? Bara för testning.`)) return;
-    button.disabled = true;
-    try {
-      await onReset();
-    } catch {
-      button.disabled = false;
-      button.textContent = "Kunde inte rensa. Försök igen.";
-    }
-  });
-  return button;
+/** TEST_RESET_DOOR / TEST_COMPLETE_DOOR: buttons that clear or finish the player's own progress in this door. */
+function doorTestButtons(number, { onReset, onComplete }) {
+  return [
+    testButton("🧹 Rensa lucka", `Rensa din progress i lucka ${number}? Bara för testning.`, onReset),
+    testButton("⭐ Klara lucka", `Klara alla uppgifter i lucka ${number}? Bara för testning.`, onComplete),
+  ];
 }
 
 /**
@@ -187,7 +179,7 @@ function resetButton(number, onReset) {
  *   number: the door number, used to build progress keys.
  *   result: { state, door } from the door reader.
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
- *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
+ *   testTools: { onReset, onComplete } for the TEST_RESET_DOOR and TEST_COMPLETE_DOOR buttons.
  */
 function rewardItem({ name, image, emoji }) {
   const item = Object.assign(document.createElement("span"), { className: "door-done-item" });
@@ -214,13 +206,13 @@ export function showDoorXp(xp) {
   box.querySelector(".door-done-xp")?.replaceChildren(`+${rounded} XP`);
 }
 
-export function showDoorContent(number, { state, door }, progress, onReset) {
+export function showDoorContent(number, { state, door }, progress, testTools) {
   element("door-tools").replaceChildren();
   showDoorReward(state === DOOR_STATE.OPEN ? door : null);
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress, door.paged));
   showDoorXp(doorXp(number, door, progress));
-  // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
-  if (onReset) element("door-tools").append(resetButton(number, onReset));
+  // TEST_RESET_DOOR / TEST_COMPLETE_DOOR: kept below the parchment so they do not look like part of the door.
+  if (testTools) element("door-tools").append(...doorTestButtons(number, testTools));
 }

@@ -90,7 +90,8 @@ check "side quests readable only from door 1 unlock (or admin)" grep -q "match /
 check "quiz-view.js has valid syntax" check_js_syntax quiz-view.js
 check "matching-view.js has valid syntax" check_js_syntax matching-view.js
 check "task-ui.js has valid syntax" check_js_syntax task-ui.js
-check "reset button is wired into the door view" grep -q "resetHandler(number, result.door, progress)" app.js
+check "reset and complete door buttons are wired into the door view" grep -q "doorTestTools(number, result.door, progress)" app.js
+check "whole-calendar test tools are shown on the overview" bash -c 'grep -q "id=\"calendar-tools\"" index.html && grep -q "showCalendarTestTools()" app.js'
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
 check "level-up message element exists" grep -q 'id="level-up"' index.html
