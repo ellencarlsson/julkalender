@@ -3991,3 +3991,27 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     background-size: auto calc(100% - 1.1rem);
   }
 }
+
+/* Phones (#241): pictures close together, and each name centred on the row of the picture beside it.
+   The empty slot under a picture takes no room until a name is paired into it. */
+@media (max-width: 35.99rem) {
+  .match-column {
+    gap: 0.5rem;
+  }
+
+  .match-slot:empty {
+    display: none;
+  }
+
+  .match-column-target > .match-target,
+  #view-door .match-column-target > .match-target {
+    height: 3.5rem;
+    margin-block: 1.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-column-target > .match-target,
+  #view-door .match-board:not(:has(img)) .match-column-target > .match-target {
+    height: 4.25rem;
+    margin-block: 0;
+  }
+}
