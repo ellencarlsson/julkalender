@@ -3951,3 +3951,19 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 #view-door .task:has(.task-done-signed:not(.task-done-mark)) > .task-done-mark {
   display: none;
 }
+
+/* Solved enchanted books keep their picture size and place (#239): the solved-card rule resets the
+   whole background, which made the books show zoomed in and cropped. */
+.match-card--backdrop.match-done,
+#view-door .match-card--backdrop.match-done {
+  background-position: top center;
+  background-size: auto calc(100% - 1.6rem);
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 35.99rem) {
+  .match-card--backdrop.match-done,
+  #view-door .match-card--backdrop.match-done {
+    background-size: auto calc(100% - 1.1rem);
+  }
+}
