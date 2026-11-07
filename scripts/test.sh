@@ -119,6 +119,7 @@ check "backpack has the Items section with the chokladboll first" grep -q "<h3>I
 check "typing-view.js has valid syntax" check_js_syntax typing-view.js
 check "leaderboard.js has valid syntax" check_js_syntax leaderboard.js
 check "leaderboard rules only accept attempts in the player's own name" grep -q "attempt.uid == request.auth.uid" firestore.rules
+check "completed task cards have no corner tick" bash -c '! grep -q "task--done[^{]*::after" style.css'
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 
