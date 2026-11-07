@@ -3897,3 +3897,43 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     max-width: 60rem;
   }
 }
+
+/* Picture questions (#233): the question right above the picture and the answer beside it. */
+@media (min-width: 36rem) {
+  #view-door .task--picture-quiz:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 24rem) minmax(12rem, 16rem);
+    justify-content: center;
+    align-items: center;
+    column-gap: 2rem;
+  }
+
+  #view-door .task--picture-quiz > * {
+    grid-column: 1 / -1;
+  }
+
+  #view-door .task--picture-quiz > .task-prompt {
+    grid-column: 1;
+    text-align: center;
+  }
+
+  #view-door .task--picture-quiz > .task-image {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    justify-self: center;
+    margin: 0;
+  }
+
+  #view-door .task--picture-quiz > :is(.quiz-form, .exam-answer) {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    align-self: center;
+    margin: 0;
+  }
+
+  #view-door .task--picture-quiz > .quiz-xp {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+  }
+}
