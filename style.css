@@ -3800,3 +3800,27 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .catch-item--large {
   width: 24%;
 }
+
+/* Wider screens (#225): both rows share one column per pair, so names left in the bottom row keep the
+   width of a picture instead of stretching across the free space. */
+@media (min-width: 36rem) {
+  .match-column {
+    display: grid;
+    grid-template-columns: repeat(var(--match-pairs), minmax(0, 1fr));
+  }
+
+  .match-column-target > .match-target,
+  #view-door .match-column-target > .match-target {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+/* The name row takes the picture row's tighter gap on big boards even when few names are left, so
+   the columns line up. */
+@media (min-width: 64rem) {
+  .match-board:has(.match-column-item > :nth-child(7)) .match-column {
+    gap: 0.5rem;
+  }
+}
