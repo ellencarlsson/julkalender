@@ -112,6 +112,7 @@ scripts/test.sh
 - `images/icons/sidequests.webp`, `images/icons/kalender.webp` — made by Ellen with Google Gemini
 - `images/icons/ryggsack.webp` — cut out from a Haglöfs Corker Medium product photo (© Haglöfs)
 - `images/door-11/hatt-arthur.webp` — cropped from Ellen's own Red Dead Redemption 2 screenshot (game art © Rockstar Games)
+- `images/door-23/{alice,jasper,bella,jane}.webp` — Twilight Saga promotional stills (© Summit Entertainment), from screenshots Ellen saved
 - `images/door-1/mobs/*` — Minecraft mob renders from the [Minecraft Wiki](https://minecraft.wiki/), Minecraft © Mojang, used under Mojang's [usage guidelines](https://www.minecraft.net/en-us/usage-guidelines)
 - `images/door-11/hatt-twisted-fate.webp`, `images/door-11/hatt-teemo.webp`, `images/door-23/{teemo,ezreal,blitzcrank,lux,thresh}.webp`, `images/lol/*` — League of Legends art © Riot Games, used under Riot's [Legal Jibber Jabber](https://www.riotgames.com/en/legal) fan content policy
 - `images/door-17/flagga-*.svg` — [flag-icons](https://github.com/lipis/flag-icons) (MIT); `images/door-17/kontur-*.svg` drawn from [Natural Earth](https://www.naturalearthdata.com/) (public domain)
