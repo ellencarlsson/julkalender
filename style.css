@@ -2658,21 +2658,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-style: italic;
 }
 
-/* TEST_CONTENT_MARKER: temporary 🎁 on doors that have content, while the calendar is being built.
-   Remove this block before the calendar is given away. */
-.door[data-state="open"] {
-  position: relative;
-}
-
-.door[data-state="open"]::before {
-  content: "🎁";
-  position: absolute;
-  top: 0.3rem;
-  left: 0.35rem;
-  font-size: 1rem;
-  line-height: 1;
-}
-
 /* Ordering task (#179): the anchor (sun) on the left, numbered slots beside it, pictures below. */
 .ord-board {
   display: grid;
