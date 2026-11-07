@@ -3440,8 +3440,19 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 /* The backpack button shows a picture of Hari's own backpack (#209), sized like the emoji icons. */
 .nav-icon-image {
   display: block;
-  height: 2.1rem;
-  width: auto;
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+}
+
+/* A light disc behind the picture icons (#210) so dark pictures like the black backpack stand out. */
+.main-nav .icon-button,
+.main-nav a[aria-current="page"] {
+  background: #f5ecd8;
+}
+
+.main-nav a[aria-current="page"] {
+  border-width: 3px;
 }
 
 /* Grouping: items as paper cards in a grid; found groups become rows with their category name. */
