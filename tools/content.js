@@ -143,6 +143,15 @@ function validateCrafting(task) {
   return errors;
 }
 
+function validatePick(task) {
+  const options = Array.isArray(task.options) ? task.options : [];
+  const valid = options.length >= 2 && options.every((option) => isPlainObject(option) && isNonEmptyString(option.text));
+  const errors = valid ? [] : ['options must be at least 2 { "text": "...", "correct": true } cards'];
+  if (valid && !options.some((option) => option.correct === true)) errors.push("at least one option must have correct: true");
+  if (task.question !== undefined && !isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
+  return errors;
+}
+
 function validateOrdering(task) {
   const isPicture = (item) => isPlainObject(item) && isNonEmptyString(item.name) && IMAGE_PATH.test(item.image ?? "");
   const errors = [];
@@ -187,6 +196,7 @@ const TASK_VALIDATORS = {
   sudoku: validateSudoku,
   ordering: validateOrdering,
   crafting: validateCrafting,
+  pick: validatePick,
   typing: validateTyping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);

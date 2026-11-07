@@ -334,3 +334,10 @@ test("crafting tasks need pictured ingredients, a result and a pattern of their 
   assert.equal(validateDoor({ door: 1, tasks: [task({ pattern: [[null]] })] }).length, 1);
   assert.equal(validateDoor({ door: 1, tasks: [task({ result: { name: "Bänk" } })] }).length, 1);
 });
+
+test("pick tasks need text cards with at least one right one", () => {
+  const pick = (options) => ({ door: 1, tasks: [{ id: "p", type: "pick", question: "Vilka?", options }] });
+  assert.deepEqual(validateDoor(pick([{ text: "A", correct: true }, { text: "B" }])), []);
+  assert.equal(validateDoor(pick([{ text: "A" }, { text: "B" }])).length, 1);
+  assert.equal(validateDoor(pick([{ text: "A", correct: true }])).length, 1);
+});
