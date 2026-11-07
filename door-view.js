@@ -1,5 +1,6 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { blockPager, isPagedDoor } from "./block-pager.js";
+import { createCrafting } from "./crafting-view.js";
 import { createCrossword } from "./crossword-view.js";
 import { createMatching } from "./matching-view.js";
 import { createOrdering } from "./ordering-view.js";
@@ -82,6 +83,7 @@ function taskCard(task, door, progress, xp) {
   if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card, xp }));
   if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
   if (task.type === "sudoku") card.append(...createSudoku({ task, key, progress, card, xp }));
+  if (task.type === "crafting") card.append(...createCrafting({ task, key, progress, card, xp }));
   if (task.type === "ordering") card.append(...createOrdering({ task, key, progress, card, xp, door }));
   if (task.type === "typing") card.append(...createTypingRace({ task, key, progress, card, door }));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));

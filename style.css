@@ -2795,7 +2795,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   border-color: #b8342a;
 }
 
-.ord-item--dragging {
+.drag-source--dragging {
   opacity: 0.3;
 }
 
@@ -2804,7 +2804,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .ord-picture,
-.ord-ghost {
+.drag-ghost {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -2812,7 +2812,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 /* The picture following the finger while dragging. */
-.ord-ghost {
+.drag-ghost {
   position: fixed;
   z-index: 50;
   width: 4.5rem;
@@ -2859,4 +2859,117 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .cw--solved .cw-tip {
   display: none;
+}
+
+/* Crafting task (#62): a 3×3 workbench, an arrow to the result, and the inventory below. */
+.craft-goal {
+  margin: 0 0 0.5rem;
+  font-family: var(--hand-font);
+  font-size: 1.4rem;
+}
+
+.craft-board {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.craft-bench {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.craft-grid {
+  display: grid;
+  grid-template-columns: repeat(3, clamp(2.6rem, 13vw, 4.5rem));
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 3px solid #6b4a24;
+  border-radius: 0.3rem;
+  background: rgba(107, 74, 36, 0.35);
+}
+
+.craft-cell,
+.craft-result {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 2px solid rgba(58, 39, 22, 0.55);
+  background: rgba(255, 248, 232, 0.55);
+  cursor: pointer;
+}
+
+.craft-result {
+  width: clamp(2.9rem, 14vw, 5rem);
+  cursor: default;
+}
+
+/* The result shows as a faint outline until it has been crafted. */
+.craft-result .craft-picture {
+  opacity: 0.18;
+  filter: grayscale(1);
+}
+
+.craft-result--made {
+  border-color: #2c6a3f;
+}
+
+.craft-result--made .craft-picture {
+  opacity: 1;
+  filter: none;
+}
+
+.craft-arrow {
+  color: var(--cream);
+  font-size: 1.8rem;
+}
+
+.craft-picture {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.craft-inventory {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.craft-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  width: 4.6rem;
+  padding: 0.35rem;
+  border: 2px solid rgba(58, 39, 22, 0.45);
+  border-radius: 0.4rem;
+  background: rgba(255, 248, 232, 0.55);
+  box-shadow: none;
+  color: var(--cream);
+  cursor: grab;
+  touch-action: none;
+}
+
+.craft-item .craft-picture {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.craft-item[aria-pressed="true"] {
+  border-color: #b8342a;
+}
+
+.craft-item-name {
+  font-family: var(--hand-font);
+  font-size: 1rem;
+}
+
+#view-door .craft-button {
+  display: block;
+  margin: 1rem auto 0;
 }

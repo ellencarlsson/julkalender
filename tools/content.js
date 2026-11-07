@@ -126,6 +126,23 @@ function validateMatching(task) {
   return promptErrors.concat(pairErrors(task.pairs));
 }
 
+function validateCrafting(task) {
+  const isPicture = (item) => isPlainObject(item) && isNonEmptyString(item.name) && IMAGE_PATH.test(item.image ?? "");
+  const errors = [];
+  const ingredients = Array.isArray(task.ingredients) ? task.ingredients : [];
+  if (ingredients.length === 0 || !ingredients.every((item) => isPicture(item) && isNonEmptyString(item.id))) {
+    errors.push('ingredients must be a list of { "id": "...", "name": "...", "image": "images/..." }');
+  }
+  if (!isPicture(task.result)) errors.push('result must be { "name": "...", "image": "images/..." }');
+  const ids = new Set(ingredients.map((item) => item?.id));
+  const rows = Array.isArray(task.pattern) ? task.pattern : [];
+  const validRow = (row) => Array.isArray(row) && row.length <= 3 && row.every((cell) => cell === null || ids.has(cell));
+  if (rows.length === 0 || rows.length > 3 || !rows.every(validRow) || !rows.flat().some((cell) => cell !== null)) {
+    errors.push("pattern must be up to 3 rows of up to 3 ingredient ids (null for an empty cell)");
+  }
+  return errors;
+}
+
 function validateOrdering(task) {
   const isPicture = (item) => isPlainObject(item) && isNonEmptyString(item.name) && IMAGE_PATH.test(item.image ?? "");
   const errors = [];
@@ -169,6 +186,7 @@ const TASK_VALIDATORS = {
   matching: validateMatching,
   sudoku: validateSudoku,
   ordering: validateOrdering,
+  crafting: validateCrafting,
   typing: validateTyping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);

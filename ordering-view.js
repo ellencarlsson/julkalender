@@ -3,12 +3,12 @@
  * the sun, on the left). Drag a picture to a slot, or tap the picture and then the slot. Once every
  * slot is filled the order is checked: right ones lock, wrong ones go back.
  */
+import { enableDrag, isStrayClick } from "./drag.js";
 import { shuffled } from "./lib/matching.js";
 import { checkOrder, isOrdered } from "./lib/ordering.js";
 import { CHALLENGE_DONE_LABEL, taskKey } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
-const DRAG_START_PX = 6;
 const WRONG_MS = 700;
 const INSTRUCTION = "Dra planeterna till rätt plats från solen, eller tryck på en planet och sedan på en plats.";
 
@@ -24,7 +24,11 @@ function itemButton(ctx, index) {
   button.dataset.item = String(index);
   button.setAttribute("aria-label", ctx.task.items[index].name);
   button.append(picture(ctx.task.items[index]));
-  enableDrag(ctx, button);
+  enableDrag(button, {
+    targetSelector: ".ord-slot",
+    onDrop: (slot) => ctx.root.contains(slot) && place(ctx, button, Number(slot.dataset.slot)),
+    onTap: () => select(ctx, button),
+  });
   return button;
 }
 
@@ -61,7 +65,7 @@ function place(ctx, button, slot) {
 }
 
 function onSlotTap(ctx, slot) {
-  if (ctx.dragJustEnded) return;
+  if (isStrayClick()) return;
   if (ctx.selected) return place(ctx, ctx.selected, slot);
   const item = ctx.slots[slot];
   if (item === null || ctx.locked.has(slot)) return;
@@ -102,51 +106,6 @@ async function complete(ctx) {
   } catch {
     ctx.status.textContent = "Kunde inte spara. Försök igen genom att ladda om sidan.";
   }
-}
-
-function moveGhost(ghost, event) {
-  ghost.style.left = `${event.clientX}px`;
-  ghost.style.top = `${event.clientY}px`;
-}
-
-function endDrag(ctx, button, event) {
-  const drag = ctx.drag;
-  ctx.drag = null;
-  if (!drag) return;
-  if (!drag.ghost) return select(ctx, button);
-  drag.ghost.remove();
-  button.classList.remove("ord-item--dragging");
-  const slot = document.elementFromPoint(event.clientX, event.clientY)?.closest(".ord-slot");
-  if (slot && ctx.root.contains(slot)) place(ctx, button, Number(slot.dataset.slot));
-  // The click that follows pointerup must not count as a tap on the slot under it.
-  ctx.dragJustEnded = true;
-  setTimeout(() => (ctx.dragJustEnded = false), 0);
-}
-
-/** Pointer events cover mouse and touch alike; a short move turns a press into a drag. */
-function enableDrag(ctx, button) {
-  button.addEventListener("pointerdown", (event) => {
-    if (button.disabled) return;
-    ctx.drag = { x: event.clientX, y: event.clientY, ghost: null };
-    button.setPointerCapture(event.pointerId);
-  });
-  button.addEventListener("pointermove", (event) => {
-    const drag = ctx.drag;
-    if (!drag) return;
-    if (!drag.ghost && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < DRAG_START_PX) return;
-    if (!drag.ghost) {
-      drag.ghost = Object.assign(button.querySelector("img").cloneNode(), { className: "ord-ghost" });
-      document.body.append(drag.ghost);
-      button.classList.add("ord-item--dragging");
-    }
-    moveGhost(drag.ghost, event);
-  });
-  button.addEventListener("pointerup", (event) => endDrag(ctx, button, event));
-  button.addEventListener("pointercancel", () => {
-    ctx.drag?.ghost?.remove();
-    button.classList.remove("ord-item--dragging");
-    ctx.drag = null;
-  });
 }
 
 function board(ctx) {
