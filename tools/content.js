@@ -188,6 +188,15 @@ function validateTyping(task) {
   return isNonEmptyStringList(task.sentences) ? [] : ["sentences must be a non-empty list of sentences"];
 }
 
+const CATCH_IMAGES = ["background", "bucket", "good", "bad"];
+
+function validateCatch(task) {
+  const errors = CATCH_IMAGES.filter((field) => !IMAGE_PATH.test(task[field] ?? "")).map((field) => `${field} must be a path like images/name.webp`);
+  if (!(Number.isInteger(task.goal) && task.goal > 0)) errors.push("goal must be a positive whole number");
+  if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  return errors;
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
@@ -198,6 +207,7 @@ const TASK_VALIDATORS = {
   crafting: validateCrafting,
   pick: validatePick,
   typing: validateTyping,
+  catch: validateCatch,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
