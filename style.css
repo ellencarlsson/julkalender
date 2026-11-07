@@ -1607,28 +1607,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   transform: translateY(-2px);
 }
 
-/* Pairs are joined by coloured lines drawn over the board; the cards themselves have no boxes. */
-.match-board {
-  position: relative;
-}
-
-.match-lines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.match-line {
-  stroke: var(--pair-color);
-  stroke-width: 4;
-  stroke-linecap: round;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
-}
-
+/* The cards themselves have no boxes. */
 .match-card,
 .match-card:has(img),
 .match-card.match-linked,
@@ -3759,5 +3738,54 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     flex-direction: column;
     width: 10rem;
     margin: 0 0 0 1rem;
+  }
+}
+
+/* A paired name moves in right under its picture (#220). Items now sit in cells, so the item sizes
+   that used to target ".match-column > .match-card" are repeated for ".match-cell > .match-card". */
+.match-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.match-slot:empty {
+  display: none;
+}
+
+.match-slot > .match-target,
+#view-door .match-slot > .match-target {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 35.99rem) {
+  .match-cell > .match-card {
+    height: 6.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-cell > .match-card {
+    height: 4.25rem;
+  }
+
+  .match-board:not(:has(img)) .match-cell > .match-card--backdrop,
+  #view-door .match-board:not(:has(img)) .match-cell > .match-card--backdrop {
+    width: auto;
+    padding: 0 0.7rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  .match-slot > .match-target,
+  #view-door .match-slot > .match-target {
+    height: 3.5rem;
+  }
+}
+
+@media (min-width: 36rem) {
+  .match-column > .match-cell {
+    flex: 1 1 0;
+    min-width: 0;
   }
 }
