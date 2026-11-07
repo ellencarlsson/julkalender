@@ -116,9 +116,27 @@ function lose(ctx) {
   showOverlay(ctx, `Oj! Det där var ingen kanelbulle. Börja om nivå ${ctx.level}.`, "Försök igen");
 }
 
-/** One star per level, filled up to the level being played (all four once the game is done). */
+/** Finished levels and the next one can be chosen; later ones stay locked. */
+const isUnlocked = (ctx, level) => level <= Math.min(LEVEL_COUNT, ctx.done + 1);
+
+function chooseLevel(ctx, level) {
+  if (ctx.running || !isUnlocked(ctx, level)) return;
+  ctx.level = level;
+  renderStars(ctx);
+  showOverlay(ctx, `Nivå ${level}: fånga ${ctx.goal} kanelbullar!`, `Starta nivå ${level}`);
+}
+
+function starButton(ctx, level) {
+  const star = element("button", level <= ctx.level ? "catch-star catch-star--on" : "catch-star", "★");
+  Object.assign(star, { type: "button", disabled: !isUnlocked(ctx, level) });
+  star.setAttribute("aria-label", `Nivå ${level}`);
+  star.addEventListener("click", () => chooseLevel(ctx, level));
+  return star;
+}
+
+/** One star per level, filled up to the level being played; clicking a star picks that level. */
 function renderStars(ctx) {
-  ctx.stars.replaceChildren(...Array.from({ length: LEVEL_COUNT }, (_, index) => element("span", index < ctx.level ? "catch-star catch-star--on" : "catch-star", "★")));
+  ctx.stars.replaceChildren(...Array.from({ length: LEVEL_COUNT }, (_, index) => starButton(ctx, index + 1)));
   ctx.stars.setAttribute("aria-label", `Nivå ${ctx.level} av ${LEVEL_COUNT}`);
 }
 
@@ -182,7 +200,8 @@ function buildField(ctx) {
   ctx.count = element("span", "", `0 / ${ctx.goal}`);
   ctx.counter = element("p", "catch-counter");
   ctx.counter.append(picture(ctx.task.good, "catch-counter-icon"), ctx.count);
-  ctx.stars = element("p", "catch-stars");
+  ctx.stars = element("div", "catch-stars");
+  ctx.stars.setAttribute("role", "group");
   renderStars(ctx);
   ctx.field.append(picture(ctx.task.background, "catch-background"), ctx.bucket, ctx.counter, ctx.stars, overlay(ctx));
   moveBucket(ctx, 50);
