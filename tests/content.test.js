@@ -234,6 +234,14 @@ test("a typing race needs a non-empty list of sentences", () => {
   assert.match(validateDoor(typingDoor(["ok", ""])).join(), /sentences must be/);
 });
 
+test("a catch game needs its four pictures and a goal", () => {
+  const images = { background: "images/door-3/kanelbulletrad.webp", bucket: "images/door-3/hink.webp", good: "images/door-3/kanelbulle.webp", bad: "images/door-3/apple.svg" };
+  const catchDoor = (overrides) => ({ door: 3, tasks: [{ id: "c", type: "catch", ...images, goal: 12, ...overrides }] });
+  assert.deepEqual(validateDoor(catchDoor({})), []);
+  assert.match(validateDoor(catchDoor({ bad: "https://x/apple.png" })).join(), /bad must be/);
+  assert.match(validateDoor(catchDoor({ goal: 0 })).join(), /goal must be/);
+});
+
 test("svg images are accepted", () => {
   assert.deepEqual(validateDoor(quizDoor({ image: "images/door-22/butan.svg", alt: "Butan" })), []);
 });
