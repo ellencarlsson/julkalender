@@ -400,3 +400,13 @@ test("a text side may have a backdrop picture behind it", () => {
   assert.deepEqual(validateDoor(door({ text: "Mending", backdrop: "images/door-1/enchanted-book.svg" })), []);
   assert.equal(validateDoor(door({ text: "Mending", backdrop: "book.svg" })).length, 1);
 });
+
+test("a hotspot needs a picture, a prompt and an area inside the picture", () => {
+  const hotspotDoor = (overrides) => ({ door: 8, tasks: [{ id: "h", type: "hotspot", picture: "images/door-8/hogwarts.webp", prompt: "Tryck på tornet", area: { x: 60, y: 10, width: 10, height: 30 }, ...overrides }] });
+  assert.deepEqual(validateDoor(hotspotDoor({})), []);
+  assert.deepEqual(validateDoor(hotspotDoor({ alt: "Hogwarts" })), []);
+  assert.match(validateDoor(hotspotDoor({ picture: "hogwarts.webp" })).join(), /picture must be/);
+  assert.match(validateDoor(hotspotDoor({ prompt: "" })).join(), /prompt must be/);
+  assert.match(validateDoor(hotspotDoor({ area: { x: 60, y: 10 } })).join(), /area needs/);
+  assert.match(validateDoor(hotspotDoor({ area: { x: 95, y: 10, width: 10, height: 30 } })).join(), /stay inside/);
+});

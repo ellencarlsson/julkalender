@@ -246,6 +246,22 @@ function validateGrouping(task) {
   });
 }
 
+const isPercent = (value) => typeof value === "number" && value >= 0 && value <= 100;
+
+function hotspotAreaErrors(area) {
+  const { x, y, width, height } = isPlainObject(area) ? area : {};
+  if (![x, y, width, height].every(isPercent)) return ["area needs x, y, width and height in percent (0-100)"];
+  if (width <= 0 || height <= 0 || x + width > 100 || y + height > 100) return ["area must have a size and stay inside the picture"];
+  return [];
+}
+
+function validateHotspot(task) {
+  // picture, not image: image is the plain picture every task can show above itself.
+  const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
+  if (!isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  return [...errors, ...hotspotAreaErrors(task.area)];
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
@@ -258,6 +274,7 @@ const TASK_VALIDATORS = {
   typing: validateTyping,
   catch: validateCatch,
   puzzle: validatePuzzle,
+  hotspot: validateHotspot,
   grouping: validateGrouping,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
@@ -266,7 +283,8 @@ export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 const IMAGE_PATH = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif|svg)$/i;
 
 function validateImage(task) {
-  if (task.image === undefined) return task.alt === undefined ? [] : ["alt requires image"];
+  // A hotspot's alt describes its picture instead.
+  if (task.image === undefined) return task.alt === undefined || task.picture !== undefined ? [] : ["alt requires image"];
   const errors = IMAGE_PATH.test(task.image) ? [] : ["image must be a path like images/name.jpg"];
   if (task.alt !== undefined && !isNonEmptyString(task.alt)) errors.push("alt must be a non-empty string");
   return errors;

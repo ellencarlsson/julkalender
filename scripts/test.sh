@@ -131,6 +131,7 @@ check "catch-view.js has valid syntax" check_js_syntax catch-view.js
 check "catch game stars pick a level" grep -q "chooseLevel(ctx, level)" catch-view.js
 check "recipe-view.js has valid syntax" check_js_syntax recipe-view.js
 check "puzzle-view.js has valid syntax" check_js_syntax puzzle-view.js
+check "hotspot-view.js has valid syntax" check_js_syntax hotspot-view.js
 check "ticket-view.js has valid syntax" check_js_syntax ticket-view.js
 check "grouping-view.js has valid syntax" check_js_syntax grouping-view.js
 check "all local imports exist" check_local_imports
