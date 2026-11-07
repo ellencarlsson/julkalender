@@ -34,3 +34,8 @@ test("resetting a door also clears a saved puzzle", () => {
   const door = { tasks: [{ id: "pussel", type: "puzzle" }] };
   assert.deepEqual(doorResetPlan(12, door, []).crosswords, ["12-pussel"]);
 });
+
+test("resetting a door also clears found groups", () => {
+  const door = { tasks: [{ id: "kategori", type: "grouping" }] };
+  assert.deepEqual(doorResetPlan(15, door, []).crosswords, ["15-kategori"]);
+});

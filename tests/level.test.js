@@ -164,3 +164,10 @@ test("a catch game gives a quarter of its XP for every finished level", () => {
   const progress = { isCompleted: () => false, crosswordEntries: () => ["2"] };
   assert.equal(doorXp(3, door, progress), 50);
 });
+
+test("a grouping task gives XP for every group found", () => {
+  const groups = [1, 2, 3, 4].map((n) => ({ name: `g${n}`, items: [{ text: "a" }, { text: "b" }] }));
+  const door = { tasks: [{ id: "g", type: "grouping", groups }] };
+  const progress = { isCompleted: () => false, crosswordEntries: () => ["2,0,3"] };
+  assert.equal(doorXp(15, door, progress), 75);
+});
