@@ -3824,3 +3824,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     gap: 0.5rem;
   }
 }
+
+/* Door 6 constellations (#230): a bit smaller than other task pictures. */
+.task-image[src*="images/door-6/"] {
+  max-width: 22rem;
+}
