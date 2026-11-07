@@ -1,5 +1,5 @@
 /**
- * Matching task: tap an item, then the target it belongs with. A chosen target moves in under its item and
+ * Matching task: tap an item and the target it belongs with, in either order. A chosen target moves in under its item and
  * can be changed freely; only when every item has a partner are all pairs checked at once, so single pairs
  * never reveal whether they are right.
  */
@@ -7,8 +7,7 @@ import { checkLinks, matchingBoard, shuffled } from "./lib/matching.js";
 import { paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till.";
-const TEXT_INSTRUCTION = "Para ihop rätt saker. Tryck först på ett namn och sedan på det det hör till.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck på två saker som hör ihop, i vilken ordning du vill.";
 const NOT_YET = "Inte rätt än – byt några par och försök igen.";
 
 const card = (ctx, role, pair) => ctx.root.querySelector(`.match-${role}[data-pair="${pair}"]`);
@@ -34,6 +33,9 @@ function sideButton(side, role) {
   return button;
 }
 
+const roleOf = (button) => (button.classList.contains("match-item") ? "item" : "target");
+const ownerOf = (ctx, target) => [...ctx.links].find(([, chosen]) => chosen === target)?.[0];
+
 /** Every paired target sits in the slot under its item; the rest stay in their column in their first order. */
 function placeTargets(ctx) {
   const itemOf = new Map([...ctx.links].map(([item, target]) => [target, item]));
@@ -50,7 +52,7 @@ function unlink(ctx, item) {
 }
 
 function link(ctx, item, target) {
-  const owner = [...ctx.links].find(([, chosen]) => chosen === target)?.[0];
+  const owner = ownerOf(ctx, target);
   if (owner !== undefined) ctx.links.delete(owner);
   ctx.links.set(item, target);
   placeTargets(ctx);
@@ -62,20 +64,22 @@ function select(ctx, button) {
   ctx.selected?.setAttribute("aria-pressed", "true");
 }
 
-/** Tapping a paired item frees it so it can be paired again. */
-function selectItem(ctx, button) {
-  ctx.status.textContent = "";
-  unlink(ctx, Number(button.dataset.pair));
-  select(ctx, button);
+/** A paired card is freed when tapped on its own, so it can be paired again. */
+function freeCard(ctx, button) {
+  const pair = Number(button.dataset.pair);
+  unlink(ctx, roleOf(button) === "item" ? pair : ownerOf(ctx, pair));
 }
 
-/** Tapping a paired target with no item chosen sends it back to the column. */
-function tryTarget(ctx, target) {
-  const item = ctx.selected;
-  const owner = [...ctx.links].find(([, chosen]) => chosen === Number(target.dataset.pair))?.[0];
-  if (!item && owner !== undefined) return unlink(ctx, owner);
-  if (!item) return (ctx.status.textContent = "Välj först en bild att para ihop.");
-  select(ctx, item);
+/** Either side can be tapped first: two cards from different sides make a pair, the same side moves the choice. */
+function onTap(ctx, button) {
+  ctx.status.textContent = "";
+  const chosen = ctx.selected;
+  if (!chosen || roleOf(chosen) === roleOf(button)) {
+    freeCard(ctx, button);
+    return select(ctx, button);
+  }
+  select(ctx, chosen);
+  const [item, target] = roleOf(button) === "item" ? [button, chosen] : [chosen, button];
   link(ctx, Number(item.dataset.pair), Number(target.dataset.pair));
   checkAll(ctx);
 }
@@ -127,7 +131,7 @@ function itemColumn(ctx, items) {
   const list = element("div", "match-column match-column-item");
   for (const side of shuffled(items, `${ctx.key}-item`)) {
     const button = sideButton(side, "item");
-    button.addEventListener("click", () => selectItem(ctx, button));
+    button.addEventListener("click", () => onTap(ctx, button));
     const cell = element("div", "match-cell");
     cell.append(button, element("div", "match-slot"));
     list.append(cell);
@@ -138,7 +142,7 @@ function itemColumn(ctx, items) {
 function targetColumn(ctx, targets) {
   ctx.targetColumn = element("div", "match-column match-column-target");
   ctx.targets = shuffled(targets, `${ctx.key}-target`).map((side) => sideButton(side, "target"));
-  ctx.targets.forEach((button) => button.addEventListener("click", () => tryTarget(ctx, button)));
+  ctx.targets.forEach((button) => button.addEventListener("click", () => onTap(ctx, button)));
   ctx.targetColumn.append(...ctx.targets);
   return ctx.targetColumn;
 }
@@ -162,6 +166,5 @@ export function createMatching({ task, key, progress, card: taskCard }) {
     lockAll(ctx);
     return [ctx.root];
   }
-  const instruction = task.pairs.some((pair) => pair.item.image) ? INSTRUCTION : TEXT_INSTRUCTION;
-  return [paragraph("task-instruction", instruction), ctx.root, ctx.status];
+  return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
 }
