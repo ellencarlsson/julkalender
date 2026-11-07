@@ -381,7 +381,8 @@ export function createCrossword(options) {
   ctx.status.setAttribute("role", "status");
   const clues = createElement("div", "cw-clues");
   clues.append(...createClueGroup(ctx, ACROSS), ...createClueGroup(ctx, DOWN));
-  ctx.root.append(toolbar, createGrid(ctx), clues, ctx.status);
+  const tip = ctx.solved ? [] : [createElement("p", "cw-tip", "Tips: När ett ord ger XP är det rätt.")];
+  ctx.root.append(toolbar, ...tip, createGrid(ctx), clues, ctx.status);
   ctx.root.classList.toggle("cw--solved", ctx.solved);
   flushWhenHidden(ctx);
   return ctx.root;

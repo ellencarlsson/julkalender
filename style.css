@@ -2848,3 +2848,15 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     line-height: 2.1rem;
   }
 }
+
+/* A short tip above the crossword: a word that gives XP is right. */
+.cw-tip {
+  margin: 0;
+  color: var(--cream-muted);
+  font: italic 1rem Georgia, serif;
+  text-align: center;
+}
+
+.cw--solved .cw-tip {
+  display: none;
+}
