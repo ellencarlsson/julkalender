@@ -3013,10 +3013,11 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 /* Catch game: the tree fills the field, items fall over it and the bucket slides along the bottom. */
+/* Shaped like the tall tree picture, and never taller than most of the screen. */
 .catch-field {
   position: relative;
-  aspect-ratio: 1312 / 1199;
-  width: min(100%, 34rem);
+  aspect-ratio: 1024 / 1536;
+  width: min(100%, 30rem, calc(70vh * 1024 / 1536));
   margin: 0.5rem auto 0;
   overflow: hidden;
   border-radius: 0.75rem;
