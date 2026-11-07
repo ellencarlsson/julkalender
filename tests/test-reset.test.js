@@ -29,3 +29,8 @@ test("resetting a door also clears a catch game's saved level", () => {
   const door = { tasks: [{ id: "fanga", type: "catch" }] };
   assert.deepEqual(doorResetPlan(3, door, []).crosswords, ["3-fanga"]);
 });
+
+test("resetting a door also clears a saved puzzle", () => {
+  const door = { tasks: [{ id: "pussel", type: "puzzle" }] };
+  assert.deepEqual(doorResetPlan(12, door, []).crosswords, ["12-pussel"]);
+});

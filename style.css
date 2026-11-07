@@ -3279,3 +3279,58 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     grid-template-columns: minmax(10rem, 2fr) 3fr;
   }
 }
+
+/* Picture puzzle: thin gaps between the pieces until it is solved, then the picture closes up. */
+.puzzle-board {
+  display: grid;
+  gap: 2px;
+  width: min(100%, 44rem);
+  aspect-ratio: 7 / 3;
+  margin: 0.5rem auto 0;
+  padding: 2px;
+  border-radius: 0.5rem;
+  background: rgba(58, 39, 22, 0.55);
+  box-shadow: 0 4px 12px rgba(58, 39, 22, 0.3);
+}
+
+#view-door .puzzle-piece {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+#view-door .puzzle-piece--selected {
+  transform: scale(0.92);
+  outline: 4px solid #e0a526;
+  outline-offset: -4px;
+  box-shadow: 0 0 10px 2px rgba(224, 165, 38, 0.9);
+  z-index: 1;
+}
+
+.puzzle-board--solved {
+  gap: 0;
+  padding: 0;
+  background: none;
+}
+
+#view-door .puzzle-board--solved .puzzle-piece {
+  border-radius: 0;
+  cursor: default;
+}
+
+.puzzle-status {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Desktop: the wide picture gets a wider door. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.puzzle-board) {
+    max-width: 60rem;
+  }
+}

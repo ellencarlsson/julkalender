@@ -205,6 +205,16 @@ function validateCatch(task) {
   return errors;
 }
 
+const isPuzzleSide = (value) => Number.isInteger(value) && value >= 2 && value <= 8;
+
+function validatePuzzle(task) {
+  // picture, not image: image is the plain picture every task can show above itself, which would give the answer away.
+  const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
+  if (!isPuzzleSide(task.cols) || !isPuzzleSide(task.rows)) errors.push("cols and rows must be whole numbers 2-8");
+  if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  return errors;
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
@@ -216,6 +226,7 @@ const TASK_VALIDATORS = {
   pick: validatePick,
   typing: validateTyping,
   catch: validateCatch,
+  puzzle: validatePuzzle,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 

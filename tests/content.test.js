@@ -244,6 +244,13 @@ test("a catch game needs its four pictures and a goal", () => {
   assert.match(validateDoor(catchDoor({ bad: [] })).join(), /bad must be/);
 });
 
+test("a puzzle needs a picture and 2-8 columns and rows", () => {
+  const puzzleDoor = (overrides) => ({ door: 12, tasks: [{ id: "p", type: "puzzle", picture: "images/door-12/jul.webp", cols: 6, rows: 3, ...overrides }] });
+  assert.deepEqual(validateDoor(puzzleDoor({})), []);
+  assert.match(validateDoor(puzzleDoor({ cols: 1 })).join(), /cols and rows/);
+  assert.match(validateDoor(puzzleDoor({ picture: "jul.webp" })).join(), /picture must be/);
+});
+
 test("svg images are accepted", () => {
   assert.deepEqual(validateDoor(quizDoor({ image: "images/door-22/butan.svg", alt: "Butan" })), []);
 });
