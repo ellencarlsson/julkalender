@@ -356,4 +356,5 @@ test("a challenge may carry a recipe with ingredients and steps", () => {
   const bake = (recipe) => ({ door: 5, tasks: [{ id: "b", type: "challenge", description: "Baka", recipe }] });
   assert.deepEqual(validateDoor(bake({ ingredients: ["3 ägg"], steps: ["Knäck i 3 ägg."] })), []);
   assert.equal(validateDoor(bake({ ingredients: [], steps: ["x"] })).length, 1);
+  assert.deepEqual(validateDoor(quizDoor({ recipe: { ingredients: ["2 ägg"], steps: ["Vispa."] } })), []);
 });
