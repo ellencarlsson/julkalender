@@ -4,7 +4,7 @@
  * anything else restarts it. The finished levels are saved; level 4 completes the task.
  */
 import {
-  BUCKET_WIDTH, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
+  BUCKET_WIDTH, LEVEL_COUNT, badPicturesFor, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
   pickKind, spawnX,
 } from "./lib/catch.js";
 
@@ -28,13 +28,12 @@ function place(node, x, y) {
   node.style.top = `${y}%`;
 }
 
-const badPictures = (task) => [task.bad].flat();
 const randomOf = (list) => list[Math.floor(Math.random() * list.length)];
 
 function spawn(ctx) {
   const kind = pickKind(Math.random, levelSettings(ctx.level).badChance);
   const item = { kind, x: spawnX(Math.random), y: CROWN_TOP + Math.random() * CROWN_HEIGHT };
-  const src = kind === "good" ? ctx.task.good : randomOf(badPictures(ctx.task));
+  const src = kind === "good" ? ctx.task.good : randomOf(badPicturesFor(ctx.task.bad, ctx.task.fromLevel, ctx.level));
   const size = ctx.task.large?.includes(src) ? " catch-item--large" : "";
   item.node = picture(src, `catch-item catch-item--${kind}${size}`);
   place(item.node, item.x, item.y);

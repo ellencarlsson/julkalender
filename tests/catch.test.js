@@ -1,7 +1,7 @@
 /** Tests for the catch game: landing in the bucket, bucket bounds, spawning and speed. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { BUCKET_WIDTH, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone, pickKind, spawnX } from "../lib/catch.js";
+import { BUCKET_WIDTH, badPicturesFor, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone, pickKind, spawnX } from "../lib/catch.js";
 
 test("an item lands only in the frame it passes the bucket rim", () => {
   assert.equal(crossesRim(78, 82, 80), true);
@@ -54,4 +54,11 @@ test("the finished levels round-trip through the saved row", () => {
   assert.equal(levelsDone(null), 0);
   assert.equal(levelsDone(["9"]), LEVEL_COUNT);
   assert.equal(levelsDone(["x"]), 0);
+});
+
+test("a picture with a start level only falls from that level on", () => {
+  const bad = ["apple.svg", "cow.webp"];
+  assert.deepEqual(badPicturesFor(bad, { "cow.webp": 3 }, 2), ["apple.svg"]);
+  assert.deepEqual(badPicturesFor(bad, { "cow.webp": 3 }, 3), bad);
+  assert.deepEqual(badPicturesFor("apple.svg", undefined, 1), ["apple.svg"]);
 });
