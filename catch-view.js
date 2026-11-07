@@ -4,7 +4,7 @@
  * anything else restarts it. The finished levels are saved; level 4 completes the task.
  */
 import {
-  BUCKET_WIDTH, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
+  BUCKET_WIDTH, LEVEL_COUNT, badPicturesFor, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
   pickKind, spawnX,
 } from "./lib/catch.js";
 
@@ -28,22 +28,17 @@ function place(node, x, y) {
   node.style.top = `${y}%`;
 }
 
-const badPictures = (task) => [task.bad].flat();
 const randomOf = (list) => list[Math.floor(Math.random() * list.length)];
 
 function spawn(ctx) {
   const kind = pickKind(Math.random, levelSettings(ctx.level).badChance);
   const item = { kind, x: spawnX(Math.random), y: CROWN_TOP + Math.random() * CROWN_HEIGHT };
-  item.node = picture(kind === "good" ? ctx.task.good : randomOf(badPictures(ctx.task)), `catch-item catch-item--${kind}`);
+  const src = kind === "good" ? ctx.task.good : randomOf(badPicturesFor(ctx.task.bad, ctx.task.fromLevel, ctx.level));
+  const size = ctx.task.large?.includes(src) ? " catch-item--large" : "";
+  item.node = picture(src, `catch-item catch-item--${kind}${size}`);
   place(item.node, item.x, item.y);
   ctx.field.append(item.node);
   ctx.items.push(item);
-}
-
-/** Spawns come quicker as the level goes on, within the level's own range. */
-function spawnDelay(ctx) {
-  const [slow, fast] = levelSettings(ctx.level).spawn;
-  return slow - (slow - fast) * Math.min(1, ctx.caught / ctx.goal);
 }
 
 function land(ctx, item) {
@@ -55,7 +50,7 @@ function land(ctx, item) {
 
 /** Moves every item down; items that pass the rim above the bucket are caught, the rest fall away. */
 function moveItems(ctx, dt) {
-  const speed = fallSpeed(ctx.caught, ctx.level);
+  const speed = fallSpeed(ctx.level);
   for (const item of [...ctx.items]) {
     const previous = item.y;
     item.y += speed * dt;
@@ -85,7 +80,7 @@ function tick(ctx, now) {
   ctx.untilSpawn -= dt;
   if (ctx.untilSpawn <= 0) {
     spawn(ctx);
-    ctx.untilSpawn = spawnDelay(ctx);
+    ctx.untilSpawn = levelSettings(ctx.level).spawn;
   }
   moveItems(ctx, dt);
   if (ctx.running) requestAnimationFrame((time) => tick(ctx, time));

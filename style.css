@@ -3789,3 +3789,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     min-width: 0;
   }
 }
+
+/* Catch game (#222): pictures listed in the task's "large" fall big, like Mamma Mu the cow. */
+.catch-item--large {
+  width: 24%;
+}
