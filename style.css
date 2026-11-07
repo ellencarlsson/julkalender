@@ -2821,3 +2821,21 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     margin-left: -1.5rem;
   }
 }
+
+/* Phones: crossword cells never shrink below a size that fits a whole handwritten letter; a wide
+   grid scrolls sideways inside the parchment instead. */
+@media (max-width: 63.99rem) {
+  .cw-grid {
+    grid-template-columns: repeat(var(--cols), 2.1rem);
+    justify-content: safe center;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #view-door .cw-cell input {
+    font-size: 16px;
+    line-height: 2.1rem;
+  }
+}
