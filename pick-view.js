@@ -30,7 +30,7 @@ async function check(ctx) {
     ctx.card.classList.add("task--done");
     ctx.list.querySelectorAll(".pick-option").forEach((card) => (card.disabled = true));
     ctx.button.remove();
-    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! 🎉 +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
+    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
     ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {

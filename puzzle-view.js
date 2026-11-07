@@ -24,7 +24,7 @@ function render(ctx) {
 async function solve(ctx) {
   ctx.done = true;
   ctx.board.classList.add("puzzle-board--solved");
-  ctx.status.textContent = "Pusslet är klart! 🎉";
+  ctx.status.textContent = "Pusslet är klart!";
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
@@ -84,7 +84,7 @@ export function createPuzzle({ task, key, progress, card }) {
   const order = done ? solved : decodeOrder(progress.crosswordEntries?.(key), count) ?? shuffledOrder(count);
   const ctx = { task, key, progress, card, order, done, selected: null };
   const board = buildBoard(ctx);
-  ctx.status = paragraph("task-status puzzle-status", done ? "Pusslet är klart! 🎉" : "");
+  ctx.status = paragraph("task-status puzzle-status", done ? "Pusslet är klart!" : "");
   ctx.status.setAttribute("role", "status");
   render(ctx);
   return [board, ctx.status];

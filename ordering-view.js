@@ -100,7 +100,7 @@ async function complete(ctx) {
     ctx.card.classList.add("task--done");
     ctx.pool.remove();
     ctx.instruction?.remove();
-    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! 🎉 +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
+    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
     ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
@@ -135,7 +135,7 @@ function solvedBoard(ctx) {
 
 /** Until the task it waits for is done, the card only says what to do first. */
 function lockedUntil(ctx, requiredKey, build) {
-  const note = paragraph("task-instruction ord-locked", ctx.task.lockedText ?? "🔒 Klara förra steget först.");
+  const note = paragraph("task-instruction ord-locked", ctx.task.lockedText ?? "Klara förra steget först.");
   const unlock = () => {
     if (!ctx.progress.isCompleted(requiredKey)) return;
     document.removeEventListener("task-solved", unlock);

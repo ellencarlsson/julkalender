@@ -171,7 +171,7 @@ button.small {
 }
 
 #auth-error {
-  color: #ffd6d6;
+  color: var(--cream);
 }
 
 .game-header {
@@ -228,7 +228,7 @@ button.small {
 
 .sidequest-reward {
   margin-top: 0;
-  color: var(--gold);
+  color: var(--cream);
   font-size: 0.95rem;
 }
 
@@ -631,7 +631,7 @@ button.small {
 }
 
 .cw-cell.cw-revealed input {
-  color: var(--gold);
+  color: var(--cream);
 }
 
 .cw-current-clue {
@@ -882,7 +882,7 @@ button.small {
 
 .quiz-hint-text {
   margin: 0;
-  color: var(--gold);
+  color: var(--cream);
   font-style: italic;
 }
 
@@ -1002,7 +1002,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 #view-door .task-done-state {
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.5rem;
   font-weight: normal;
@@ -1344,7 +1344,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .sq-reward {
   flex: none;
-  color: var(--gold);
+  color: var(--cream);
   font-size: 1.05rem;
 }
 
@@ -1355,7 +1355,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .sq-error {
   margin: 0.5rem 0 0;
-  color: var(--gold);
+  color: var(--cream);
 }
 
 /* Crossword on the parchment: handwritten clues straight on the paper and ink-drawn cells,
@@ -1542,7 +1542,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 /* A solved matching block says so clearly, with the XP it gave. */
 .match-success {
   margin-top: 0.75rem;
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.6rem;
   text-align: center;
@@ -1764,7 +1764,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   justify-content: center;
   gap: 0.25rem 0.75rem;
   margin: 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.2rem;
   line-height: 1.1;
@@ -1904,7 +1904,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .sdk-cell.sdk-conflict {
-  color: #c0392b;
+  background: rgba(58, 39, 22, 0.18);
+  color: var(--cream);
+  text-decoration: underline wavy;
 }
 
 .sdk-pad {
@@ -2116,7 +2118,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 #view-door .exam-mark {
-  color: var(--knit-red);
+  color: var(--cream);
   font-family: "Dancing Script", var(--hand-font), cursive;
   font-size: 3.4rem;
   font-weight: 700;
@@ -2257,9 +2259,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   left: 0.8rem;
   display: block;
   padding: 0.15rem 0.6rem;
-  border: 3px solid rgba(184, 52, 42, 0.85);
+  border: 3px solid var(--cream-muted);
   border-radius: 0.3rem;
-  color: rgba(184, 52, 42, 0.85);
+  color: var(--cream);
   font: bold 1.3rem Georgia, serif;
   letter-spacing: 0.12em;
   transform: rotate(-12deg);
@@ -2269,7 +2271,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task--done .envelope-sent {
   display: block;
   margin: 0.9rem 0 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font: 1.7rem var(--hand-font);
   text-align: center;
 }
@@ -2435,9 +2437,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .letter-sent-stamp {
   padding: 0.15rem 0.8rem;
-  border: 3px solid rgba(184, 52, 42, 0.85);
+  border: 3px solid var(--cream-muted);
   border-radius: 0.3rem;
-  color: rgba(184, 52, 42, 0.85);
+  color: var(--cream);
   font: bold 1.6rem Georgia, serif;
   letter-spacing: 0.14em;
   transform: rotate(-10deg);
@@ -2446,7 +2448,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .letter-sent-text {
   margin: 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font: 1.7rem var(--hand-font);
   text-align: center;
 }
@@ -2573,13 +2575,14 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .typing-correct {
-  color: #2c6a3f;
+  color: var(--cream);
 }
 
 .typing-wrong {
   border-radius: 0.2rem;
-  background: rgba(192, 57, 43, 0.25);
-  color: #c0392b;
+  background: rgba(58, 39, 22, 0.18);
+  color: var(--cream);
+  text-decoration: underline wavy;
 }
 
 .typing-clock {
@@ -3379,7 +3382,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  color: #9b2a20;
+  color: var(--cream);
   text-align: center;
   transform: rotate(-3deg);
 }
@@ -3514,7 +3517,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .grp-box--wrong .grp-box-title {
-  color: #b8342a;
+  color: var(--cream);
 }
 
 @media (min-width: 64rem) {
@@ -3603,7 +3606,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-size: 0.95rem;
   font-weight: bold;
   letter-spacing: 0.06em;
-  color: #9b2a20;
+  color: var(--cream);
 }
 
 .backpack-item--wide {

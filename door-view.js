@@ -140,7 +140,7 @@ function showMessage(...lines) {
 
 function showLocked(number) {
   const when = number === TEST_LOCKED_DOOR ? TEST_LOCKED_DOOR_LABEL : unlockLabel(number);
-  showMessage("🔒 Denna lucka är låst", when);
+  showMessage("Denna lucka är låst", when);
   element("task-area").firstChild.className = "locked-title";
 }
 
@@ -167,8 +167,8 @@ export function showDoorLoading() {
 /** TEST_RESET_DOOR / TEST_COMPLETE_DOOR: buttons that clear or finish the player's own progress in this door. */
 function doorTestButtons(number, { onReset, onComplete }) {
   return [
-    testButton("🧹 Rensa lucka", `Rensa din progress i lucka ${number}? Bara för testning.`, onReset),
-    testButton("⭐ Klara lucka", `Klara alla uppgifter i lucka ${number}? Bara för testning.`, onComplete),
+    testButton("Rensa lucka", `Rensa din progress i lucka ${number}? Bara för testning.`, onReset),
+    testButton("Klara lucka", `Klara alla uppgifter i lucka ${number}? Bara för testning.`, onComplete),
   ];
 }
 

@@ -39,7 +39,7 @@ function resultMessage(ctx, timeMs) {
   const best = ellenBest(ctx.results);
   if (ctx.board.isEllen) return "";
   if (best === null) return `Din tid: ${formatTime(timeMs)}. Ellen har inte satt någon tid än.`;
-  if (beatsEllen(timeMs, best)) return `Du slog Ellen! 🎉 ${formatTime(timeMs)}`;
+  if (beatsEllen(timeMs, best)) return `Du slog Ellen! ${formatTime(timeMs)}`;
   return `${formatTime(timeMs)} – försök igen, slå Ellens tid ${formatTime(best)}`;
 }
 
@@ -86,7 +86,7 @@ function restart(ctx) {
 function renderLeaderboard(ctx) {
   const rows = topResults(ctx.results).map((result) => {
     const row = element("li", result === ctx.latest ? "typing-me" : "");
-    row.append(element("span", "typing-name", result.ellen ? `${result.name} 👑` : result.name), element("span", "typing-time", formatTime(result.timeMs)));
+    row.append(element("span", "typing-name", result.name), element("span", "typing-time", formatTime(result.timeMs)));
     return row;
   });
   ctx.list.replaceChildren(...(rows.length ? rows : [element("li", "typing-empty", "Ingen har skrivit än.")]));

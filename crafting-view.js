@@ -85,7 +85,7 @@ async function craft(ctx) {
   try {
     await ctx.progress.complete(ctx.key);
     finish(ctx);
-    const label = ctx.xp && ctx.xp < 100 ? `${ctx.task.result.name} tillverkad! 🎉 +${ctx.xp} XP` : `${ctx.task.result.name} tillverkad!`;
+    const label = ctx.xp && ctx.xp < 100 ? `${ctx.task.result.name} tillverkad! +${ctx.xp} XP` : `${ctx.task.result.name} tillverkad!`;
     ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {

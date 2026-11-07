@@ -149,8 +149,8 @@ async function finishLevel(ctx) {
   ctx.done = Math.max(ctx.done, finished);
   if (finished < LEVEL_COUNT) ctx.level = finished + 1;
   renderStars(ctx);
-  if (finished < LEVEL_COUNT) showOverlay(ctx, `Nivå ${finished} klar! ⭐ Nästa nivå går lite fortare.`, `Starta nivå ${ctx.level}`);
-  else showOverlay(ctx, `Alla ${LEVEL_COUNT} nivåer klara! 🎉`, "Spela nivå 4 igen");
+  if (finished < LEVEL_COUNT) showOverlay(ctx, `Nivå ${finished} klar! Nästa nivå går lite fortare.`, `Starta nivå ${ctx.level}`);
+  else showOverlay(ctx, `Alla ${LEVEL_COUNT} nivåer klara!`, "Spela nivå 4 igen");
   try {
     await saveProgress(ctx);
   } catch {

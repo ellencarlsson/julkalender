@@ -98,7 +98,7 @@ async function onCheck(ctx) {
   ctx.found = [...ctx.found, ...newlyFound];
   render(ctx);
   const allFound = ctx.found.length === ctx.task.groups.length;
-  ctx.status.textContent = allFound ? "Alla grupper rätt! 🎉" : `${newlyFound.length} av ${checked} lådor rätt.`;
+  ctx.status.textContent = allFound ? "Alla grupper rätt!" : `${newlyFound.length} av ${checked} lådor rätt.`;
   if (newlyFound.length === 0) return;
   try {
     await ctx.progress.saveCrossword?.(ctx.key, encodeFound(ctx.found));
@@ -142,7 +142,7 @@ export function createGrouping({ task, key, progress, card }) {
   ctx.pool = element("div", "grp-pool");
   ctx.pool.addEventListener("click", (event) => onAreaClick(ctx, POOL, event));
   ctx.boxArea = element("div", "grp-boxes");
-  ctx.status = paragraph("task-status grp-status", found.length === all.length ? "Alla grupper rätt! 🎉" : "");
+  ctx.status = paragraph("task-status grp-status", found.length === all.length ? "Alla grupper rätt!" : "");
   ctx.status.setAttribute("role", "status");
   const parts = [ctx.pool, ctx.boxArea, controls(ctx), ctx.status];
   render(ctx);
