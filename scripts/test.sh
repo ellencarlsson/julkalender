@@ -125,6 +125,7 @@ check "Kör igen stays hidden until a run is finished (regression #183)" grep -q
 check "the open door shows its XP so far beside the title" grep -q "showDoorXp(doorXp(number, door, progress))" door-view.js
 check "crafting-view.js has valid syntax" check_js_syntax crafting-view.js
 check "drag.js has valid syntax" check_js_syntax drag.js
+check "pick-view.js has valid syntax" check_js_syntax pick-view.js
 check "catch-view.js has valid syntax" check_js_syntax catch-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"

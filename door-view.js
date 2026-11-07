@@ -4,6 +4,7 @@ import { createCrafting } from "./crafting-view.js";
 import { createCrossword } from "./crossword-view.js";
 import { createMatching } from "./matching-view.js";
 import { createOrdering } from "./ordering-view.js";
+import { createPick } from "./pick-view.js";
 import { createQuiz } from "./quiz-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
@@ -29,6 +30,7 @@ function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
   if (task.type === "matching" || task.type === "catch") return task.prompt ?? null;
+  if (task.type === "pick") return task.question ?? null;
   return null;
 }
 
@@ -78,6 +80,7 @@ const TASK_BUILDERS = {
   sudoku: createSudoku,
   crafting: createCrafting,
   ordering: createOrdering,
+  pick: createPick,
   typing: createTypingRace,
   catch: createCatchGame,
 };

@@ -2974,6 +2974,44 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   margin: 1rem auto 0;
 }
 
+/* Pick task (#190): cards to tap; chosen ones get an ink frame and a tick. */
+.pick-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.pick-option {
+  padding: 0.6rem 1rem;
+  border: 2px solid rgba(58, 39, 22, 0.35);
+  border-radius: 0.5rem;
+  background: rgba(255, 248, 232, 0.55);
+  box-shadow: none;
+  color: var(--cream);
+  font-family: var(--hand-font);
+  font-size: 1.25rem;
+}
+
+.pick-option[aria-pressed="true"] {
+  border-color: var(--cream);
+  background: rgba(58, 39, 22, 0.12);
+}
+
+.pick-option[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
+.pick-option:disabled {
+  cursor: default;
+}
+
+#view-door .pick-check {
+  display: block;
+  margin: 0 auto;
+}
+
 /* Catch game: the tree fills the field, items fall over it and the bucket slides along the bottom. */
 .catch-field {
   position: relative;
