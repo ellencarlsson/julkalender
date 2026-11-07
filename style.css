@@ -3436,3 +3436,10 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task:has(.ticket) .quiz-solved-answer {
   display: none;
 }
+
+/* The backpack button shows a picture of Hari's own backpack (#209), sized like the emoji icons. */
+.nav-icon-image {
+  display: block;
+  height: 2.1rem;
+  width: auto;
+}
