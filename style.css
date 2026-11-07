@@ -405,9 +405,7 @@ button.small {
   white-space: pre-line;
 }
 
-/* Without a task type heading, the done marker sits in the card's corner. */
-.check-icon,
-.task--done::after {
+.check-icon {
   display: inline-block;
   width: 1.1em;
   height: 1.1em;
@@ -417,22 +415,10 @@ button.small {
   mask: var(--check-mask) center / contain no-repeat;
 }
 
-.task--done::after {
-  content: "";
-  position: absolute;
-  top: 0.6rem;
-  right: 0.75rem;
-  font-size: 1.4rem;
-}
-
 .task-instruction {
   font-style: italic;
 }
 
-/* Challenges show their own "Klart!" or ticked box, so they skip the corner marker. */
-.task--done:has(.task-done-state, .photo-sent)::after {
-  content: none;
-}
 
 /* TEST_RESET_DOOR */
 .reset-door {
@@ -1023,8 +1009,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-weight: normal;
 }
 
-#view-door .check-icon,
-#view-door .task--done::after {
+#view-door .check-icon {
   background: #2c6a3f;
 }
 
@@ -2538,11 +2523,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 #view-backpack:is(.has-code-start, .has-code-end, .has-code-title) .backpack-empty,
 #view-backpack:has(.backpack-item--reward, .backpack-item--chokladboll:not([data-count="0"])) .backpack-empty {
   display: none;
-}
-
-/* A solved periodic table sum needs no corner tick: the symbols and the picture are the answer. */
-.task--done:has(.pt-row)::after {
-  content: none;
 }
 
 /* Sudoku pencil marks: small digits, each in its own spot of a 3×3 grid inside the cell. */
