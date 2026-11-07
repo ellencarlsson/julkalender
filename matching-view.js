@@ -159,6 +159,7 @@ export function createMatching({ task, key, progress, card: taskCard }) {
   const { items, targets } = matchingBoard(task.pairs);
   const ctx = { task, key, progress, card: taskCard, links: new Map(), selected: null };
   ctx.root = element("div", "match-board");
+  ctx.root.style.setProperty("--match-pairs", String(task.pairs.length));
   ctx.root.append(itemColumn(ctx, items), targetColumn(ctx, targets));
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
