@@ -3824,3 +3824,12 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     gap: 0.5rem;
   }
 }
+
+/* A name too long for its box (#227, "Förvrängd svamp") wraps between words, never inside a word. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
