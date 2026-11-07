@@ -1,4 +1,4 @@
-/** Draws a coloured line between each chosen picture and name in a matching board. */
+/** Draws a line between each chosen picture and name in a matching board. */
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -27,11 +27,10 @@ function columnsSideBySide(board) {
   return Boolean(items && targets) && targets.top < items.bottom - 1;
 }
 
-function line(coords, color) {
+function line(coords) {
   const node = document.createElementNS(SVG_NS, "line");
   ["x1", "y1", "x2", "y2"].forEach((name, i) => node.setAttribute(name, coords[i]));
   node.setAttribute("class", "match-line");
-  node.style.setProperty("--pair-color", color);
   return node;
 }
 
@@ -41,15 +40,15 @@ function line(coords, color) {
  * Args:
  *   board: the matching board element that holds the cards and the line layer.
  *   svg: the line layer from createLineLayer().
- *   pairs: list of { item, target, color } with the two card elements and a CSS colour.
+ *   pairs: list of { item, target } with the two card elements.
  */
 export function drawLines(board, svg, pairs) {
   const boardRect = board.getBoundingClientRect();
   const sideways = columnsSideBySide(board);
   svg.setAttribute("viewBox", `0 0 ${boardRect.width} ${boardRect.height}`);
   svg.replaceChildren(
-    ...pairs.map(({ item, target, color }) =>
-      line(endpoints(boardRect, item.getBoundingClientRect(), target.getBoundingClientRect(), sideways), color),
+    ...pairs.map(({ item, target }) =>
+      line(endpoints(boardRect, item.getBoundingClientRect(), target.getBoundingClientRect(), sideways)),
     ),
   );
 }
