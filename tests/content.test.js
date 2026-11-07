@@ -388,3 +388,9 @@ test("a door may give the prize", () => {
   assert.deepEqual(validateDoor({ ...quizDoor(), reward: { prize } }), []);
   assert.equal(validateDoor({ ...quizDoor(), reward: { prize: { image: "images/x.svg" } } }).length, 1);
 });
+
+test("a text side may have a backdrop picture behind it", () => {
+  const door = (item) => ({ door: 3, tasks: [{ id: "m", type: "matching", pairs: [{ item, target: { text: "a" } }, { item: { text: "c" }, target: { text: "d" } }] }] });
+  assert.deepEqual(validateDoor(door({ text: "Mending", backdrop: "images/door-1/enchanted-book.svg" })), []);
+  assert.equal(validateDoor(door({ text: "Mending", backdrop: "book.svg" })).length, 1);
+});
