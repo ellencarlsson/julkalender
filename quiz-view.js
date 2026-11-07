@@ -1,9 +1,10 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
+import { XP_PER_LEVEL } from "./lib/level.js";
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
 import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
-import { doneState, paragraph } from "./task-ui.js";
+import { checkIcon, paragraph } from "./task-ui.js";
 
 function answerInput() {
   const input = document.createElement("input");
@@ -74,24 +75,57 @@ async function submitAnswer(ctx) {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
     ctx.card.querySelector(".quiz-hint")?.remove();
-    ctx.form.replaceWith(...solvedState(ctx.task));
+    ctx.form.replaceWith(...solvedState(ctx.task, answer), ...earnedXp(ctx.xp));
+    ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     if (ctx.button) ctx.button.disabled = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
 }
 
-/** A solved tile quiz shows the real symbols and its picture; any quiz shows "Rätt svar!". */
-function solvedState(task) {
-  if (!task.tiles) return [doneState(QUIZ_DONE_LABEL)];
+/** A question that is one of several in its door shows the XP it just gave; a whole door says +100 XP itself. */
+function earnedXp(xp) {
+  if (!xp || xp >= XP_PER_LEVEL) return [];
+  return [paragraph("task-done-state match-success quiz-xp", `+${xp} XP`)];
+}
+
+/** The answer stays on its line, with the teacher's red cursive R ("rätt") where the Rätta button was. */
+function examAnswer(text) {
+  const row = Object.assign(document.createElement("p"), { className: "task-done-state exam-answer" });
+  const mark = Object.assign(document.createElement("span"), { className: "exam-mark", textContent: "R" });
+  mark.setAttribute("aria-hidden", "true");
+  row.append(Object.assign(document.createElement("span"), { className: "exam-line", textContent: text }), mark);
+  return row;
+}
+
+/** Only completion is stored, so a reload shows the first accepted answer. */
+function solvedAnswer(task, typed) {
+  const text = typed?.trim() || task.answers[0];
+  const row = task.exam ? examAnswer(text) : paragraph("task-done-state quiz-solved-answer", `${text} `);
+  if (!task.exam) row.append(checkIcon());
+  row.setAttribute("role", "status");
+  row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
+  return row;
+}
+
+/** A solved tile quiz shows the real symbols and its picture; any other quiz keeps the answer. */
+function solvedState(task, typed) {
+  if (!task.tiles) return [solvedAnswer(task, typed)];
   const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
-  return [createPeriodicTiles(task.tiles, { mode: "solved", result }), doneState(QUIZ_DONE_LABEL)];
+  // The revealed symbols and picture are the answer, so no separate "Rätt svar!" line.
+  const tiles = createPeriodicTiles(task.tiles, { mode: "solved", result });
+  tiles.setAttribute("role", "status");
+  tiles.setAttribute("aria-label", QUIZ_DONE_LABEL);
+  return [tiles];
 }
 
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
 function answerField(task) {
   if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
-  return task.letters ? letterBoxes(codeWordLength(task.answers)) : answerInput();
+  if (task.letters) return letterBoxes(codeWordLength(task.answers));
+  const input = answerInput();
+  if (task.exam) input.classList.add("exam-blank");
+  return input;
 }
 
 const AUTO_CHECK_DELAY_MS = 700;
@@ -112,11 +146,12 @@ function checkWhenFilled(ctx) {
  * Builds the answer form for a quiz task.
  *
  * Args:
- *   options: { task, key, progress, card } where card is the task card to mark as done.
+ *   options: { task, key, progress, card, xp } where card is the task card to mark as done and
+ *     xp the XP this question is worth, shown when it is answered.
  * Returns:
  *   The elements to append to the card.
  */
-export function createQuiz({ task, key, progress, card }) {
+export function createQuiz({ task, key, progress, card, xp }) {
   if (progress.isCompleted(key)) return solvedState(task);
   const form = Object.assign(document.createElement("form"), { className: "quiz-form" });
   const field = answerField(task);
@@ -125,7 +160,7 @@ export function createQuiz({ task, key, progress, card }) {
   const status = paragraph("task-status", "");
   status.setAttribute("role", "status");
   form.append(...[field, button, status].filter(Boolean));
-  const ctx = { task, key, progress, card, form, field, button, status };
+  const ctx = { task, key, progress, card, xp, form, field, button, status };
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     submitAnswer(ctx);

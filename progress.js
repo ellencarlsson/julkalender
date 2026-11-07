@@ -50,6 +50,15 @@ function hintMethods(ref, completedSideQuests, revealedWords, correctWords) {
       completedSideQuests.add(id);
     },
     completedSideQuestIds: () => [...completedSideQuests],
+    /** TEST_RESET_SIDEQUESTS: forgets the player's own completed side quests. */
+    async resetSideQuests() {
+      try {
+        await updateDoc(ref, "completedSideQuests", deleteField());
+      } catch (error) {
+        if (error?.code !== "not-found") throw error;
+      }
+      completedSideQuests.clear();
+    },
     revealedWordKeys: () => [...revealedWords],
     isWordRevealed: (key) => revealedWords.has(key),
     /** A used quiz hint costs one hint point like a revealed word, but gives no XP. */

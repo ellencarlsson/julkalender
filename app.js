@@ -8,17 +8,22 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
+import { markDoor, showDoorContent, showDoorLoading, showDoorXp } from "./door-view.js";
+import { doorXp } from "./lib/level.js";
 import { discardPendingCrossword } from "./crossword-view.js";
+import { renderBackpack } from "./backpack-view.js";
 import { createDoorReader } from "./doors.js";
+import { hideFinalMessage, readFinalMessage, showFinalMessage } from "./final-message.js";
 import { firebaseConfig } from "./firebase-config.js";
 import { createHintTracker } from "./hint-tracker.js";
 import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
+import { collectRewards } from "./lib/rewards.js";
 import { parseRoute } from "./lib/router.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { doorResetPlan } from "./lib/test-reset.js";
 import { loadProgress } from "./progress.js";
+import { createLeaderboard } from "./leaderboard.js";
 import { renderSideQuests } from "./sidequest-view.js";
 import { readSideQuests } from "./sidequests.js";
 import { createShell, hideLevelUp } from "./ui.js";
@@ -28,7 +33,13 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const doors = createDoorReader(db);
 let progressReady = null;
-const levels = createLevelTracker();
+const levels = createLevelTracker({
+  onMaxLevel: () => readFinalMessage(db).then(showFinalMessage),
+  onChange: (loadedDoors, progress) => {
+    renderBackpack(progress && collectRewards(loadedDoors, progress));
+    updateOpenDoorXp(loadedDoors, progress);
+  },
+});
 const hints = createHintTracker();
 const showShell = createShell({ onDoorOpen: openDoor, onSideQuestsOpen: openSideQuests });
 const element = (id) => document.getElementById(id);
@@ -40,7 +51,21 @@ function showSideQuestsIfOpen() {
 }
 
 function openSideQuests() {
-  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress));
+  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress), resetSideQuests);
+}
+
+/** TEST_RESET_SIDEQUESTS: clears the signed-in user's own ticked side quests and shows the list fresh. */
+async function resetSideQuests() {
+  await loadedProgress.resetSideQuests();
+  hints.refresh();
+  openSideQuests();
+}
+
+/** Keeps the open door's XP beside its title in step with every task, word or digit completed. */
+function updateOpenDoorXp(loadedDoors, progress) {
+  const number = parseRoute(location.hash).door;
+  const door = new Map(loadedDoors).get(number);
+  if (progress && door) showDoorXp(doorXp(number, door, progress));
 }
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
@@ -65,6 +90,11 @@ function withLevelUpdates(progress) {
     },
     async markWordsCorrect(keys) {
       await progress.markWordsCorrect(keys);
+      levels.refresh({ celebrate: true });
+    },
+    // A saved sudoku can finish a digit, which is worth XP of its own.
+    async saveCrossword(key, rows) {
+      await progress.saveCrossword(key, rows);
       levels.refresh({ celebrate: true });
     },
     hintBalance: () => hints.balance(),
@@ -106,7 +136,7 @@ async function openDoor(number) {
     markDoor(number, result.state);
     levels.setDoor(number, result);
     const onReset = result.door && resetHandler(number, result.door, progress);
-    if (parseRoute(location.hash).door === number) showDoorContent(number, result, withLevelUpdates(progress), onReset);
+    if (parseRoute(location.hash).door === number) showDoorContent(number, result, { ...withLevelUpdates(progress), leaderboard: createLeaderboard(db, user) }, onReset);
   } catch {
     progressReady = startProgressLoad(user.uid);
     if (parseRoute(location.hash).door === number) showDoorContent(number, { state: DOOR_STATE.ERROR });
@@ -147,6 +177,7 @@ element("sign-in-button").addEventListener("click", signIn);
 element("sign-out-button").addEventListener("click", () => signOut(auth));
 onAuthStateChanged(auth, (user) => {
   showUser(user);
+  hideFinalMessage();
   levels.reset();
   hints.reset();
   loadedProgress = null;

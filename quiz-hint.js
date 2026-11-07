@@ -4,57 +4,62 @@ import { chokladbollIcon, paragraph } from "./task-ui.js";
 
 const HINT_MESSAGES = {
   ask: "Vill du använda en ledtråd? Det kostar 1 chokladboll.",
-  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att få fler.",
+  noPoints: "Du har ätit upp alla chokladbollar 😭 Klara fler sidequests för att samla fler.",
   failed: "Kunde inte använda ledtråden. Försök igen.",
 };
 
 const hintText = (task) => paragraph("quiz-hint-text", `Ledtråd: ${task.hint}`);
 
-function smallButton(text, onClick) {
-  const button = Object.assign(document.createElement("button"), { type: "button", className: "small", textContent: text });
+function smallButton(text, className, onClick) {
+  const button = Object.assign(document.createElement("button"), { type: "button", className: `small ${className}`, textContent: text });
   button.addEventListener("click", onClick);
   return button;
+}
+
+/** Shows content in the pop-up under the chokladboll, or closes it when given nothing. */
+function showPopover(ctx, ...children) {
+  ctx.panel.replaceChildren(...children);
+  ctx.panel.hidden = children.length === 0;
 }
 
 async function spendHint(ctx) {
   ctx.panel.querySelectorAll("button").forEach((button) => (button.disabled = true));
   try {
     await ctx.progress.useHint(ctx.hintKey);
-    showHintText(ctx);
+    ctx.revealed = true;
+    showPopover(ctx, hintText(ctx.task));
   } catch {
-    ctx.panel.replaceChildren(paragraph("task-status", HINT_MESSAGES.failed));
+    showPopover(ctx, paragraph("", HINT_MESSAGES.failed));
   }
 }
 
-function showHintText(ctx) {
-  ctx.revealed = true;
-  ctx.panel.replaceChildren(hintText(ctx.task));
-}
-
-function confirmHint(ctx) {
-  if (ctx.revealed) return;
-  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return ctx.panel.replaceChildren(paragraph("task-status", HINT_MESSAGES.noPoints));
-  const confirm = Object.assign(document.createElement("div"), { className: "quiz-hint-confirm" });
-  confirm.append(
+function askToSpend(ctx) {
+  showPopover(
+    ctx,
     paragraph("", HINT_MESSAGES.ask),
-    smallButton("Ja", () => spendHint(ctx)),
-    smallButton("Nej", () => ctx.panel.replaceChildren()),
+    smallButton("Ja", "hint-yes", () => spendHint(ctx)),
+    smallButton("Nej", "hint-no", () => showPopover(ctx)),
   );
-  ctx.panel.replaceChildren(confirm);
 }
 
-// The icon never leaves the corner; questions and the hint text go in the panel below it.
+/** The chokladboll toggles the pop-up; a hint already paid for just shows its text again. */
+function onHintIcon(ctx) {
+  if (!ctx.panel.hidden) return showPopover(ctx);
+  if (ctx.revealed) return showPopover(ctx, hintText(ctx.task));
+  if ((ctx.progress.hintBalance?.() ?? 0) < 1) return showPopover(ctx, paragraph("", HINT_MESSAGES.noPoints));
+  askToSpend(ctx);
+}
+
 function hintIcon(ctx) {
-  const button = smallButton("", () => confirmHint(ctx));
+  const button = smallButton("", "quiz-hint-icon", () => onHintIcon(ctx));
   button.append(chokladbollIcon());
-  button.classList.add("quiz-hint-icon");
-  button.setAttribute("aria-label", "Använd ledtråd (kostar 1 chokladboll)");
-  button.title = "Använd ledtråd";
+  button.setAttribute("aria-label", ctx.revealed ? "Visa ledtråden" : "Använd ledtråd (kostar 1 chokladboll)");
+  button.title = ctx.revealed ? "Visa ledtråden" : "Använd ledtråd";
   return button;
 }
 
 /**
- * Builds the hint area of a quiz task.
+ * Builds the hint area of a quiz task: the chokladboll button and its pop-up.
  *
  * Args:
  *   options: { task, key, progress } where key is the task key.
@@ -64,9 +69,10 @@ function hintIcon(ctx) {
 export function createQuizHint({ task, key, progress }) {
   if (!task.hint) return null;
   const box = Object.assign(document.createElement("div"), { className: "quiz-hint" });
-  const ctx = { task, progress, hintKey: quizHintKey(key), revealed: false };
-  ctx.panel = Object.assign(document.createElement("div"), { className: "quiz-hint-panel" });
-  if (progress.isWordRevealed?.(ctx.hintKey)) showHintText(ctx);
+  const hintKey = quizHintKey(key);
+  const ctx = { task, progress, hintKey, revealed: Boolean(progress.isWordRevealed?.(hintKey)) };
+  ctx.panel = Object.assign(document.createElement("div"), { className: "quiz-hint-panel hint-popover", hidden: true });
+  ctx.panel.setAttribute("role", "status");
   box.append(hintIcon(ctx), ctx.panel);
   return box;
 }

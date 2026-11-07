@@ -6,8 +6,8 @@
   <title>Haris Julkalender</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
-  <link rel="stylesheet" href="./style.css?v=135db2529d">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap">
+  <link rel="stylesheet" href="./style.css?v=fa74efbd5f">
   <script>
     // Shows a reload message if the app fails to load or crashes before it is ready.
     window.addEventListener("error", () => {
@@ -18,39 +18,61 @@
   <script type="importmap">
   {
     "imports": {
-      "./app.js": "./app.js?v=726a79ca6d",
-      "./block-pager.js": "./block-pager.js?v=465c59442f",
-      "./crossword-view.js": "./crossword-view.js?v=2c258ce5c6",
-      "./door-view.js": "./door-view.js?v=342ab0adf7",
+      "./app.js": "./app.js?v=c9d71f5cfc",
+      "./backpack-view.js": "./backpack-view.js?v=d1b6990a10",
+      "./block-pager.js": "./block-pager.js?v=fef50d885e",
+      "./catch-view.js": "./catch-view.js?v=bc88533df5",
+      "./crafting-view.js": "./crafting-view.js?v=a1e2779257",
+      "./crossword-view.js": "./crossword-view.js?v=48709be238",
+      "./door-view.js": "./door-view.js?v=f038b92fef",
       "./doors.js": "./doors.js?v=2b6119d4d8",
+      "./drag.js": "./drag.js?v=a50853df1d",
+      "./final-message.js": "./final-message.js?v=227146e48e",
       "./firebase-config.js": "./firebase-config.js?v=9d2969ef94",
       "./hint-tracker.js": "./hint-tracker.js?v=3811ee7f5c",
-      "./level-tracker.js": "./level-tracker.js?v=30b63112f7",
-      "./lib/crossword.js": "./lib/crossword.js?v=5f3683877a",
+      "./leaderboard.js": "./leaderboard.js?v=5f79bc091f",
+      "./level-tracker.js": "./level-tracker.js?v=90e8ae4227",
+      "./lib/catch.js": "./lib/catch.js?v=07f4dd0e01",
+      "./lib/crafting.js": "./lib/crafting.js?v=6edd79c3f8",
+      "./lib/crossword.js": "./lib/crossword.js?v=f39e541910",
       "./lib/door-state.js": "./lib/door-state.js?v=91df6ae122",
       "./lib/hints.js": "./lib/hints.js?v=43e3f72143",
-      "./lib/level.js": "./lib/level.js?v=f3da8b800a",
+      "./lib/level.js": "./lib/level.js?v=0231c3cf69",
       "./lib/matching.js": "./lib/matching.js?v=8ad187ecee",
+      "./lib/ordering.js": "./lib/ordering.js?v=59add581c1",
       "./lib/periodic.js": "./lib/periodic.js?v=d765f90375",
+      "./lib/pick.js": "./lib/pick.js?v=a143d9e198",
       "./lib/progress.js": "./lib/progress.js?v=2bc2af29b5",
+      "./lib/puzzle.js": "./lib/puzzle.js?v=55b6138674",
       "./lib/quiz.js": "./lib/quiz.js?v=962c550567",
+      "./lib/rewards.js": "./lib/rewards.js?v=8cdfe28019",
       "./lib/router.js": "./lib/router.js?v=d520c19738",
+      "./lib/sudoku.js": "./lib/sudoku.js?v=2d4b5caa54",
       "./lib/test-door.js": "./lib/test-door.js?v=8e0480cff7",
-      "./lib/test-reset.js": "./lib/test-reset.js?v=8a63eeb741",
+      "./lib/test-reset.js": "./lib/test-reset.js?v=2e7b536824",
+      "./lib/typing.js": "./lib/typing.js?v=dfe53f62e7",
       "./lib/unlock-time.js": "./lib/unlock-time.js?v=7197c095d4",
-      "./matching-view.js": "./matching-view.js?v=c35fdfe476",
+      "./match-lines.js": "./match-lines.js?v=856f22d583",
+      "./matching-view.js": "./matching-view.js?v=fc229f7320",
+      "./ordering-view.js": "./ordering-view.js?v=427a6ca628",
       "./periodic-tiles.js": "./periodic-tiles.js?v=16fcd305c5",
-      "./progress.js": "./progress.js?v=bbe6e79699",
-      "./quiz-hint.js": "./quiz-hint.js?v=734c97e836",
-      "./quiz-view.js": "./quiz-view.js?v=7bcc934c97",
-      "./sidequest-view.js": "./sidequest-view.js?v=fd44619442",
+      "./pick-view.js": "./pick-view.js?v=7e02802497",
+      "./progress.js": "./progress.js?v=9574bf14db",
+      "./puzzle-view.js": "./puzzle-view.js?v=96b1efd668",
+      "./quiz-hint.js": "./quiz-hint.js?v=793502a0ec",
+      "./quiz-view.js": "./quiz-view.js?v=6b623cf24d",
+      "./recipe-view.js": "./recipe-view.js?v=fb1d595ded",
+      "./sidequest-view.js": "./sidequest-view.js?v=52d9a90b29",
       "./sidequests.js": "./sidequests.js?v=aeffc0c02d",
+      "./sudoku-view.js": "./sudoku-view.js?v=7309493972",
       "./task-ui.js": "./task-ui.js?v=6c8d6c079c",
-      "./ui.js": "./ui.js?v=46ff9090f2"
+      "./typing-view.js": "./typing-view.js?v=4e3de1fbe8",
+      "./ui.js": "./ui.js?v=a73fec073d",
+      "./worksheet-view.js": "./worksheet-view.js?v=706ee771ff"
     }
   }
   </script>
-  <script type="module" src="./app.js?v=726a79ca6d"></script>
+  <script type="module" src="./app.js?v=c9d71f5cfc"></script>
 </head>
 <body>
   <main>
@@ -82,10 +104,15 @@
       <p id="level-up" class="level-up" role="status" hidden></p>
 
       <section id="view-overview" data-view="overview">
+        <article id="final-message" class="final-message" hidden>
+          <h2>Ett meddelande från Ellen</h2>
+          <p id="final-message-text"></p>
+        </article>
         <ol id="door-grid" class="door-grid"></ol>
       </section>
 
       <section id="view-door" data-view="door" hidden>
+        <div id="door-done" class="door-done" role="status"></div>
         <div class="door-header">
           <a id="prev-door" class="door-arrow" aria-label="Föregående lucka">&lt;</a>
           <h2 id="door-title">Lucka</h2>
@@ -98,18 +125,30 @@
 
       <section id="view-backpack" data-view="backpack" hidden>
         <h2>Ryggsäck</h2>
-        <div class="panel">
-          <h3>Ledtrådar</h3>
-          <ul id="clue-list"></ul>
-          <p id="clues-empty">Inga ledtrådar än.</p>
+        <p class="backpack-empty">Din ryggsäck är tom. Börja klara luckor för att samla ledtrådar.</p>
+        <div class="code-part">
+          <h3 class="code-title">Hemlig kod</h3>
+          <ol id="code-boxes" class="code-boxes" aria-label="Kod"></ol>
+        </div>
+        <div class="items-part">
+          <h3>Items</h3>
+          <ul id="backpack-items" class="backpack-items">
+            <li id="backpack-chokladboll" class="backpack-item backpack-item--chokladboll" data-count="0">
+              <img src="./images/theme/chokladboll.webp" alt="">
+              <span class="backpack-item-count" id="backpack-chokladbollar">0</span>
+              <span class="backpack-item-name">Chokladbollar</span>
+            </li>
+          </ul>
         </div>
       </section>
 
       <section id="view-sidequests" data-view="sidequests" hidden>
         <h2>Side quests</h2>
-        <p class="sidequests-intro">Bocka av ett uppdrag när du har gjort det, så får du chokladbollar.</p>
+        <p class="sidequests-intro">Klara sidequestsen för att samla fler chokladbollar.</p>
         <div id="sidequest-list" class="task-area"></div>
       </section>
+
+      <div id="sidequest-tools" class="door-tools"></div>
 
       <footer class="app-footer">
         <p>Inloggad som: <span id="user-name"></span></p>

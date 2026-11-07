@@ -1,14 +1,20 @@
 /** Keeps the header level ring in sync with loaded doors and completed tasks. */
 import { DOOR_STATE } from "./lib/door-state.js";
 import { markDoorCompleted } from "./door-view.js";
-import { isDoorCompleted, levelFromXp, totalXp } from "./lib/level.js";
+import { MAX_LEVEL, isDoorCompleted, levelFromXp, totalXp } from "./lib/level.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 import { showLevel, showLevelUp } from "./ui.js";
 
-export function createLevelTracker() {
+/**
+ * Args:
+ *   onMaxLevel: called once per sign-in when the player reaches the last level.
+ *   onChange: called with ([number, door] pairs, progress) whenever doors or progress change.
+ */
+export function createLevelTracker({ onMaxLevel = () => {}, onChange = () => {} } = {}) {
   const doors = new Map();
   let progress = null;
   let shownLevel = 0;
+  let reachedMax = false;
 
   function markCompletedDoors() {
     for (let number = 1; number <= DOOR_COUNT; number++) {
@@ -19,11 +25,14 @@ export function createLevelTracker() {
   /** Celebrates only after a task is completed, never when data merely finishes loading. */
   function refresh({ celebrate = false } = {}) {
     markCompletedDoors();
+    onChange([...doors.entries()], progress);
     if (!progress) return;
     const { level, xpInLevel } = levelFromXp(totalXp([...doors.entries()], progress));
     if (celebrate && level > shownLevel) showLevelUp(level);
     shownLevel = level;
     showLevel(level, xpInLevel);
+    if (level === MAX_LEVEL && !reachedMax) onMaxLevel();
+    reachedMax = level === MAX_LEVEL;
   }
 
   function setDoor(number, result) {
@@ -49,8 +58,10 @@ export function createLevelTracker() {
       doors.clear();
       progress = null;
       shownLevel = 0;
+      reachedMax = false;
       showLevel(0, 0);
       markCompletedDoors();
+      onChange([], null);
     },
   };
 }

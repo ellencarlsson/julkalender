@@ -1,8 +1,12 @@
 /** Shows a door's task cards one block at a time, with < > buttons to browse between them. */
 
-/** A door is paged when it is made of several matching tasks, like one round per champion class. */
-export function isPagedDoor(tasks) {
-  return tasks.length > 1 && tasks.every((task) => task.type === "matching");
+/**
+ * A door is paged when it asks for it (one recipe per page) or is made of several matching
+ * tasks, like one round per champion class.
+ */
+export function isPagedDoor(tasks, door) {
+  if (tasks.length < 2) return false;
+  return door?.paged === true || tasks.every((task) => task.type === "matching");
 }
 
 const AUTO_NEXT_MS = 1800;
@@ -18,7 +22,7 @@ function arrowButton(text, label) {
  *
  * Args:
  *   cards: the task card elements, in door order.
- *   titles: one heading per card, shown between the arrows.
+ *   titles: one heading per card, shown between the arrows with the counter; "" shows only the counter.
  * Returns:
  *   The pager element.
  */
@@ -32,7 +36,8 @@ export function blockPager(cards, titles) {
   const show = (to) => {
     index = to;
     cards.forEach((card, i) => (card.hidden = i !== index));
-    title.textContent = `${titles[index]} (${index + 1}/${cards.length})`;
+    const count = `${index + 1}/${cards.length}`;
+    title.textContent = titles[index] ? `${titles[index]} (${count})` : count;
     prev.disabled = index === 0;
     next.disabled = index === cards.length - 1;
   };

@@ -1,17 +1,17 @@
 /**
- * Matching task: tap an item, then the target it belongs with. Pairs get a shared number and can be
+ * Matching task: tap an item, then the target it belongs with. A chosen pair is joined by a line and can be
  * changed freely; only when every item has a partner are all pairs checked at once, so single pairs
  * never reveal whether they are right.
  */
 import { checkLinks, matchingBoard, nextBadge, shuffled } from "./lib/matching.js";
-import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
-import { doneState, paragraph } from "./task-ui.js";
+import { createLineLayer, drawLines } from "./match-lines.js";
+import { paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till. När alla har ett par kollas svaret.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till.";
+const TEXT_INSTRUCTION = "Para ihop rätt saker. Tryck först på ett namn och sedan på det det hör till.";
 const NOT_YET = "Inte rätt än – byt några par och försök igen.";
 
-const successLabel = (xp) => (xp ? `Alla rätt! 🎉 +${xp} XP` : CHALLENGE_DONE_LABEL);
 const card = (ctx, role, pair) => ctx.root.querySelector(`.match-${role}[data-pair="${pair}"]`);
 
 function sideContent(side) {
@@ -29,10 +29,18 @@ function sideButton(side, role) {
   return button;
 }
 
+/** Marks a card as part of a pair; the pair itself is shown by the line between the two cards. */
 function setBadge(button, badge) {
-  button.querySelector(".match-badge")?.remove();
   button.classList.toggle("match-linked", Boolean(badge));
-  if (badge) button.append(Object.assign(document.createElement("span"), { className: "match-badge", textContent: badge }));
+}
+
+function redraw(ctx) {
+  // Lines start at the picture itself, not the wider button around it.
+  const pairs = [...ctx.links].map(([item, target]) => ({
+    item: card(ctx, "item", item).querySelector("img") ?? card(ctx, "item", item),
+    target: card(ctx, "target", target),
+  }));
+  drawLines(ctx.root, ctx.lines, pairs);
 }
 
 function unlink(ctx, item) {
@@ -41,6 +49,7 @@ function unlink(ctx, item) {
   setBadge(card(ctx, "item", item), null);
   ctx.links.delete(item);
   ctx.badges.delete(item);
+  redraw(ctx);
 }
 
 function link(ctx, item, target) {
@@ -51,6 +60,7 @@ function link(ctx, item, target) {
   ctx.badges.set(item, badge);
   setBadge(card(ctx, "item", item), badge);
   setBadge(card(ctx, "target", target), badge);
+  redraw(ctx);
 }
 
 function select(ctx, button) {
@@ -90,7 +100,10 @@ function checkAll(ctx) {
   complete(ctx);
 }
 
+/** Solved: every picture is joined to its own name. */
 function lockAll(ctx) {
+  ctx.task.pairs.forEach((_, pair) => ctx.links.set(pair, pair));
+  redraw(ctx);
   ctx.root.querySelectorAll(".match-card").forEach((button) => {
     setBadge(button, null);
     button.classList.add("match-done");
@@ -104,9 +117,7 @@ async function complete(ctx) {
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
-    const success = doneState(successLabel(ctx.xp));
-    success.classList.add("match-success");
-    ctx.status.replaceWith(success);
+    ctx.status.remove();
     // Lets a paged door move on to the next block.
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
@@ -128,21 +139,24 @@ function column(ctx, sides, role, onTap) {
  * Builds a matching task.
  *
  * Args:
- *   options: { task, key, progress, card, xp } where card is the task card to mark as done and
- *     xp the XP this task is worth, shown when it is solved.
+ *   options: { task, key, progress, card } where card is the task card to mark as done.
  * Returns:
  *   The elements to append to the card.
  */
-export function createMatching({ task, key, progress, card: taskCard, xp }) {
+export function createMatching({ task, key, progress, card: taskCard }) {
   const { items, targets } = matchingBoard(task.pairs);
-  const ctx = { task, key, progress, card: taskCard, xp, links: new Map(), badges: new Map(), selected: null };
+  const ctx = { task, key, progress, card: taskCard, links: new Map(), badges: new Map(), selected: null };
   ctx.root = Object.assign(document.createElement("div"), { className: "match-board" });
-  ctx.root.append(column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
+  ctx.lines = createLineLayer();
+  ctx.root.append(ctx.lines, column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
+  // Lines follow the cards when the layout changes (rotation, images loading, a block becoming visible).
+  new ResizeObserver(() => redraw(ctx)).observe(ctx.root);
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) {
     lockAll(ctx);
-    return [ctx.root, doneState(CHALLENGE_DONE_LABEL)];
+    return [ctx.root];
   }
-  return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  const instruction = task.pairs.some((pair) => pair.item.image) ? INSTRUCTION : TEXT_INSTRUCTION;
+  return [paragraph("task-instruction", instruction), ctx.root, ctx.status];
 }

@@ -45,7 +45,7 @@ check "version stamps are up to date" node scripts/stamp-versions.mjs --check
 check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --surface-raised --cell --gold --cream; do grep -q "^  $v:" style.css || exit 1; done'
 check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
 check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js style.css index.html'
-check "square checkmark icon defined" grep -q "check-mask" style.css
+check "check icon is a plain ink tick, no green box" bash -c '! grep -q "check-mask" style.css && sed -n "/^\.check-icon {/,/^}/p" style.css | grep -q "tick-mask"'
 check "footer is pushed to the bottom of the page" bash -c 'sed -n "/^\.app-footer {/,/^}/p" style.css | grep -q "margin-top: auto"'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
@@ -97,6 +97,7 @@ check "level-up message element exists" grep -q 'id="level-up"' index.html
 check "door content rendered as text, never HTML" bash -c '! grep -n "innerHTML" *.js'
 check "tools/upload-content.mjs has valid syntax" check_js_syntax tools/upload-content.mjs
 check "tools/reset-progress.mjs has valid syntax" check_js_syntax tools/reset-progress.mjs
+check "tools/remove-door.mjs has valid syntax" check_js_syntax tools/remove-door.mjs
 check "tools/firebase-admin.js has valid syntax" check_js_syntax tools/firebase-admin.js
 check "service account key is gitignored" git check-ignore -q tools/service-account.json
 check "local content folder is gitignored" git check-ignore -q content/door-1.json
@@ -106,6 +107,29 @@ check "firestore.rules uses server time" grep -q "request.time" firestore.rules
 check "task images have a renderer (regression #101)" grep -q "^function taskImage" door-view.js
 check "door view has prev/next arrows" grep -q "id=\"next-door\"" index.html
 check "block-pager.js has valid syntax" check_js_syntax block-pager.js
+check "final-message.js has valid syntax" check_js_syntax final-message.js
+check "doors with examples page their tasks beside the examples" grep -q "^function examplesLayout" door-view.js
+check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
+check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answer)" quiz-view.js
+check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
+check "exam quizzes get the teacher's cursive R when solved" grep -q "task.exam ? examAnswer(text)" quiz-view.js
+check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
+check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
+check "backpack has the Items section with the chokladboll first" grep -q "<h3>Items</h3>" index.html
+check "typing-view.js has valid syntax" check_js_syntax typing-view.js
+check "leaderboard.js has valid syntax" check_js_syntax leaderboard.js
+check "leaderboard rules only accept attempts in the player's own name" grep -q "attempt.uid == request.auth.uid" firestore.rules
+check "ordering-view.js has valid syntax" check_js_syntax ordering-view.js
+check "completed task cards have no corner tick" bash -c '! grep -q "task--done[^{]*::after" style.css'
+check "Kör igen stays hidden until a run is finished (regression #183)" grep -q "^.typing-retry:not(\[hidden\])" style.css
+check "the open door shows its XP so far beside the title" grep -q "showDoorXp(doorXp(number, door, progress))" door-view.js
+check "crafting-view.js has valid syntax" check_js_syntax crafting-view.js
+check "drag.js has valid syntax" check_js_syntax drag.js
+check "pick-view.js has valid syntax" check_js_syntax pick-view.js
+check "catch-view.js has valid syntax" check_js_syntax catch-view.js
+check "catch game stars pick a level" grep -q "chooseLevel(ctx, level)" catch-view.js
+check "recipe-view.js has valid syntax" check_js_syntax recipe-view.js
+check "puzzle-view.js has valid syntax" check_js_syntax puzzle-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

@@ -1,14 +1,24 @@
 /** Renders door states in the overview and a door's tasks in the door view. */
 import { blockPager, isPagedDoor } from "./block-pager.js";
+import { createCrafting } from "./crafting-view.js";
 import { createCrossword } from "./crossword-view.js";
 import { createMatching } from "./matching-view.js";
+import { createOrdering } from "./ordering-view.js";
+import { createPick } from "./pick-view.js";
 import { createQuiz } from "./quiz-view.js";
+import { recipeCard } from "./recipe-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
-import { taskXp } from "./lib/level.js";
+import { doorXp, taskXp } from "./lib/level.js";
+import { isItem } from "./lib/rewards.js";
+import { createSudoku } from "./sudoku-view.js";
+import { createTypingRace } from "./typing-view.js";
+import { createCatchGame } from "./catch-view.js";
+import { createPuzzle } from "./puzzle-view.js";
+import { envelope, letterAddress, letterSent, worksheetHeader } from "./worksheet-view.js";
 
 const element = (id) => document.getElementById(id);
 
@@ -21,7 +31,8 @@ const STATE_MESSAGES = {
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
-  if (task.type === "matching") return task.prompt ?? null;
+  if (["matching", "catch", "puzzle"].includes(task.type)) return task.prompt ?? null;
+  if (task.type === "pick") return task.question ?? null;
   return null;
 }
 
@@ -31,26 +42,86 @@ function taskImage(task) {
   return image;
 }
 
+function exampleFigure({ image, name, formula }) {
+  const figure = document.createElement("figure");
+  const picture = taskImage({ image, alt: name });
+  picture.className = "example-image";
+  const caption = Object.assign(document.createElement("figcaption"), { textContent: name });
+  if (formula) caption.append(Object.assign(document.createElement("span"), { className: "example-formula", textContent: formula }));
+  figure.append(picture, caption);
+  return figure;
+}
+
+function tableRow(cells, tag) {
+  const row = document.createElement("tr");
+  row.append(...cells.map((text) => Object.assign(document.createElement(tag), { textContent: text })));
+  return row;
+}
+
+function exampleTable({ title, headers, rows }) {
+  const table = Object.assign(document.createElement("table"), { className: "examples-table" });
+  table.createCaption().textContent = title;
+  table.createTHead().append(tableRow(headers, "th"));
+  table.createTBody().append(...rows.map((cells) => tableRow(cells, "td")));
+  return table;
+}
+
+function exampleGallery(examples, table) {
+  const gallery = Object.assign(document.createElement("div"), { className: "task-examples" });
+  gallery.append(...examples.map(exampleFigure));
+  if (table) gallery.append(exampleTable(table));
+  return gallery;
+}
+
+/** Each task type's own controls; every builder returns the elements to append to the card. */
+const TASK_BUILDERS = {
+  challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)),
+  crossword: (options) => [createCrossword(options)],
+  quiz: createQuiz,
+  matching: createMatching,
+  sudoku: createSudoku,
+  crafting: createCrafting,
+  ordering: createOrdering,
+  pick: createPick,
+  typing: createTypingRace,
+  catch: createCatchGame,
+  puzzle: createPuzzle,
+};
+
 function taskCard(task, door, progress, xp) {
   const card = document.createElement("article");
-  card.className = "task";
+  card.className = task.worksheet ? "task task--worksheet" : "task";
+  if (task.worksheet) card.append(worksheetHeader(task.worksheet, task.worksheetName));
+  if (task.letterAddress) card.append(letterAddress(task.letterAddress));
   const promptText = taskPrompt(task);
-  if (promptText) card.append(Object.assign(document.createElement("p"), { textContent: promptText }));
+  if (promptText) card.append(Object.assign(document.createElement("p"), { className: "task-prompt", textContent: promptText }));
   if (task.image) card.append(taskImage(task));
+  if (task.formula) card.append(paragraph("task-formula", task.formula));
+  if (task.recipe) card.append(recipeCard(task.recipe));
   const key = taskKey(door, task.id);
-  if (task.type === "challenge") card.append(...photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)));
-  if (task.type === "crossword") card.append(createCrossword({ task, key, progress, card }));
-  if (task.type === "quiz") card.append(...createQuiz({ task, key, progress, card }));
-  if (task.type === "matching") card.append(...createMatching({ task, key, progress, card, xp }));
+  card.append(...(TASK_BUILDERS[task.type]?.({ task, key, progress, card, xp, door }) ?? []));
+  if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
+  if (task.letterSent) card.append(letterSent(task.letterSent));
   if (progress.isCompleted(key)) card.classList.add("task--done");
   return card;
 }
 
-function taskElements(tasks, door, progress) {
-  if (!isPagedDoor(tasks)) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
+/** Examples beside (desktop) or below (mobile) a pager that shows one task at a time. */
+function examplesLayout(tasks, examples, door, progress) {
+  const cards = tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
+  const layout = Object.assign(document.createElement("div"), { className: "examples-layout" });
+  const table = tasks.find((task) => task.examplesTable)?.examplesTable;
+  layout.append(blockPager(cards, tasks.map(() => "")), exampleGallery(examples, table));
+  return layout;
+}
+
+function taskElements(tasks, door, progress, paged) {
+  const examples = tasks.flatMap((task) => task.examples ?? []);
+  if (examples.length > 0) return [examplesLayout(tasks, examples, door, progress)];
+  if (!isPagedDoor(tasks, { paged })) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   // The block title above the cards already names each task, so its prompt is not repeated in the card.
   const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));
-  return [blockPager(cards, tasks.map((task) => task.prompt ?? ""))];
+  return [blockPager(cards, tasks.map((task) => task.pageTitle ?? task.prompt ?? ""))];
 }
 
 function showMessage(...lines) {
@@ -114,11 +185,38 @@ function resetButton(number, onReset) {
  *   progress: { isCompleted(key), complete(key) } for the signed-in user.
  *   onReset: TEST_RESET_DOOR callback for the "Rensa lucka" button.
  */
+function rewardItem({ name, image, emoji }) {
+  const item = Object.assign(document.createElement("span"), { className: "door-done-item" });
+  const picture = image
+    ? Object.assign(document.createElement("img"), { src: image, alt: "" })
+    : Object.assign(document.createElement("span"), { className: "door-done-emoji", textContent: emoji });
+  item.append(picture, ` ${name}`);
+  return item;
+}
+
+/** The door's XP so far and its reward item; CSS shows the XP once it is above 0 and the item once the door is done. */
+function showDoorReward(door) {
+  const xp = Object.assign(document.createElement("span"), { className: "door-done-xp" });
+  const item = door?.reward?.item;
+  element("door-done").replaceChildren(xp, ...(isItem(item) ? [rewardItem(item)] : []));
+  showDoorXp(0);
+}
+
+/** XP earned so far in the open door, shown beside the title. */
+export function showDoorXp(xp) {
+  const box = element("door-done");
+  const rounded = Math.round(xp);
+  box.dataset.xp = String(rounded);
+  box.querySelector(".door-done-xp")?.replaceChildren(`+${rounded} XP`);
+}
+
 export function showDoorContent(number, { state, door }, progress, onReset) {
   element("door-tools").replaceChildren();
+  showDoorReward(state === DOOR_STATE.OPEN ? door : null);
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
-  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress));
+  element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress, door.paged));
+  showDoorXp(doorXp(number, door, progress));
   // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
   if (onReset) element("door-tools").append(resetButton(number, onReset));
 }
