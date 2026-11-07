@@ -122,6 +122,7 @@ function validateSide(side, where) {
   const hasText = isNonEmptyString(side.text);
   const hasImage = isNonEmptyString(side.image) && IMAGE_PATH.test(side.image);
   if (hasText === hasImage) return [`${where} must have either text or an image like images/name.jpg`];
+  if (side.backdrop !== undefined && !(hasText && IMAGE_PATH.test(side.backdrop))) return [`${where}.backdrop must be an image path behind a text`];
   return [];
 }
 

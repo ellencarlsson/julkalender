@@ -3683,3 +3683,52 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   line-height: 1.35;
   white-space: pre-line;
 }
+
+/* Enchanted books (#218): the enchantment name written on the book's purple cover. */
+.match-card--backdrop,
+#view-door .match-card--backdrop,
+.match-board:not(:has(img)) .match-column > .match-card--backdrop,
+#view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 8.5rem;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 26 / 18;
+  margin: 0 auto;
+  padding: 0 1.1rem 1.4rem;
+  border: none;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  color: #fbf3ff;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+  overflow-wrap: normal;
+  white-space: normal;
+  word-break: keep-all;
+  image-rendering: pixelated;
+  text-align: center;
+  text-shadow: 0 1px 0 #3b2414;
+}
+
+.match-card--backdrop[aria-pressed="true"] {
+  outline: 3px solid var(--cream);
+  outline-offset: 2px;
+}
+
+/* Phones: the book is exactly one row high, so every book lines up with its box. */
+@media (max-width: 35.99rem) {
+  .match-board:not(:has(img)) .match-column > .match-card--backdrop,
+  #view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop {
+    width: auto;
+    height: 4.25rem;
+    padding: 0 0.7rem 0.9rem;
+    font-size: 0.75rem;
+  }
+}
