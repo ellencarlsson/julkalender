@@ -3,7 +3,7 @@
  * stops when the text is exactly right. The task is passed by beating Ellen's best time.
  */
 import { beatsEllen, formatTime, raceText, topResults, typingProgress } from "./lib/typing.js";
-import { doneState, paragraph } from "./task-ui.js";
+import { paragraph } from "./task-ui.js";
 
 const TICK_MS = 100;
 const element = (tag, className, text) => Object.assign(document.createElement(tag), { className, ...(text !== undefined && { textContent: text }) });
@@ -66,8 +66,8 @@ async function finish(ctx, timeMs) {
 async function pass(ctx) {
   if (ctx.progress.isCompleted(ctx.key)) return;
   await ctx.progress.complete(ctx.key);
+  // The door header shows "+100 XP" once the door is done, so no extra line here.
   ctx.card.classList.add("task--done");
-  ctx.status.after(doneState("Lucka avklarad!"));
 }
 
 function restart(ctx) {
@@ -138,6 +138,5 @@ export function createTypingRace({ task, key, progress, card, door }) {
   renderTarget(ctx, { correct: 0, wrong: false });
   const board = leaderboardBox(ctx);
   if (ctx.board) loadLeaderboard(ctx);
-  const done = progress.isCompleted(key) ? [doneState("Lucka avklarad!")] : [];
-  return [ctx.targetView, ctx.clock, ctx.input, ctx.status, ...done, ctx.retry, board];
+  return [ctx.targetView, ctx.clock, ctx.input, ctx.status, ctx.retry, board];
 }
