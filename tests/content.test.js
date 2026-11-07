@@ -382,3 +382,9 @@ test("a quiz may show a ticket picture that unlocks with the code", () => {
   assert.deepEqual(validateDoor(quizDoor({ ticket: { image: "images/door-24/biobiljett.webp" } })), []);
   assert.equal(validateDoor(quizDoor({ ticket: { image: "biljett.webp" } })).length, 1);
 });
+
+test("a door may give the prize", () => {
+  const prize = { image: "images/door-24/cinema-ticket.svg", code: "123", text: "Grattis!" };
+  assert.deepEqual(validateDoor({ ...quizDoor(), reward: { prize } }), []);
+  assert.equal(validateDoor({ ...quizDoor(), reward: { prize: { image: "images/x.svg" } } }).length, 1);
+});

@@ -1,6 +1,6 @@
 /** Validates door and final-message JSON before it is uploaded to Firestore. */
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
-import { CLUES, CODE_LENGTH, isCodePosition, isDigit } from "../lib/rewards.js";
+import { CLUES, CODE_LENGTH, isCodePosition, isDigit, isPrize } from "../lib/rewards.js";
 import { isValidSolution, parseGrid } from "../lib/sudoku.js";
 
 const BLOCK = "#";
@@ -323,7 +323,11 @@ function rewardErrors(reward) {
     errors.push('reward.item must be { "name": "...", "image": "images/..." } or { "name": "...", "emoji": "🍿" }');
   }
   if (reward.clue !== undefined && !CLUES.includes(reward.clue)) errors.push(`reward.clue must be one of ${CLUES.join(", ")}`);
-  if (!hasDigit && reward.item === undefined && reward.clue === undefined) errors.push("reward must have a digit, an item or a clue");
+  if (reward.prize !== undefined && !(isPrize(reward.prize) && IMAGE_PATH.test(reward.prize.image))) {
+    errors.push('reward.prize must be { "image": "images/...", "code": "...", "text": "..." }');
+  }
+  const gives = hasDigit || [reward.item, reward.clue, reward.prize].some((part) => part !== undefined);
+  if (!gives) errors.push("reward must have a digit, an item, a clue or a prize");
   return errors;
 }
 

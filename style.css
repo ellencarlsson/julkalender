@@ -3635,3 +3635,51 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   width: 10rem;
   height: 6rem;
 }
+
+/* The prize (#215): its own big section at the bottom of the backpack, the code printed on the ticket. */
+#view-backpack:has(#backpack-prize:not([hidden])) .backpack-empty {
+  display: none;
+}
+
+.prize-part {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+
+.prize-ticket {
+  position: relative;
+  max-width: 30rem;
+  margin: 0 auto;
+  transform: rotate(-2deg);
+}
+
+.prize-ticket img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(58, 39, 22, 0.35));
+}
+
+/* Sits on the empty strip under ADMIT ONE. */
+.prize-code {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #3b3328;
+  font-family: "Courier New", monospace;
+  font-size: clamp(1rem, 4.6vw, 1.7rem);
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.prize-text {
+  max-width: 30rem;
+  margin: 1.25rem auto 0;
+  font-family: var(--hand-font);
+  font-size: 1.3rem;
+  line-height: 1.35;
+  white-space: pre-line;
+}

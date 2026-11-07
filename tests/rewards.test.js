@@ -46,3 +46,9 @@ test("an item keeps its note and wide flag, like the cinema ticket", () => {
   const ticket = { name: "Biobiljett", image: "images/door-24/biobiljett.webp", note: "123", wide: true };
   assert.deepEqual(collectRewards([[24, door({ item: ticket })]], progressWith("24-a")).items, [ticket]);
 });
+
+test("a completed prize door gives the prize", () => {
+  const prize = { image: "images/door-24/cinema-ticket.svg", code: "123", text: "Grattis!" };
+  assert.deepEqual(collectRewards([[24, door({ prize })]], progressWith("24-a")).prize, prize);
+  assert.equal(collectRewards([[24, door({ prize })]], progressWith()).prize, null);
+});
