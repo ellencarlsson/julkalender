@@ -2621,6 +2621,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .typing-clock {
   margin: 0 0 0.5rem;
+  text-align: center;
   font-family: "Cinzel", Georgia, serif;
   font-size: 1.6rem;
   font-weight: 700;
@@ -2648,7 +2649,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .typing-retry {
-  margin-top: 0.5rem;
+  display: block;
+  margin: 0.5rem 0 0 auto;
 }
 
 .typing-board {
