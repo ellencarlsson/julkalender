@@ -3559,3 +3559,21 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 @keyframes grp-found {
   from { transform: scale(0.95); opacity: 0; }
 }
+
+/* An item's note (#211), e.g. the cinema ticket's code, in small print under its name. */
+.backpack-item-note {
+  font-family: "Courier New", monospace;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  color: #9b2a20;
+}
+
+.backpack-item--wide {
+  width: 11rem;
+}
+
+.backpack-item--wide img {
+  width: 10rem;
+  height: 6rem;
+}

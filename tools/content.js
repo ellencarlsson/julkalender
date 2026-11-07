@@ -319,6 +319,7 @@ function rewardErrors(reward) {
   }
   const item = reward.item;
   const hasPicture = isPlainObject(item) && (IMAGE_PATH.test(item.image ?? "") || isNonEmptyString(item.emoji));
+  if (isPlainObject(item) && item.note !== undefined && !isNonEmptyString(item.note)) errors.push("reward.item.note must be a non-empty string");
   if (item !== undefined && !(hasPicture && isNonEmptyString(item.name))) {
     errors.push('reward.item must be { "name": "...", "image": "images/..." } or { "name": "...", "emoji": "🍿" }');
   }

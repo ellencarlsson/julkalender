@@ -23,6 +23,9 @@ function itemTile(item) {
   const tile = Object.assign(document.createElement("li"), { className: `backpack-item ${REWARD_ITEM}` });
   const picture = itemPicture(item);
   tile.append(picture, Object.assign(document.createElement("span"), { className: "backpack-item-name", textContent: name }));
+  if (item.note) tile.append(Object.assign(document.createElement("span"), { className: "backpack-item-note", textContent: item.note }));
+  // A wide picture (like the cinema ticket) gets a wider tile.
+  if (item.wide) tile.classList.add("backpack-item--wide");
   return tile;
 }
 
