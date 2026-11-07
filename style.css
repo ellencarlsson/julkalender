@@ -3446,8 +3446,13 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 /* A light disc behind the picture icons (#210) so dark pictures like the black backpack stand out. */
-.main-nav .icon-button {
+.main-nav .icon-button,
+.main-nav a[aria-current="page"] {
   background: #f5ecd8;
+}
+
+.main-nav a[aria-current="page"] {
+  border-width: 3px;
 }
 
 /* Grouping: items as paper cards in a grid; found groups become rows with their category name. */
