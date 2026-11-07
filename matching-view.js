@@ -46,6 +46,18 @@ function placeTargets(ctx) {
   }
 }
 
+/**
+ * Empty slots keep the room of the tallest name still in the column, so pairing never makes the board
+ * grow. Only names in the column are measured (a slot can be narrower), and the room only ever grows.
+ */
+function reserveSlotRoom(ctx) {
+  const inColumn = ctx.targets.filter((target) => target.parentElement === ctx.targetColumn);
+  const tallest = Math.max(ctx.slotRoom ?? 0, ...inColumn.map((target) => target.offsetHeight));
+  if (tallest === (ctx.slotRoom ?? 0)) return;
+  ctx.slotRoom = tallest;
+  ctx.root.style.setProperty("--match-slot", `${tallest}px`);
+}
+
 function unlink(ctx, item) {
   ctx.links.delete(item);
   placeTargets(ctx);
@@ -161,6 +173,8 @@ export function createMatching({ task, key, progress, card: taskCard }) {
   ctx.root = element("div", "match-board");
   ctx.root.style.setProperty("--match-pairs", String(task.pairs.length));
   ctx.root.append(itemColumn(ctx, items), targetColumn(ctx, targets));
+  // Measured once the board is laid out and again whenever it changes size (fonts, pictures, a block shown).
+  new ResizeObserver(() => reserveSlotRoom(ctx)).observe(ctx.root);
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) {
