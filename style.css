@@ -1817,8 +1817,17 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   text-align: center;
 }
 
-#view-door:has(.task):not(:has(.task:not(.task--done))) .door-done {
+/* The XP shows as soon as the door has given any; the reward item only once every task is done. */
+#view-door .door-done:not([data-xp="0"]) {
   display: flex;
+}
+
+#view-door .door-done .door-done-item {
+  display: none;
+}
+
+#view-door:has(.task):not(:has(.task:not(.task--done))) .door-done .door-done-item {
+  display: inline-flex;
 }
 
 /* Wider screens: in the top-left corner, mirroring the chokladboll on the right. */

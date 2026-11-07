@@ -9,7 +9,7 @@ import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
 import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
-import { XP_PER_LEVEL, taskXp } from "./lib/level.js";
+import { doorXp, taskXp } from "./lib/level.js";
 import { isItem } from "./lib/rewards.js";
 import { createSudoku } from "./sudoku-view.js";
 import { createTypingRace } from "./typing-view.js";
@@ -178,11 +178,20 @@ function rewardItem({ name, image, emoji }) {
   return item;
 }
 
-/** What finishing the door gives; CSS reveals it once every task card is done. */
+/** The door's XP so far and its reward item; CSS shows the XP once it is above 0 and the item once the door is done. */
 function showDoorReward(door) {
-  const xp = Object.assign(document.createElement("span"), { className: "door-done-xp", textContent: `+${XP_PER_LEVEL} XP` });
+  const xp = Object.assign(document.createElement("span"), { className: "door-done-xp" });
   const item = door?.reward?.item;
   element("door-done").replaceChildren(xp, ...(isItem(item) ? [rewardItem(item)] : []));
+  showDoorXp(0);
+}
+
+/** XP earned so far in the open door, shown beside the title. */
+export function showDoorXp(xp) {
+  const box = element("door-done");
+  const rounded = Math.round(xp);
+  box.dataset.xp = String(rounded);
+  box.querySelector(".door-done-xp")?.replaceChildren(`+${rounded} XP`);
 }
 
 export function showDoorContent(number, { state, door }, progress, onReset) {
@@ -191,6 +200,7 @@ export function showDoorContent(number, { state, door }, progress, onReset) {
   if (state === DOOR_STATE.LOCKED) return showLocked(number);
   if (state !== DOOR_STATE.OPEN) return showMessage(STATE_MESSAGES[state]);
   element("task-area").replaceChildren(...taskElements(door.tasks ?? [], number, progress, door.paged));
+  showDoorXp(doorXp(number, door, progress));
   // TEST_RESET_DOOR: kept below the parchment so it does not look like part of the door.
   if (onReset) element("door-tools").append(resetButton(number, onReset));
 }

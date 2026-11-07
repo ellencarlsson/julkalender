@@ -122,6 +122,7 @@ check "leaderboard rules only accept attempts in the player's own name" grep -q 
 check "ordering-view.js has valid syntax" check_js_syntax ordering-view.js
 check "completed task cards have no corner tick" bash -c '! grep -q "task--done[^{]*::after" style.css'
 check "Kör igen stays hidden until a run is finished (regression #183)" grep -q "^.typing-retry:not(\[hidden\])" style.css
+check "the open door shows its XP so far beside the title" grep -q "showDoorXp(doorXp(number, door, progress))" door-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

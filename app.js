@@ -8,7 +8,8 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-import { markDoor, showDoorContent, showDoorLoading } from "./door-view.js";
+import { markDoor, showDoorContent, showDoorLoading, showDoorXp } from "./door-view.js";
+import { doorXp } from "./lib/level.js";
 import { discardPendingCrossword } from "./crossword-view.js";
 import { renderBackpack } from "./backpack-view.js";
 import { createDoorReader } from "./doors.js";
@@ -34,7 +35,10 @@ const doors = createDoorReader(db);
 let progressReady = null;
 const levels = createLevelTracker({
   onMaxLevel: () => readFinalMessage(db).then(showFinalMessage),
-  onChange: (loadedDoors, progress) => renderBackpack(progress && collectRewards(loadedDoors, progress)),
+  onChange: (loadedDoors, progress) => {
+    renderBackpack(progress && collectRewards(loadedDoors, progress));
+    updateOpenDoorXp(loadedDoors, progress);
+  },
 });
 const hints = createHintTracker();
 const showShell = createShell({ onDoorOpen: openDoor, onSideQuestsOpen: openSideQuests });
@@ -55,6 +59,13 @@ async function resetSideQuests() {
   await loadedProgress.resetSideQuests();
   hints.refresh();
   openSideQuests();
+}
+
+/** Keeps the open door's XP beside its title in step with every task, word or digit completed. */
+function updateOpenDoorXp(loadedDoors, progress) {
+  const number = parseRoute(location.hash).door;
+  const door = new Map(loadedDoors).get(number);
+  if (progress && door) showDoorXp(doorXp(number, door, progress));
 }
 
 /** Starts loading progress; the no-op catch only silences "unhandled rejection" until a door awaits it. */
