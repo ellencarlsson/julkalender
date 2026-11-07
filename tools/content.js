@@ -197,16 +197,22 @@ function validateTyping(task) {
 const CATCH_IMAGES = ["background", "bucket", "good"];
 const isImageList = (value) => Array.isArray(value) && value.length > 0 && value.every((path) => IMAGE_PATH.test(path));
 
+const isFactorMap = (value) => typeof value === "object" && value !== null && !Array.isArray(value)
+  && Object.entries(value).every(([path, factor]) => IMAGE_PATH.test(path) && typeof factor === "number" && factor > 0);
 const isLevelMap = (value) => typeof value === "object" && value !== null && !Array.isArray(value)
   && Object.entries(value).every(([path, level]) => IMAGE_PATH.test(path) && [1, 2, 3, 4].includes(level));
 
 /** bad is one picture or a list of pictures; any of them falls as a thing not to catch. large lists the pictures that fall
-    big, and fromLevel maps a picture to the first level it falls on. */
+    big, fromLevel maps a picture to the first level it falls on, pickWeight to how often it is picked
+    and speed to a factor on the fall speed. */
 function validateCatch(task) {
   const errors = CATCH_IMAGES.filter((field) => !IMAGE_PATH.test(task[field] ?? "")).map((field) => `${field} must be a path like images/name.webp`);
   if (!IMAGE_PATH.test(task.bad ?? "") && !isImageList(task.bad)) errors.push("bad must be a picture path or a list of them");
   if (task.large !== undefined && !isImageList(task.large)) errors.push("large must be a list of picture paths");
   if (task.fromLevel !== undefined && !isLevelMap(task.fromLevel)) errors.push("fromLevel must map picture paths to a level 1-4");
+  for (const field of ["pickWeight", "speed"]) {
+    if (task[field] !== undefined && !isFactorMap(task[field])) errors.push(`${field} must map picture paths to a positive number`);
+  }
   if (!(Number.isInteger(task.goal) && task.goal > 0)) errors.push("goal must be a positive whole number");
   if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
   return errors;

@@ -5,7 +5,7 @@
  */
 import {
   BUCKET_WIDTH, LEVEL_COUNT, badPicturesFor, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone,
-  pickKind, spawnX,
+  pickKind, pickWeighted, spawnX,
 } from "./lib/catch.js";
 
 // Where the bucket rim is drawn: the bucket sits at the bottom of the tall field and its rim is about
@@ -28,12 +28,12 @@ function place(node, x, y) {
   node.style.top = `${y}%`;
 }
 
-const randomOf = (list) => list[Math.floor(Math.random() * list.length)];
-
 function spawn(ctx) {
   const kind = pickKind(Math.random, levelSettings(ctx.level).badChance);
   const item = { kind, x: spawnX(Math.random), y: CROWN_TOP + Math.random() * CROWN_HEIGHT };
-  const src = kind === "good" ? ctx.task.good : randomOf(badPicturesFor(ctx.task.bad, ctx.task.fromLevel, ctx.level));
+  const bad = () => pickWeighted(Math.random, badPicturesFor(ctx.task.bad, ctx.task.fromLevel, ctx.level), ctx.task.pickWeight);
+  const src = kind === "good" ? ctx.task.good : bad();
+  item.speed = ctx.task.speed?.[src] ?? 1;
   const size = ctx.task.large?.includes(src) ? " catch-item--large" : "";
   item.node = picture(src, `catch-item catch-item--${kind}${size}`);
   place(item.node, item.x, item.y);
@@ -53,7 +53,7 @@ function moveItems(ctx, dt) {
   const speed = fallSpeed(ctx.level);
   for (const item of [...ctx.items]) {
     const previous = item.y;
-    item.y += speed * dt;
+    item.y += speed * item.speed * dt;
     const caught = crossesRim(previous, item.y, RIM_Y) && isOverBucket(item.x, ctx.bucketX);
     if (caught || item.y > 105) removeItem(ctx, item);
     else place(item.node, item.x, item.y);

@@ -1,7 +1,7 @@
 /** Tests for the catch game: landing in the bucket, bucket bounds, spawning and speed. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { BUCKET_WIDTH, badPicturesFor, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone, pickKind, spawnX } from "../lib/catch.js";
+import { BUCKET_WIDTH, badPicturesFor, pickWeighted, LEVEL_COUNT, clampBucket, crossesRim, encodeLevels, fallSpeed, isOverBucket, levelSettings, levelsDone, pickKind, spawnX } from "../lib/catch.js";
 
 test("an item lands only in the frame it passes the bucket rim", () => {
   assert.equal(crossesRim(78, 82, 80), true);
@@ -61,4 +61,12 @@ test("a picture with a start level only falls from that level on", () => {
   assert.deepEqual(badPicturesFor(bad, { "cow.webp": 3 }, 2), ["apple.svg"]);
   assert.deepEqual(badPicturesFor(bad, { "cow.webp": 3 }, 3), bad);
   assert.deepEqual(badPicturesFor("apple.svg", undefined, 1), ["apple.svg"]);
+});
+
+test("a heavier picture is picked more often", () => {
+  const pictures = ["apple.svg", "cow.webp"];
+  // Total weight 4: apple covers [0, 1), the cow [1, 4).
+  assert.equal(pickWeighted(() => 0.2, pictures, { "cow.webp": 3 }), "apple.svg");
+  assert.equal(pickWeighted(() => 0.3, pictures, { "cow.webp": 3 }), "cow.webp");
+  assert.equal(pickWeighted(() => 0.3, pictures), "apple.svg");
 });
