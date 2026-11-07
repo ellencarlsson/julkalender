@@ -113,6 +113,7 @@ scripts/test.sh
 - `images/icons/ryggsack.webp` — cut out from a Haglöfs Corker Medium product photo (© Haglöfs)
 - `images/door-11/hatt-arthur.webp` — cropped from Ellen's own Red Dead Redemption 2 screenshot (game art © Rockstar Games)
 - `images/door-23/{edward,alice,jasper,bella,jane}.webp` — Twilight Saga promotional stills (© Summit Entertainment), from screenshots Ellen saved
+- `images/door-23/{mackay,falck,sundance,casper,boris}.webp` — Battlefield 2042 specialist renders (© Electronic Arts), saved by Ellen
 - `images/door-23/{arthur,dutch,uncle,charles,sadie}.webp` — Red Dead Redemption 2 game screenshots (© Rockstar Games), saved by Ellen
 - `images/door-23/{harry,tonks,mcgonagall,sirius,trelawney}.webp` — Harry Potter film stills (© Warner Bros.), from screenshots Ellen saved
 - `images/door-23/{eleven,kali,will,vecna}.webp` — Stranger Things stills (© Netflix), from screenshots Ellen saved
