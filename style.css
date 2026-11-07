@@ -2628,14 +2628,17 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   border-color: #c0392b;
 }
 
-.typing-retry {
+/* :not([hidden]) so the block display never shows the button before a run is finished. */
+.typing-retry:not([hidden]) {
   display: block;
   margin: 0.5rem 0 0 auto;
 }
 
+/* Centred under the race; the rows stay aligned with each other inside the centred list. */
 .typing-board {
   margin: 1.25rem auto 0;
   max-width: 22rem;
+  text-align: center;
 }
 
 .typing-board h3 {
@@ -2643,7 +2646,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   font-family: var(--hand-font);
   font-size: 1.4rem;
   font-weight: bold;
-  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .typing-instructions {
@@ -2653,6 +2657,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .typing-list {
+  display: inline-block;
   margin: 0;
   padding-left: 1.75rem;
   font-family: var(--hand-font);
