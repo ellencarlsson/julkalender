@@ -316,3 +316,12 @@ test("the paged flag is kept in the uploaded door document", () => {
   assert.equal(toDoorDocument({ ...quizDoor(), paged: true }).paged, true);
   assert.equal("paged" in toDoorDocument(quizDoor()), false);
 });
+
+test("ordering tasks list pictures in order and may require another task", () => {
+  const item = (name) => ({ name, image: `images/p/${name}.svg` });
+  const naming = { id: "namn", type: "quiz", question: "?", answers: ["a"] };
+  const ordering = (extra) => ({ id: "ordning", type: "ordering", items: [item("a"), item("b")], ...extra });
+  assert.deepEqual(validateDoor({ door: 6, tasks: [naming, ordering({ requires: "namn", anchor: { image: "images/p/sol.svg" } })] }), []);
+  assert.equal(validateDoor({ door: 6, tasks: [ordering({ items: [item("a")] })] }).length, 1);
+  assert.equal(validateDoor({ door: 6, tasks: [naming, ordering({ requires: "saknas" })] }).length, 1);
+});
