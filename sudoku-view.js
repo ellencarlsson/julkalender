@@ -173,7 +173,7 @@ async function complete(ctx) {
     ctx.mode.remove();
     ctx.lamp?.remove();
     const label = ctx.xp ? `Sudokut är löst! +${ctx.xp} XP` : "Sudokut är löst!";
-    ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
+    ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state task-done-signed match-success" }));
   } catch {
     ctx.done = false;
     ctx.status.textContent = "Kunde inte spara. Försök igen.";

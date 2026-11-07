@@ -24,9 +24,9 @@ export function checkIcon() {
   return icon;
 }
 
+/** The task's done text, signed in script at the bottom right of the card. */
 export function doneState(label) {
-  const done = paragraph("task-done-state", ` ${label}`);
-  done.prepend(checkIcon());
+  const done = paragraph("task-done-state task-done-signed", label);
   done.setAttribute("role", "status");
   return done;
 }
