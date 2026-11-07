@@ -3190,3 +3190,11 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .match-target::after {
   right: 0.4rem;
 }
+
+/* Phones: a long formula line (like the door 19 rebus) shrinks to fit instead of wrapping oddly. */
+@media (max-width: 35.99rem) {
+  .task-formula {
+    font-size: clamp(1.6rem, 8vw, 3.2rem);
+    white-space: nowrap;
+  }
+}
