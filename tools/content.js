@@ -261,6 +261,9 @@ function validateTaskCommon(task) {
     errors.push("weight must be a positive number");
   }
   if (task.clue !== undefined && !isNonEmptyString(task.clue)) errors.push("clue must be a non-empty string");
+  if (task.ticket !== undefined && !(isPlainObject(task.ticket) && IMAGE_PATH.test(task.ticket.image ?? ""))) {
+    errors.push('ticket must be { "image": "images/..." } with optional locked, unlocked and note texts');
+  }
   return [...errors, ...validateImage(task)];
 }
 

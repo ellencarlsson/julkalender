@@ -7,6 +7,7 @@ import { createOrdering } from "./ordering-view.js";
 import { createPick } from "./pick-view.js";
 import { createQuiz } from "./quiz-view.js";
 import { recipeCard } from "./recipe-view.js";
+import { ticketPicture } from "./ticket-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { taskKey } from "./lib/progress.js";
@@ -98,6 +99,7 @@ function taskCard(task, door, progress, xp) {
   if (task.image) card.append(taskImage(task));
   if (task.formula) card.append(paragraph("task-formula", task.formula));
   if (task.recipe) card.append(recipeCard(task.recipe));
+  if (task.ticket) card.append(ticketPicture(task, card, progress.isCompleted(taskKey(door, task.id))));
   const key = taskKey(door, task.id);
   card.append(...(TASK_BUILDERS[task.type]?.({ task, key, progress, card, xp, door }) ?? []));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));

@@ -17,12 +17,14 @@ function answerInput() {
   return input;
 }
 
-function letterBox(index, count) {
+function letterBox(index, count, digits) {
   const box = answerInput();
   box.className = "quiz-letter";
   box.maxLength = 1;
-  box.setAttribute("aria-label", `Bokstav ${index + 1} av ${count}`);
+  box.setAttribute("aria-label", `${digits ? "Siffra" : "Bokstav"} ${index + 1} av ${count}`);
   box.setAttribute("autocapitalize", "characters");
+  // A code of digits brings up the number keyboard on phones.
+  if (digits) box.inputMode = "numeric";
   return box;
 }
 
@@ -39,9 +41,9 @@ function onLetterKey(event, boxes, index) {
 }
 
 /** One box per letter; typing moves on to the next box and Backspace steps back. */
-function letterBoxes(count) {
+function letterBoxes(count, digits = false) {
   const row = Object.assign(document.createElement("div"), { className: "quiz-letters" });
-  const boxes = Array.from({ length: count }, (_, index) => letterBox(index, count));
+  const boxes = Array.from({ length: count }, (_, index) => letterBox(index, count, digits));
   boxes.forEach((box, index) => {
     box.addEventListener("input", () => onLetterInput(boxes, index));
     box.addEventListener("keydown", (event) => onLetterKey(event, boxes, index));
@@ -122,7 +124,7 @@ function solvedState(task, typed) {
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
 function answerField(task) {
   if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
-  if (task.letters) return letterBoxes(codeWordLength(task.answers));
+  if (task.letters) return letterBoxes(codeWordLength(task.answers), /^\d+$/.test(task.answers[0] ?? ""));
   const input = answerInput();
   if (task.exam) input.classList.add("exam-blank");
   return input;
