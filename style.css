@@ -387,7 +387,7 @@ button.small {
   text-align: center;
 }
 
-.locked-title + p {
+.locked-title ~ p {
   text-align: center;
 }
 
