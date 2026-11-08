@@ -1,5 +1,5 @@
 /**
- * Hotspot task: a picture and a question like "Tryck på astronomitornet" or "Hitta de 13 hattarna". A tap
+ * Hotspot task: a picture with its question written on it, like "Klicka på astronomitornet" or "Hitta de 13 hattarna". A tap
  * inside a right area outlines it; once every area is found the task is solved. A tap anywhere else
  * just says to try again.
  */
@@ -71,9 +71,11 @@ function savedFound(task, key, progress, count) {
 export function createHotspot({ task, key, progress, card }) {
   const ctx = { task, key, progress, card, areas: hotspotAreas(task), found: [] };
   ctx.frame = element("div", "hotspot-frame");
-  ctx.picture = Object.assign(element("img", "hotspot-picture"), { src: task.picture, alt: task.alt ?? "", draggable: false });
+  ctx.picture = Object.assign(element("img", "hotspot-picture"), { src: task.picture, alt: `${task.prompt} ${task.alt ?? ""}`.trim(), draggable: false });
   ctx.picture.addEventListener("click", (event) => onTap(ctx, event));
-  ctx.frame.append(ctx.picture);
+  const caption = Object.assign(element("span", "hotspot-caption"), { textContent: task.prompt });
+  caption.setAttribute("aria-hidden", "true");
+  ctx.frame.append(ctx.picture, caption);
   ctx.status = paragraph("task-status hotspot-status", "");
   ctx.status.setAttribute("role", "status");
   savedFound(task, key, progress, ctx.areas.length).forEach((index) => showFound(ctx, index));
