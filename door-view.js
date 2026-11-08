@@ -83,6 +83,15 @@ const isPictureQuiz = (task) => task.type === "quiz" && task.image && !task.exam
 /** Task types that write their prompt into their own controls, so it is never shown above the card. */
 const DRAWS_OWN_PROMPT = new Set(["hotspot"]);
 
+/** Witness statements: who said it, then what they said. */
+function statementList(statements) {
+  const list = Object.assign(document.createElement("dl"), { className: "task-statements" });
+  for (const { who, text } of statements) {
+    list.append(Object.assign(document.createElement("dt"), { textContent: who }), Object.assign(document.createElement("dd"), { textContent: `”${text}”` }));
+  }
+  return list;
+}
+
 /** Each task type's own controls; every builder returns the elements to append to the card. */
 const TASK_BUILDERS = {
   challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)),
@@ -105,9 +114,11 @@ function taskCard(task, door, progress, xp) {
   card.className = task.worksheet ? "task task--worksheet" : "task";
   if (task.worksheet) card.append(worksheetHeader(task.worksheet, task.worksheetName));
   if (task.letterAddress) card.append(letterAddress(task.letterAddress));
+  if (task.story) card.append(paragraph("task-story", task.story));
   const promptText = taskPrompt(task);
   if (promptText) card.append(Object.assign(document.createElement("p"), { className: "task-prompt", textContent: promptText }));
   if (task.image) card.append(taskImage(task));
+  if (task.statements) card.append(statementList(task.statements));
   if (task.formula) card.append(paragraph("task-formula", task.formula));
   if (task.recipe) card.append(recipeCard(task.recipe));
   if (task.ticket) card.append(ticketPicture(task, card, progress.isCompleted(taskKey(door, task.id))));

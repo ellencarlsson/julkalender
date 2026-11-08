@@ -309,6 +309,10 @@ function validateWorksheet(task) {
 function validateTaskCommon(task) {
   const errors = [...validateWorksheet(task)];
   if (task.pageTitle !== undefined && !isNonEmptyString(task.pageTitle)) errors.push("pageTitle must be a non-empty string");
+  if (task.story !== undefined && !isNonEmptyString(task.story)) errors.push("story must be a non-empty string");
+  if (task.statements !== undefined && !(Array.isArray(task.statements) && task.statements.length > 0 && task.statements.every((s) => isNonEmptyString(s?.who) && isNonEmptyString(s?.text)))) {
+    errors.push('statements must be a non-empty list of { "who": "...", "text": "..." }');
+  }
   if (!isNonEmptyString(task.id)) errors.push("id must be a non-empty string");
   if (task.weight !== undefined && !(Number.isFinite(task.weight) && task.weight > 0)) {
     errors.push("weight must be a positive number");
