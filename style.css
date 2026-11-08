@@ -242,22 +242,66 @@ button.small {
   background: conic-gradient(var(--cream) calc(var(--progress) * 1%), var(--surface) 0);
 }
 
-/* Fixed so it is seen even when the completed task is far down the page. */
+/* Fixed so it is seen even when the completed task is far down the page. A small parchment note
+   with a wax seal, like the door pages, so it belongs to the same letter-and-ink look. */
 .level-up {
   position: fixed;
   right: 1rem;
   bottom: 1rem;
   left: 1rem;
   z-index: 10;
-  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
   margin: 0 auto;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--gold);
-  border-radius: 999px;
-  background: var(--surface-raised);
-  color: var(--cream);
-  font-weight: bold;
+  border: 1.2rem solid transparent;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.2rem round;
+  padding: 0 1rem 0 0.6rem;
+  color: #3a2716;
+  text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.5));
+  animation: level-up-in 0.5s ease-out;
+}
+
+/* Beats the page column's full width so the note only takes the room its words need. */
+#signed-in > .level-up {
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+}
+
+.level-up::before {
+  content: "";
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  background: url("./images/theme/wax-seal.webp") center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(60, 10, 5, 0.4));
+}
+
+.level-up-title {
+  display: block;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.level-up-text {
+  display: block;
+  font-size: 1.05rem;
+}
+
+@keyframes level-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) rotate(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-up {
+    animation: none;
+  }
 }
 
 .level-up[hidden] {
