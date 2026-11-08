@@ -163,8 +163,8 @@ function showMessage(...lines) {
 const COME_BACK = "Kom tillbaka då för att öppna den!";
 
 function showLocked(number) {
-  if (number === TEST_LOCKED_DOOR) showMessage("Denna lucka är låst", TEST_LOCKED_DOOR_LABEL);
-  else showMessage("Denna lucka är låst", unlockLabel(number), COME_BACK);
+  const when = number === TEST_LOCKED_DOOR ? TEST_LOCKED_DOOR_LABEL : unlockLabel(number);
+  showMessage("Denna lucka är låst", when, COME_BACK);
   element("task-area").firstChild.className = "locked-title";
 }
 
