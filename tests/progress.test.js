@@ -20,7 +20,7 @@ test("missing or malformed progress means nothing completed", () => {
 });
 
 test("challenge texts match the agreed wording", () => {
-  assert.equal(PHOTO_SENT_LABEL, "Jag har skickat bild till spelledaren att jag gjort detta");
+  assert.equal(PHOTO_SENT_LABEL, "Markera rutan som klar när du har skickat en bild till spelledaren på att du har slutfört uppdraget");
   assert.equal(CHALLENGE_DONE_LABEL, "Klart!");
   assert.equal(QUIZ_DONE_LABEL, "Rätt svar!");
   assert.equal(QUIZ_WRONG_LABEL, "Inte rätt, försök igen.");
