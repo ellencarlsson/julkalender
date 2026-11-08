@@ -259,6 +259,7 @@ function validateHotspot(task) {
   // picture, not image: image is the plain picture every task can show above itself.
   const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
   if (!isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  if (![undefined, "bottom", "bottom-left"].includes(task.captionAt)) errors.push('captionAt must be "bottom" or "bottom-left"');
   if (task.areas === undefined) return [...errors, ...hotspotAreaErrors(task.area)];
   if (!Array.isArray(task.areas) || task.areas.length === 0) return [...errors, "areas must be a list of areas"];
   return [...errors, ...task.areas.flatMap((area, index) => hotspotAreaErrors(area).map((error) => `areas[${index}]: ${error}`))];
