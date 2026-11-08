@@ -433,6 +433,12 @@ test("a word search needs equal rows of letters and words that are in the grid",
   assert.match(validateDoor(door({ words: ["GTA", "Teemo"] })).join(), /"Teemo" is not in the grid/);
 });
 
+test("a pick task may have a hint", () => {
+  const door = (overrides) => ({ door: 8, tasks: [{ id: "p", type: "pick", options: [{ text: "A", correct: true }, { text: "B" }], ...overrides }] });
+  assert.deepEqual(validateDoor(door({ hint: "Tänk på julen." })), []);
+  assert.match(validateDoor(door({ hint: "" })).join(), /hint must be/);
+});
+
 test("a matching pair hint is true or false", () => {
   const pairs = [{ item: { text: "A" }, target: { text: "1" } }, { item: { text: "B" }, target: { text: "2" } }];
   const hintDoor = (pairHint) => ({ door: 7, tasks: [{ id: "m", type: "matching", pairs, pairHint }] });

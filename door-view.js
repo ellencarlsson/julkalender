@@ -7,6 +7,7 @@ import { createMatching } from "./matching-view.js";
 import { createOrdering } from "./ordering-view.js";
 import { createPick } from "./pick-view.js";
 import { createQuiz } from "./quiz-view.js";
+import { createQuizHint } from "./quiz-hint.js";
 import { recipeCard } from "./recipe-view.js";
 import { ticketPicture } from "./ticket-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
@@ -93,6 +94,9 @@ function statementList(statements) {
   return list;
 }
 
+/** Task types that place their own chokladboll hint; every other type gets the text hint added here. */
+const OWN_HINT = new Set(["quiz", "pick", "sudoku", "crossword"]);
+
 /** Each task type's own controls; every builder returns the elements to append to the card. */
 const TASK_BUILDERS = {
   challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), (done) => (done ? progress.complete(key) : progress.uncomplete(key))),
@@ -126,6 +130,7 @@ function taskCard(task, door, progress, xp) {
   if (task.ticket) card.append(ticketPicture(task, card, progress.isCompleted(taskKey(door, task.id))));
   const key = taskKey(door, task.id);
   card.append(...(TASK_BUILDERS[task.type]?.({ task, key, progress, card, xp, door }) ?? []));
+  if (!OWN_HINT.has(task.type) && !progress.isCompleted(key)) card.append(...[createQuizHint({ task, key, progress })].filter(Boolean));
   if (task.envelope) card.append(...envelope(task.envelope, task.envelopeSent));
   if (task.letterSent) card.append(letterSent(task.letterSent));
   // Shown by CSS once the card is done, so every task type ends with the same signed "Klart!".
