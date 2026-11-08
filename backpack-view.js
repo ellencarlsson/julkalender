@@ -23,7 +23,19 @@ function itemTile(item) {
   const tile = Object.assign(document.createElement("li"), { className: `backpack-item ${REWARD_ITEM}` });
   const picture = itemPicture(item);
   tile.append(picture, Object.assign(document.createElement("span"), { className: "backpack-item-name", textContent: name }));
+  if (item.note) tile.append(Object.assign(document.createElement("span"), { className: "backpack-item-note", textContent: item.note }));
+  // A wide picture (like the cinema ticket) gets a wider tile.
+  if (item.wide) tile.classList.add("backpack-item--wide");
   return tile;
+}
+
+/** The prize gets its own big section at the bottom, apart from the code and the items. */
+function showPrize(prize) {
+  element("backpack-prize").hidden = !prize;
+  if (!prize) return;
+  element("prize-image").src = prize.image;
+  element("prize-code").textContent = prize.code;
+  element("prize-text").textContent = prize.text;
 }
 
 /**
@@ -33,7 +45,8 @@ function itemTile(item) {
  *   rewards: { code, items } from collectRewards, or null while progress is loading.
  */
 export function renderBackpack(rewards) {
-  const { code, items, clues } = rewards ?? { code: Array(CODE_LENGTH).fill(null), items: [], clues: new Set() };
+  const { code, items, clues, prize } = rewards ?? { code: Array(CODE_LENGTH).fill(null), items: [], clues: new Set(), prize: null };
+  showPrize(prize);
   // Which parts of the code show is styled from these flags on the section.
   CLUES.forEach((clue) => element("view-backpack").classList.toggle(`has-${clue}`, clues.has(clue)));
   element("code-boxes").replaceChildren(...code.map(codeBox));

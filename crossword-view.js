@@ -74,7 +74,7 @@ async function finish(ctx) {
   try {
     await ctx.progress.complete(ctx.key);
     ctx.card.classList.add("task--done");
-    ctx.status.textContent = "Korsordet är löst! 🎉";
+    ctx.status.textContent = "Korsordet är löst!";
   } catch {
     setLocked(ctx, false);
     ctx.status.textContent = "Rätt! Men det gick inte att spara. Ändra en bokstav och försök igen.";

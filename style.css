@@ -171,7 +171,7 @@ button.small {
 }
 
 #auth-error {
-  color: #ffd6d6;
+  color: var(--cream);
 }
 
 .game-header {
@@ -228,7 +228,7 @@ button.small {
 
 .sidequest-reward {
   margin-top: 0;
-  color: var(--gold);
+  color: var(--cream);
   font-size: 0.95rem;
 }
 
@@ -242,22 +242,66 @@ button.small {
   background: conic-gradient(var(--cream) calc(var(--progress) * 1%), var(--surface) 0);
 }
 
-/* Fixed so it is seen even when the completed task is far down the page. */
+/* Fixed so it is seen even when the completed task is far down the page. A small parchment note
+   with a wax seal, like the door pages, so it belongs to the same letter-and-ink look. */
 .level-up {
   position: fixed;
   right: 1rem;
   bottom: 1rem;
   left: 1rem;
   z-index: 10;
-  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
   margin: 0 auto;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.35);
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--gold);
-  border-radius: 999px;
-  background: var(--surface-raised);
-  color: var(--cream);
-  font-weight: bold;
+  border: 1.2rem solid transparent;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.2rem round;
+  padding: 0 1rem 0 0.6rem;
+  color: #3a2716;
+  text-shadow: none;
+  filter: drop-shadow(0 8px 18px rgba(10, 16, 40, 0.5));
+  animation: level-up-in 0.5s ease-out;
+}
+
+/* Beats the page column's full width so the note only takes the room its words need. */
+#signed-in > .level-up {
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+}
+
+.level-up::before {
+  content: "";
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  background: url("./images/theme/wax-seal.webp") center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(60, 10, 5, 0.4));
+}
+
+.level-up-title {
+  display: block;
+  font-family: "Dancing Script", var(--hand-font), cursive;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.level-up-text {
+  display: block;
+  font-size: 1.05rem;
+}
+
+@keyframes level-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) rotate(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-up {
+    animation: none;
+  }
 }
 
 .level-up[hidden] {
@@ -387,7 +431,7 @@ button.small {
   text-align: center;
 }
 
-.locked-title + p {
+.locked-title ~ p {
   text-align: center;
 }
 
@@ -402,16 +446,6 @@ button.small {
   margin-top: 0;
   /* Keeps line breaks from the content, e.g. one equation or recipe step per line. */
   white-space: pre-line;
-}
-
-.check-icon {
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  vertical-align: -0.15em;
-  background: currentColor;
-  -webkit-mask: var(--tick-mask) center / contain no-repeat;
-  mask: var(--tick-mask) center / contain no-repeat;
 }
 
 .task-instruction {
@@ -631,7 +665,7 @@ button.small {
 }
 
 .cw-cell.cw-revealed input {
-  color: var(--gold);
+  color: var(--cream);
 }
 
 .cw-current-clue {
@@ -882,7 +916,7 @@ button.small {
 
 .quiz-hint-text {
   margin: 0;
-  color: var(--gold);
+  color: var(--cream);
   font-style: italic;
 }
 
@@ -900,7 +934,7 @@ button.small {
   --solved: rgba(44, 106, 63, 0.22);
   --gold: #b8342a;
   border: 1.6rem solid transparent;
-  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.6rem round;
   padding: 0.25rem 0.5rem 0.75rem;
   color: var(--cream);
   text-shadow: none;
@@ -1002,7 +1036,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 #view-door .task-done-state {
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.5rem;
   font-weight: normal;
@@ -1344,7 +1378,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .sq-reward {
   flex: none;
-  color: var(--gold);
+  color: var(--cream);
   font-size: 1.05rem;
 }
 
@@ -1355,7 +1389,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .sq-error {
   margin: 0.5rem 0 0;
-  color: var(--gold);
+  color: var(--cream);
 }
 
 /* Crossword on the parchment: handwritten clues straight on the paper and ink-drawn cells,
@@ -1542,7 +1576,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 /* A solved matching block says so clearly, with the XP it gave. */
 .match-success {
   margin-top: 0.75rem;
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.6rem;
   text-align: center;
@@ -1607,28 +1641,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   transform: translateY(-2px);
 }
 
-/* Pairs are joined by coloured lines drawn over the board; the cards themselves have no boxes. */
-.match-board {
-  position: relative;
-}
-
-.match-lines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.match-line {
-  stroke: var(--pair-color);
-  stroke-width: 4;
-  stroke-linecap: round;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
-}
-
+/* The cards themselves have no boxes. */
 .match-card,
 .match-card:has(img),
 .match-card.match-linked,
@@ -1778,20 +1791,21 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 /* Shown by CSS alone once every task card is done, so it appears the moment the last task is
-   solved. Phones have no room beside the title arrows, so it sits centered above the title there. */
+   solved. It sits in the top-left corner beside the title, mirroring the chokladboll on the right. */
 #view-door .door-done {
   display: none;
   align-items: center;
   justify-content: center;
   gap: 0.25rem 0.75rem;
   margin: 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font-family: var(--hand-font);
   font-size: 1.2rem;
   line-height: 1.1;
 }
 
 .door-done-xp {
+  font-size: 1.6rem;
   font-weight: bold;
 }
 
@@ -1825,19 +1839,48 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   display: inline-flex;
 }
 
-/* Wider screens: in the top-left corner, mirroring the chokladboll on the right. */
-@media (min-width: 36rem) {
-  #view-door .door-done {
-    position: absolute;
-    top: calc(var(--hint-top) + 0.3rem);
-    left: var(--hint-right);
-    z-index: 1;
-    align-items: flex-start;
+/* In the top-left corner, stacked: the XP on top, the item below it (#240: also on phones). */
+#view-door .door-done {
+  position: absolute;
+  top: calc(var(--hint-top) + 0.3rem);
+  left: var(--hint-right);
+  z-index: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Phones: smaller, and the title line keeps clear of the XP corner and the chokladboll. */
+@media (max-width: 35.99rem) {
+  #view-door .door-header {
+    gap: 0.4rem;
+    padding-inline: 3.4rem;
   }
 
-  /* Stacked in the corner: the XP on top, the item below it. */
-  #view-door:has(.task):not(:has(.task:not(.task--done))) .door-done {
-    flex-direction: column;
+  #view-door .door-header h2 {
+    font-size: clamp(1.8rem, 8vw, 2.4rem);
+  }
+
+  #view-door .door-done {
+    top: calc(var(--hint-top) + 0.5rem);
+    gap: 0.1rem;
+    font-size: 0.85rem;
+  }
+
+  #view-door .door-done {
+    max-width: 3.3rem;
+  }
+
+  #view-door .door-done-xp {
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
+  #view-door .door-done-item img,
+  #view-door .door-done-emoji {
+    width: 1.1rem;
+    height: 1.1rem;
+    font-size: 0.95rem;
+    line-height: 1.1rem;
   }
 }
 
@@ -1845,7 +1888,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .final-message:not([hidden]) {
   margin: 0 0 1.5rem;
   border: 1.6rem solid transparent;
-  border-image: url("./images/theme/parchment.webp") 70 fill / 1.6rem stretch;
+  border-image: url("./images/theme/parchment-tile.webp") 52 fill / 1.6rem round;
   padding: 0.25rem 0.75rem 0.75rem;
   color: #3a2716;
   text-align: center;
@@ -1925,7 +1968,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .sdk-cell.sdk-conflict {
-  color: #c0392b;
+  background: rgba(58, 39, 22, 0.18);
+  color: var(--cream);
+  text-decoration: underline wavy;
 }
 
 .sdk-pad {
@@ -2081,11 +2126,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   text-align: center;
 }
 
-/* A solved quiz keeps the answer in ink, with the green check beside it. */
-#view-door .quiz-solved-answer {
-  color: var(--cream);
-}
-
 /* The side quest reward reads like the quest text, not as a warning. */
 #view-sidequests .sq-reward {
   /* Same ink, handwriting, size and weight as the quest text next to it. */
@@ -2099,7 +2139,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   color: var(--cream-muted);
 }
 
-/* Exam-style quiz (door 22): the answer is written on a line, and a right answer gets the teacher's red R. */
+/* Exam-style quiz: the answer is written on a line, and a right answer gets the teacher's red R. */
 #view-door .exam-blank,
 #view-door .exam-line {
   box-sizing: border-box;
@@ -2137,7 +2177,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 #view-door .exam-mark {
-  color: var(--knit-red);
+  color: var(--cream);
   font-family: "Dancing Script", var(--hand-font), cursive;
   font-size: 3.4rem;
   font-weight: 700;
@@ -2278,9 +2318,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   left: 0.8rem;
   display: block;
   padding: 0.15rem 0.6rem;
-  border: 3px solid rgba(184, 52, 42, 0.85);
+  border: 3px solid var(--cream-muted);
   border-radius: 0.3rem;
-  color: rgba(184, 52, 42, 0.85);
+  color: var(--cream);
   font: bold 1.3rem Georgia, serif;
   letter-spacing: 0.12em;
   transform: rotate(-12deg);
@@ -2290,7 +2330,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task--done .envelope-sent {
   display: block;
   margin: 0.9rem 0 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font: 1.7rem var(--hand-font);
   text-align: center;
 }
@@ -2456,9 +2496,9 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .letter-sent-stamp {
   padding: 0.15rem 0.8rem;
-  border: 3px solid rgba(184, 52, 42, 0.85);
+  border: 3px solid var(--cream-muted);
   border-radius: 0.3rem;
-  color: rgba(184, 52, 42, 0.85);
+  color: var(--cream);
   font: bold 1.6rem Georgia, serif;
   letter-spacing: 0.14em;
   transform: rotate(-10deg);
@@ -2467,7 +2507,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 
 .letter-sent-text {
   margin: 0;
-  color: #2c6a3f;
+  color: var(--cream);
   font: 1.7rem var(--hand-font);
   text-align: center;
 }
@@ -2594,13 +2634,14 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .typing-correct {
-  color: #2c6a3f;
+  color: var(--cream);
 }
 
 .typing-wrong {
   border-radius: 0.2rem;
-  background: rgba(192, 57, 43, 0.25);
-  color: #c0392b;
+  background: rgba(58, 39, 22, 0.18);
+  color: var(--cream);
+  text-decoration: underline wavy;
 }
 
 .typing-clock {
@@ -2688,21 +2729,6 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .typing-empty {
   list-style: none;
   font-style: italic;
-}
-
-/* TEST_CONTENT_MARKER: temporary 🎁 on doors that have content, while the calendar is being built.
-   Remove this block before the calendar is given away. */
-.door[data-state="open"] {
-  position: relative;
-}
-
-.door[data-state="open"]::before {
-  content: "🎁";
-  position: absolute;
-  top: 0.3rem;
-  left: 0.35rem;
-  font-size: 1rem;
-  line-height: 1;
 }
 
 /* Ordering task (#179): the anchor (sun) on the left, numbered slots beside it, pictures below. */
@@ -2813,6 +2839,19 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   width: 4.5rem;
   height: 4.5rem;
   transform: translate(-50%, -50%);
+}
+
+/* A text card being dragged: drawn like the paper card it came from. */
+.drag-ghost--card {
+  width: auto;
+  height: auto;
+  padding: 0.4rem 0.7rem;
+  border: 1.5px solid #3a2716;
+  border-radius: 0.6rem;
+  background: #fbf3e2;
+  color: #3a2716;
+  font: max(15px, 1.1rem) var(--hand-font);
+  box-shadow: 0 6px 14px rgba(58, 39, 22, 0.35);
 }
 
 /* Wider screens: all eight slots on one line to the right of the sun. */
@@ -2979,7 +3018,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .pick-option {
-  padding: 0.6rem 1rem;
+  position: relative;
+  padding: 0.6rem 1.5rem;
   border: 2px solid rgba(58, 39, 22, 0.35);
   border-radius: 0.5rem;
   background: rgba(255, 248, 232, 0.55);
@@ -2994,8 +3034,11 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   background: rgba(58, 39, 22, 0.12);
 }
 
+/* The tick sits in the side padding so choosing an option never widens it and reflows the row. */
 .pick-option[aria-pressed="true"]::before {
-  content: "✓ ";
+  content: "✓";
+  position: absolute;
+  left: 0.45rem;
 }
 
 .pick-option:disabled {
@@ -3278,4 +3321,929 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   .recipe-card {
     grid-template-columns: minmax(10rem, 2fr) 3fr;
   }
+}
+
+/* Picture puzzle: thin gaps between the pieces until it is solved, then the picture closes up. */
+.puzzle-board {
+  display: grid;
+  gap: 2px;
+  width: min(100%, 44rem);
+  aspect-ratio: 7 / 3;
+  margin: 0.5rem auto 0;
+  padding: 2px;
+  border-radius: 0.5rem;
+  background: rgba(58, 39, 22, 0.55);
+  box-shadow: 0 4px 12px rgba(58, 39, 22, 0.3);
+}
+
+#view-door .puzzle-piece {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+#view-door .puzzle-piece--selected {
+  transform: scale(0.92);
+  outline: 4px solid #e0a526;
+  outline-offset: -4px;
+  box-shadow: 0 0 10px 2px rgba(224, 165, 38, 0.9);
+  z-index: 1;
+}
+
+.puzzle-board--solved {
+  gap: 0;
+  padding: 0;
+  background: none;
+}
+
+#view-door .puzzle-board--solved .puzzle-piece {
+  border-radius: 0;
+  cursor: default;
+}
+
+.puzzle-status {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Desktop: the wide picture gets a wider door. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.puzzle-board) {
+    max-width: 60rem;
+  }
+}
+
+/* Text-only matching (#207, door 23 powers): longer texts wrap inside their boxes instead of
+   running out of them, and every box grows to fit its text. */
+.match-board:not(:has(img)) .match-target,
+#view-door .match-board:not(:has(img)) .match-target,
+#view-door .match-board:not(:has(img)) .match-target.match-done {
+  white-space: normal;
+  overflow-wrap: break-word;
+  min-width: 0;
+  height: auto;
+  min-height: 3.25rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
+}
+
+/* Phones: both columns use one row height, so every name lines up with a box. */
+@media (max-width: 35.99rem) {
+  .match-board:not(:has(img)) .match-column {
+    gap: 0.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-column > .match-card,
+  #view-door .match-board:not(:has(img)) .match-column > .match-card {
+    height: 4.25rem;
+    min-height: 0;
+    margin-block: 0;
+  }
+}
+
+/* Cinema ticket (#208): text printed in the ticket's empty middle, in the same red as its logo. */
+.ticket {
+  position: relative;
+  max-width: 34rem;
+  margin: 0.5rem auto 1.25rem;
+  transform: rotate(-2deg);
+}
+
+.ticket-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(58, 39, 22, 0.35));
+}
+
+.ticket-print {
+  position: absolute;
+  inset: 22% 8% 22% 36%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--cream);
+  text-align: center;
+  transform: rotate(-3deg);
+}
+
+.ticket-lock {
+  font-size: clamp(1.4rem, 6vw, 2.2rem);
+}
+
+.ticket-line {
+  font-family: var(--hand-font);
+  font-size: clamp(0.95rem, 3.6vw, 1.35rem);
+  line-height: 1.2;
+}
+
+.ticket-heading {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(1rem, 4.2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ticket-code {
+  font-family: "Courier New", monospace;
+  font-size: clamp(1.1rem, 4.8vw, 1.9rem);
+  font-weight: bold;
+  letter-spacing: 0.12em;
+}
+
+.ticket--unlocked .ticket-image {
+  animation: ticket-unlock 0.6s ease-out;
+}
+
+@keyframes ticket-unlock {
+  40% {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket--unlocked .ticket-image {
+    animation: none;
+  }
+}
+
+/* The unlocked ticket already shows the code, so the typed answer line below it is left out. */
+.task:has(.ticket) .exam-answer {
+  display: none;
+}
+
+/* The backpack button shows a picture of Hari's own backpack (#209), sized like the emoji icons. */
+.nav-icon-image {
+  display: block;
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+}
+
+/* A light disc behind the picture icons (#210) so dark pictures like the black backpack stand out. */
+.main-nav .icon-button,
+.main-nav a[aria-current="page"] {
+  background: #f5ecd8;
+}
+
+.main-nav a[aria-current="page"] {
+  border-width: 3px;
+}
+
+/* Grouping: the loose items on top, one box per group below; found boxes turn green with their name. */
+.grp-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 3rem;
+  padding: 0.5rem;
+  border: 1.5px dashed rgba(58, 39, 22, 0.35);
+  border-radius: 0.7rem;
+}
+
+.grp-boxes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.grp-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 7.5rem;
+  padding: 0.45rem;
+  border: 2px solid rgba(58, 39, 22, 0.5);
+  border-radius: 0.7rem;
+  background: rgba(255, 250, 238, 0.35);
+}
+
+.grp-box-title {
+  margin: 0;
+  font-family: var(--hand-font);
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--cream-muted);
+}
+
+.grp-box-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.grp-box--found {
+  border-color: rgba(44, 106, 63, 0.7);
+  background: rgba(44, 106, 63, 0.14);
+  animation: grp-found 0.35s ease-out;
+}
+
+.grp-box--found .grp-box-title {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--cream);
+}
+
+.grp-box--wrong {
+  border-color: rgba(184, 52, 42, 0.7);
+  animation: grp-shake 0.35s ease;
+}
+
+.grp-box--wrong .grp-box-title {
+  color: var(--cream);
+}
+
+@media (min-width: 64rem) {
+  .grp-boxes {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+#view-door .grp-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid rgba(58, 39, 22, 0.45);
+  border-radius: 0.6rem;
+  background: rgba(255, 250, 238, 0.85);
+  box-shadow: none;
+  color: var(--cream);
+  font: max(15px, 1.1rem) / 1.15 var(--hand-font);
+  touch-action: none;
+  cursor: grab;
+}
+
+#view-door .grp-item--selected {
+  border-color: #3a2716;
+  background: rgba(176, 120, 52, 0.35);
+  transform: scale(0.96);
+}
+
+#view-door .grp-item:disabled {
+  cursor: default;
+}
+
+/* Picture cards share one width so they line up in the pool and in the boxes. */
+#view-door .grp-item:has(.grp-image) {
+  width: 5.5rem;
+  padding: 0.3rem;
+}
+
+.grp-image {
+  width: 100%;
+  height: 4.5rem;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.grp-controls:not([hidden]) {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+#view-door .grp-check {
+  padding: 0.3rem 1.4rem;
+  border: 1.5px solid var(--cream);
+  border-radius: 0.5rem;
+  background: none;
+  box-shadow: none;
+  color: var(--cream);
+  font: max(16px, 1.3rem) var(--hand-font);
+}
+
+#view-door .grp-check:disabled {
+  opacity: 0.45;
+}
+
+.grp-status {
+  text-align: center;
+}
+
+@keyframes grp-shake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes grp-found {
+  from { transform: scale(0.95); opacity: 0; }
+}
+
+/* An item's note (#211), e.g. the cinema ticket's code, in small print under its name. */
+.backpack-item-note {
+  font-family: "Courier New", monospace;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  color: var(--cream);
+}
+
+.backpack-item--wide {
+  width: 11rem;
+}
+
+.backpack-item--wide img {
+  width: 10rem;
+  height: 6rem;
+}
+
+/* The prize (#215): its own big section at the bottom of the backpack, the code printed on the ticket. */
+#view-backpack:has(#backpack-prize:not([hidden])) .backpack-empty {
+  display: none;
+}
+
+.prize-part {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+
+.prize-ticket {
+  position: relative;
+  max-width: 30rem;
+  margin: 0 auto;
+  transform: rotate(-2deg);
+}
+
+.prize-ticket img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(58, 39, 22, 0.35));
+}
+
+/* Sits on the empty strip under ADMIT ONE. */
+.prize-code {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #3b3328;
+  font-family: "Courier New", monospace;
+  font-size: clamp(1rem, 4.6vw, 1.7rem);
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.prize-text {
+  max-width: 30rem;
+  margin: 1.25rem auto 0;
+  font-family: var(--hand-font);
+  font-size: 1.3rem;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+
+/* Enchanted books (#218, #223): the book picture on top and the enchantment name written below it. */
+.match-card--backdrop,
+#view-door .match-card--backdrop,
+.match-board:not(:has(img)) .match-column > .match-card--backdrop,
+#view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  justify-content: center;
+  width: 8.5rem;
+  max-width: none;
+  height: 8.2rem;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0 0.2rem 0.1rem;
+  border: none;
+  background-color: transparent;
+  background-position: top center;
+  background-size: auto calc(100% - 1.6rem);
+  background-repeat: no-repeat;
+  box-shadow: none;
+  color: #3b2414;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 244, 220, 0.7);
+}
+
+.match-card--backdrop[aria-pressed="true"] {
+  outline: 3px solid var(--cream);
+  outline-offset: 2px;
+}
+
+/* Phones: book and name fit in one row height, so every book lines up with its box. */
+@media (max-width: 35.99rem) {
+  .match-board:has(.match-card--backdrop) {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.75rem;
+  }
+
+  .match-board:not(:has(img)) .match-column > .match-card--backdrop,
+  #view-door .match-board:not(:has(img)) .match-column > .match-card--backdrop,
+  .match-board:not(:has(img)) .match-cell > .match-card--backdrop,
+  #view-door .match-board:not(:has(img)) .match-cell > .match-card--backdrop {
+    width: auto;
+    height: 4.25rem;
+    padding: 0 0.1rem;
+    background-size: auto calc(100% - 1.1rem);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+  }
+}
+
+/* Test tools (#219): "Rensa lucka" and "Klara lucka" side by side, and the whole-calendar tools to
+   the right of the door grid where there is room, otherwise below it. */
+.door-tools {
+  gap: 0.5rem;
+}
+
+.calendar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 75rem) {
+  #signed-in > #view-overview {
+    position: relative;
+  }
+
+  .calendar-tools {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    flex-direction: column;
+    width: 10rem;
+    margin: 0 0 0 1rem;
+  }
+}
+
+/* A paired name moves in right under its picture (#220). Items now sit in cells, so the item sizes
+   that used to target ".match-column > .match-card" are repeated for ".match-cell > .match-card". */
+.match-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.match-slot {
+  min-height: var(--match-slot, 0);
+}
+
+.match-slot > .match-target,
+#view-door .match-slot > .match-target {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 35.99rem) {
+  .match-cell > .match-card {
+    height: 6.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-cell > .match-card {
+    height: 4.25rem;
+  }
+
+
+  .match-slot > .match-target,
+  #view-door .match-slot > .match-target {
+    height: 3.5rem;
+  }
+}
+
+@media (min-width: 36rem) {
+  .match-column > .match-cell {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* Catch game (#222): pictures listed in the task's "large" fall big, like Mamma Mu the cow. */
+.catch-item--large {
+  width: 24%;
+}
+
+/* Wider screens (#225): both rows share one column per pair, so names left in the bottom row keep the
+   width of a picture instead of stretching across the free space. */
+@media (min-width: 36rem) {
+  .match-column {
+    display: grid;
+    grid-template-columns: repeat(var(--match-pairs), minmax(0, 1fr));
+  }
+
+  .match-column-target > .match-target,
+  #view-door .match-column-target > .match-target {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+/* The name row takes the picture row's tighter gap on big boards even when few names are left, so
+   the columns line up. */
+@media (min-width: 64rem) {
+  .match-board:has(.match-column-item > :nth-child(7)) .match-column {
+    gap: 0.5rem;
+  }
+}
+
+/* A name too long for its box (#227, "Förvrängd svamp") wraps between words, never inside a word. */
+.match-target,
+#view-door .match-target,
+#view-door .match-target.match-done {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+/* Done text (#226): signed in script at the bottom right of the task card. */
+#view-door .task-done-signed {
+  margin: 0.75rem 0 0;
+  font-family: "Dancing Script", cursive;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  text-align: right;
+}
+
+/* Door 6 constellations (#230): a bit smaller than other task pictures. */
+.task-image[src*="images/door-6/"] {
+  max-width: 22rem;
+}
+
+/* Wider screens (#229): the name row keeps its height until the board is solved, even after the last
+   name has moved up under a picture. */
+@media (min-width: 36rem) {
+  .match-board:not(:has(.match-done)) .match-column-target {
+    min-height: var(--match-slot, 0);
+  }
+}
+
+/* The "not right yet" line has its room from the start, so it does not push the paper longer. */
+.match-board + .task-status,
+.match-board + .task-status:empty {
+  display: block;
+  min-height: 1lh;
+}
+
+@media (max-width: 35.99rem) {
+  .match-board + .task-status,
+  .match-board + .task-status:empty {
+    min-height: 2lh;
+  }
+}
+
+/* Hotspot task (#65): tap the right place in the picture; the found area gets an ink frame. */
+.hotspot-frame {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.hotspot-picture {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 0.5rem;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.hotspot-frame--done .hotspot-picture {
+  cursor: default;
+}
+
+.hotspot-area {
+  position: absolute;
+  border: 3px solid var(--cream);
+  border-radius: 0.4rem;
+  box-shadow: 0 0 0 2px rgba(251, 243, 220, 0.8);
+  pointer-events: none;
+}
+
+/* The question written at the bottom of the picture (#249), clear of the tower at the top. */
+.hotspot-caption {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 50%;
+  padding: 0.3rem 0.9rem;
+  border-radius: 0.4rem;
+  background: rgba(251, 243, 220, 0.88);
+  color: var(--cream);
+  font-family: "Dancing Script", cursive;
+  font-size: 1.6rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (max-width: 35.99rem) {
+  .hotspot-caption {
+    bottom: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    font-size: 1.1rem;
+  }
+}
+
+.hotspot-status {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Desktop: a wide picture gets a wider door, like the puzzle. */
+@media (min-width: 64rem) {
+  #signed-in > #view-door:has(.hotspot-frame) {
+    max-width: 60rem;
+  }
+}
+
+/* Picture questions (#233): the question right above the picture and the answer beside it. */
+@media (min-width: 36rem) {
+  #view-door .task--picture-quiz:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 24rem) minmax(12rem, 16rem);
+    justify-content: center;
+    align-items: center;
+    column-gap: 2rem;
+  }
+
+  #view-door .task--picture-quiz > * {
+    grid-column: 1 / -1;
+  }
+
+  #view-door .task--picture-quiz > .task-prompt {
+    grid-column: 1;
+    text-align: center;
+  }
+
+  #view-door .task--picture-quiz > .task-image {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    justify-self: center;
+    margin: 0;
+  }
+
+  #view-door .task--picture-quiz > :is(.quiz-form, .exam-answer) {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    align-self: center;
+    margin: 0;
+  }
+
+  #view-door .task--picture-quiz > .quiz-xp {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+  }
+}
+
+/* Paged doors (#237): the block title reads as a small subtitle right under "Lucka X". */
+.block-nav {
+  margin: -0.4rem 0 0.75rem;
+  gap: 0.35rem;
+}
+
+.block-title,
+#view-door .block-title {
+  color: var(--cream-muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.block-arrow,
+#view-door .block-arrow {
+  min-width: 1.75rem;
+  padding: 0.15rem;
+  color: var(--cream-muted);
+  font-size: 1.15rem;
+}
+
+/* Every finished task part ends with the signed "Klart!" (#238); task types that sign their own done
+   text keep theirs instead. */
+#view-door .task:not(.task--done) > .task-done-mark,
+#view-door .task:has(.task-done-signed:not(.task-done-mark)) > .task-done-mark {
+  display: none;
+}
+
+/* Solved enchanted books keep their picture size and place (#239): the solved-card rule resets the
+   whole background, which made the books show zoomed in and cropped. */
+.match-card--backdrop.match-done,
+#view-door .match-card--backdrop.match-done {
+  background-position: top center;
+  background-size: auto calc(100% - 1.6rem);
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 35.99rem) {
+  .match-card--backdrop.match-done,
+  #view-door .match-card--backdrop.match-done {
+    background-size: auto calc(100% - 1.1rem);
+  }
+}
+
+/* Phones (#241): pictures close together, and each name centred on the row of the picture beside it.
+   The empty slot under a picture takes no room until a name is paired into it. */
+@media (max-width: 35.99rem) {
+  .match-column {
+    gap: 0.5rem;
+  }
+
+  .match-slot:empty {
+    display: none;
+  }
+
+  .match-column-target > .match-target,
+  #view-door .match-column-target > .match-target {
+    height: 3.5rem;
+    margin-block: 1.5rem;
+  }
+
+  .match-board:not(:has(img)) .match-column-target > .match-target,
+  #view-door .match-board:not(:has(img)) .match-column-target > .match-target {
+    height: 4.25rem;
+    margin-block: 0;
+  }
+}
+
+/* Hidden hats (#263): a caption can sit bottom-left, and a picture with many things to find is shown
+   at double width on phones, scrolled sideways. */
+.hotspot-caption--bottom-left {
+  left: 0.6rem;
+  transform: none;
+}
+
+@media (max-width: 35.99rem) {
+  .hotspot-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+  }
+
+  .hotspot-scroll > .hotspot-frame {
+    width: 200%;
+    max-width: none;
+  }
+
+  .hotspot-scroll .hotspot-picture {
+    width: 100%;
+    max-height: none;
+  }
+
+  .hotspot-scroll .hotspot-caption {
+    font-size: 1.3rem;
+  }
+}
+
+/* Story text at the top of a task page (#261). */
+.task-story {
+  margin: 0 0 1rem;
+  font-style: italic;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.quiz-solved-image {
+  margin-top: 1rem;
+}
+
+/* Witness statements (#261). */
+.task-statements {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.task-statements dt {
+  font-family: "Cinzel", Georgia, serif;
+  font-weight: 700;
+}
+
+.task-statements dd {
+  margin: 0;
+  font-style: italic;
+}
+
+@media (max-width: 35.99rem) {
+  .task-statements {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+
+  .task-statements dd {
+    margin-bottom: 0.6rem;
+  }
+}
+
+.hotspot-solved-image {
+  margin-top: 1rem;
+}
+
+/* #275: a long submit label (door 18's "Skicka till högkvarteret") grows the button instead of
+   spilling out of it; short labels keep the R's width so the answer line stays the same. */
+#view-door .task:has(.exam-blank) .quiz-form button[type="submit"] {
+  width: auto;
+  min-width: 5.5rem;
+  height: auto;
+  min-height: 2.9rem;
+}
+
+/* Word search (#276): a square letter grid that fits a phone, the tapped first letter ringed, found
+   words tinted, and the word list below with found words struck through. */
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 0.15rem;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.ws-cell,
+#view-door .ws-cell {
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.3rem;
+  background: rgba(255, 248, 232, 0.55);
+  box-shadow: none;
+  color: var(--cream);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(0.85rem, 3.6vw, 1.3rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+#view-door .ws-cell--found {
+  background: rgba(44, 106, 63, 0.3);
+}
+
+#view-door .ws-cell--start {
+  outline: 3px solid var(--cream);
+  outline-offset: -3px;
+}
+
+.ws-status {
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+.ws-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--hand-font);
+  font-size: 1.15rem;
+}
+
+.ws-word--found {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+/* A dashed line between the code and the items (#283), like the one above the prize; only when the code shows. */
+#view-backpack:is(.has-code-start, .has-code-end, .has-code-title) .items-part {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+
+/* Door 8 (#283): the tall Mr Bean picture is kept small. */
+.task-image[src*="images/door-8/mr-bean"] {
+  max-width: 9rem;
 }

@@ -1,6 +1,7 @@
 /** Pick task: tap the right options among the cards (tap again to undo), then press Kolla. */
 import { shuffled } from "./lib/matching.js";
 import { isRightPick } from "./lib/pick.js";
+import { createQuizHint } from "./quiz-hint.js";
 import { CHALLENGE_DONE_LABEL } from "./lib/progress.js";
 import { doneState, paragraph } from "./task-ui.js";
 
@@ -30,8 +31,8 @@ async function check(ctx) {
     ctx.card.classList.add("task--done");
     ctx.list.querySelectorAll(".pick-option").forEach((card) => (card.disabled = true));
     ctx.button.remove();
-    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! 🎉 +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
-    ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state match-success" }));
+    const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
+    ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state task-done-signed match-success" }));
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
@@ -66,5 +67,7 @@ export function createPick({ task, key, progress, card, xp }) {
   ctx.button.addEventListener("click", () => check(ctx));
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
-  return [paragraph("task-instruction", task.instruction ?? "Tryck på alla som stämmer och sedan på Kolla."), ctx.list, ctx.button, ctx.status];
+  const hint = createQuizHint({ task, key, progress });
+  const instruction = paragraph("task-instruction", task.instruction ?? "Tryck på alla som stämmer och sedan på Kolla.");
+  return [...(hint ? [hint] : []), instruction, ctx.list, ctx.button, ctx.status];
 }

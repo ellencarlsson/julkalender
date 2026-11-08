@@ -14,6 +14,7 @@ import { doorResetPlan } from "./lib/test-reset.js";
 
 // arrayUnion + merge so saving from two devices at once never drops an entry.
 const addToList = (ref, field, items) => setDoc(ref, { [field]: arrayUnion(...items) }, { merge: true });
+const removeFromList = (ref, field, item) => setDoc(ref, { [field]: arrayRemove(item) }, { merge: true });
 
 function taskMethods(ref, completed) {
   return {
@@ -21,6 +22,10 @@ function taskMethods(ref, completed) {
     async complete(key) {
       await addToList(ref, "completedTasks", [key]);
       completed.add(key);
+    },
+    async uncomplete(key) {
+      await removeFromList(ref, "completedTasks", key);
+      completed.delete(key);
     },
   };
 }
@@ -48,6 +53,10 @@ function hintMethods(ref, completedSideQuests, revealedWords, correctWords) {
     async completeSideQuest(id) {
       await addToList(ref, "completedSideQuests", [id]);
       completedSideQuests.add(id);
+    },
+    async uncompleteSideQuest(id) {
+      await removeFromList(ref, "completedSideQuests", id);
+      completedSideQuests.delete(id);
     },
     completedSideQuestIds: () => [...completedSideQuests],
     /** TEST_RESET_SIDEQUESTS: forgets the player's own completed side quests. */
@@ -95,6 +104,27 @@ function resetMethod(ref, completed, crosswords, correctWords, revealed) {
   };
 }
 
+/** TEST_COMPLETE / TEST_RESET_CALENDAR: marks many tasks done at once, or forgets all door progress. */
+function calendarTestMethods(ref, completed, crosswords, correctWords, revealed) {
+  return {
+    async completeTasks(keys) {
+      if (keys.length === 0) return;
+      await addToList(ref, "completedTasks", keys);
+      keys.forEach((key) => completed.add(key));
+    },
+    // Side quests are kept; they have their own "Rensa sidequests" tool.
+    async resetCalendar() {
+      try {
+        await updateDoc(ref, "completedTasks", deleteField(), "correctWords", deleteField(),
+          "revealedWords", deleteField(), "crosswords", deleteField());
+      } catch (error) {
+        if (error?.code !== "not-found") throw error;
+      }
+      [completed, crosswords, correctWords, revealed].forEach((saved) => saved.clear());
+    },
+  };
+}
+
 export async function loadProgress(db, uid) {
   const ref = doc(db, "users", uid);
   const snapshot = await getDoc(ref);
@@ -106,5 +136,6 @@ export async function loadProgress(db, uid) {
     ...crosswordMethods(ref, crosswords, correctWords),
     ...hintMethods(ref, sideQuests, revealed, correctWords),
     resetDoor: resetMethod(ref, completed, crosswords, correctWords, revealed),
+    ...calendarTestMethods(ref, completed, crosswords, correctWords, revealed),
   };
 }

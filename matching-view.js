@@ -1,14 +1,14 @@
 /**
- * Matching task: tap an item, then the target it belongs with. A chosen pair is joined by a line and can be
- * changed freely; only when every item has a partner are all pairs checked at once, so single pairs
+ * Matching task: tap an item and the target it belongs with, in either order. A chosen target moves in under its item and
+ * can be changed freely; only when every item has a partner are all pairs checked at once, so single pairs
  * never reveal whether they are right.
  */
-import { checkLinks, matchingBoard, nextBadge, shuffled } from "./lib/matching.js";
-import { createLineLayer, drawLines } from "./match-lines.js";
+import { checkLinks, matchingBoard, shuffled } from "./lib/matching.js";
+import { createMatchingHint, pairHintKey } from "./matching-hint.js";
 import { paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
-const INSTRUCTION = "Para ihop rätt saker. Tryck först på en bild och sedan på det den hör till.";
+const INSTRUCTION = "Para ihop rätt saker. Tryck på två saker som hör ihop, i vilken ordning du vill.";
 const NOT_YET = "Inte rätt än – byt några par och försök igen.";
 
 const card = (ctx, role, pair) => ctx.root.querySelector(`.match-${role}[data-pair="${pair}"]`);
@@ -24,42 +24,51 @@ function sideButton(side, role) {
   const button = Object.assign(document.createElement("button"), { type: "button", className: `match-card match-${role}` });
   button.dataset.pair = side.pair;
   button.append(...sideContent(side));
+  // A backdrop picture (like an enchanted book) is drawn above the text; as a CSS background it keeps
+  // the board a text board, so long names still wrap.
+  if (side.backdrop) {
+    button.classList.add("match-card--backdrop");
+    button.style.backgroundImage = `url("${side.backdrop}")`;
+  }
   if (side.image) button.setAttribute("aria-label", side.alt || "Bild");
   return button;
 }
 
-/** Marks a card as part of a pair; the pair itself is shown by the line between the two cards. */
-function setBadge(button, badge) {
-  button.classList.toggle("match-linked", Boolean(badge));
+const roleOf = (button) => (button.classList.contains("match-item") ? "item" : "target");
+const ownerOf = (ctx, target) => [...ctx.links].find(([, chosen]) => chosen === target)?.[0];
+
+/** Every paired target sits in the slot under its item; the rest stay in their column in their first order. */
+function placeTargets(ctx) {
+  const itemOf = new Map([...ctx.links].map(([item, target]) => [target, item]));
+  for (const target of ctx.targets) {
+    const item = itemOf.get(Number(target.dataset.pair));
+    const home = item === undefined ? ctx.targetColumn : card(ctx, "item", item).nextElementSibling;
+    if (target.parentElement !== home) home.append(target);
+  }
 }
 
-function redraw(ctx) {
-  // Lines start at the picture itself, not the wider button around it.
-  const pairs = [...ctx.links].map(([item, target]) => ({
-    item: card(ctx, "item", item).querySelector("img") ?? card(ctx, "item", item),
-    target: card(ctx, "target", target),
-  }));
-  drawLines(ctx.root, ctx.lines, pairs);
+/**
+ * Empty slots keep the room of the tallest name still in the column, so pairing never makes the board
+ * grow. Only names in the column are measured (a slot can be narrower), and the room only ever grows.
+ */
+function reserveSlotRoom(ctx) {
+  const inColumn = ctx.targets.filter((target) => target.parentElement === ctx.targetColumn);
+  const tallest = Math.max(ctx.slotRoom ?? 0, ...inColumn.map((target) => target.offsetHeight));
+  if (tallest === (ctx.slotRoom ?? 0)) return;
+  ctx.slotRoom = tallest;
+  ctx.root.style.setProperty("--match-slot", `${tallest}px`);
 }
 
 function unlink(ctx, item) {
-  if (!ctx.links.has(item)) return;
-  setBadge(card(ctx, "target", ctx.links.get(item)), null);
-  setBadge(card(ctx, "item", item), null);
   ctx.links.delete(item);
-  ctx.badges.delete(item);
-  redraw(ctx);
+  placeTargets(ctx);
 }
 
 function link(ctx, item, target) {
-  const owner = [...ctx.links].find(([, chosen]) => chosen === target)?.[0];
-  if (owner !== undefined) unlink(ctx, owner);
-  const badge = nextBadge(new Set(ctx.badges.values()));
+  const owner = ownerOf(ctx, target);
+  if (owner !== undefined) ctx.links.delete(owner);
   ctx.links.set(item, target);
-  ctx.badges.set(item, badge);
-  setBadge(card(ctx, "item", item), badge);
-  setBadge(card(ctx, "target", target), badge);
-  redraw(ctx);
+  placeTargets(ctx);
 }
 
 function select(ctx, button) {
@@ -68,17 +77,22 @@ function select(ctx, button) {
   ctx.selected?.setAttribute("aria-pressed", "true");
 }
 
-/** Tapping a paired item frees it so it can be paired again. */
-function selectItem(ctx, button) {
-  ctx.status.textContent = "";
-  unlink(ctx, Number(button.dataset.pair));
-  select(ctx, button);
+/** A paired card is freed when tapped on its own, so it can be paired again. */
+function freeCard(ctx, button) {
+  const pair = Number(button.dataset.pair);
+  unlink(ctx, roleOf(button) === "item" ? pair : ownerOf(ctx, pair));
 }
 
-function tryTarget(ctx, target) {
-  const item = ctx.selected;
-  if (!item) return (ctx.status.textContent = "Välj först en bild att para ihop.");
-  select(ctx, item);
+/** Either side can be tapped first: two cards from different sides make a pair, the same side moves the choice. */
+function onTap(ctx, button) {
+  ctx.status.textContent = "";
+  const chosen = ctx.selected;
+  if (!chosen || roleOf(chosen) === roleOf(button)) {
+    freeCard(ctx, button);
+    return select(ctx, button);
+  }
+  select(ctx, chosen);
+  const [item, target] = roleOf(button) === "item" ? [button, chosen] : [chosen, button];
   link(ctx, Number(item.dataset.pair), Number(target.dataset.pair));
   checkAll(ctx);
 }
@@ -99,12 +113,27 @@ function checkAll(ctx) {
   complete(ctx);
 }
 
+/** A pair given by a chokladboll: joined, locked and no longer chosen. */
+function revealPair(ctx, pair) {
+  if (ctx.selected && Number(ctx.selected.dataset.pair) === pair) select(ctx, ctx.selected);
+  link(ctx, pair, pair);
+  for (const role of ["item", "target"]) {
+    const button = card(ctx, role, pair);
+    button.classList.add("match-done");
+    button.disabled = true;
+  }
+}
+
+function pairHint(ctx) {
+  const selectedPair = () => (ctx.selected ? Number(ctx.selected.dataset.pair) : null);
+  return createMatchingHint({ key: ctx.key, progress: ctx.progress, selectedPair, onReveal: (pair) => (revealPair(ctx, pair), checkAll(ctx)) });
+}
+
 /** Solved: every picture is joined to its own name. */
 function lockAll(ctx) {
   ctx.task.pairs.forEach((_, pair) => ctx.links.set(pair, pair));
-  redraw(ctx);
+  placeTargets(ctx);
   ctx.root.querySelectorAll(".match-card").forEach((button) => {
-    setBadge(button, null);
     button.classList.add("match-done");
     button.disabled = true;
     button.removeAttribute("aria-pressed");
@@ -124,14 +153,27 @@ async function complete(ctx) {
   }
 }
 
-function column(ctx, sides, role, onTap) {
-  const list = Object.assign(document.createElement("div"), { className: `match-column match-column-${role}` });
-  for (const side of shuffled(sides, `${ctx.key}-${role}`)) {
-    const button = sideButton(side, role);
+const element = (tag, className) => Object.assign(document.createElement(tag), { className });
+
+/** Each item gets a cell with an empty slot under it for the target it is paired with. */
+function itemColumn(ctx, items) {
+  const list = element("div", "match-column match-column-item");
+  for (const side of shuffled(items, `${ctx.key}-item`)) {
+    const button = sideButton(side, "item");
     button.addEventListener("click", () => onTap(ctx, button));
-    list.append(button);
+    const cell = element("div", "match-cell");
+    cell.append(button, element("div", "match-slot"));
+    list.append(cell);
   }
   return list;
+}
+
+function targetColumn(ctx, targets) {
+  ctx.targetColumn = element("div", "match-column match-column-target");
+  ctx.targets = shuffled(targets, `${ctx.key}-target`).map((side) => sideButton(side, "target"));
+  ctx.targets.forEach((button) => button.addEventListener("click", () => onTap(ctx, button)));
+  ctx.targetColumn.append(...ctx.targets);
+  return ctx.targetColumn;
 }
 
 /**
@@ -144,17 +186,19 @@ function column(ctx, sides, role, onTap) {
  */
 export function createMatching({ task, key, progress, card: taskCard }) {
   const { items, targets } = matchingBoard(task.pairs);
-  const ctx = { task, key, progress, card: taskCard, links: new Map(), badges: new Map(), selected: null };
-  ctx.root = Object.assign(document.createElement("div"), { className: "match-board" });
-  ctx.lines = createLineLayer();
-  ctx.root.append(ctx.lines, column(ctx, items, "item", selectItem), column(ctx, targets, "target", tryTarget));
-  // Lines follow the cards when the layout changes (rotation, images loading, a block becoming visible).
-  new ResizeObserver(() => redraw(ctx)).observe(ctx.root);
+  const ctx = { task, key, progress, card: taskCard, links: new Map(), selected: null };
+  ctx.root = element("div", "match-board");
+  ctx.root.style.setProperty("--match-pairs", String(task.pairs.length));
+  ctx.root.append(itemColumn(ctx, items), targetColumn(ctx, targets));
+  // Measured once the board is laid out and again whenever it changes size (fonts, pictures, a block shown).
+  new ResizeObserver(() => reserveSlotRoom(ctx)).observe(ctx.root);
   ctx.status = paragraph("task-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) {
     lockAll(ctx);
     return [ctx.root];
   }
-  return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  if (!task.pairHint) return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  task.pairs.forEach((_, pair) => progress.isWordRevealed?.(pairHintKey(key, pair)) && revealPair(ctx, pair));
+  return [pairHint(ctx), paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
 }

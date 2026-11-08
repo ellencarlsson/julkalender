@@ -1,7 +1,8 @@
 /** Validates door and final-message JSON before it is uploaded to Firestore. */
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
-import { CLUES, CODE_LENGTH, isCodePosition, isDigit } from "../lib/rewards.js";
+import { CLUES, CODE_LENGTH, isCodePosition, isDigit, isPrize } from "../lib/rewards.js";
 import { isValidSolution, parseGrid } from "../lib/sudoku.js";
+import { findWord, gridLetters } from "../lib/wordsearch.js";
 
 const BLOCK = "#";
 const SPACE = " ";
@@ -53,6 +54,9 @@ function exampleTableErrors(task) {
   return [...errors, ...badRows.map((index) => `examplesTable.rows[${index}] must be ${headers.length} strings`)];
 }
 
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const validTimeRange = (range) => isPlainObject(range) && TIME.test(range.from) && TIME.test(range.to) && range.from <= range.to;
+
 function validateQuiz(task) {
   const errors = [];
   // A tile sum is the question itself, so the question text may be left out then.
@@ -64,9 +68,10 @@ function validateQuiz(task) {
   if (task.exam !== undefined && typeof task.exam !== "boolean") errors.push("exam must be true or false");
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  if (task.timeRange !== undefined && !validTimeRange(task.timeRange)) errors.push('timeRange must be { "from": "HH:MM", "to": "HH:MM" } with from before to');
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
   if (task.examplesTable !== undefined) errors.push(...exampleTableErrors(task));
-  for (const field of ["hint", "submitLabel", "solvedAlt", "formula"]) {
+  for (const field of ["submitLabel", "solvedAlt", "formula"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   return errors;
@@ -124,13 +129,15 @@ function validateSide(side, where) {
   const hasText = isNonEmptyString(side.text);
   const hasImage = isNonEmptyString(side.image) && IMAGE_PATH.test(side.image);
   if (hasText === hasImage) return [`${where} must have either text or an image like images/name.jpg`];
+  if (side.backdrop !== undefined && !(hasText && IMAGE_PATH.test(side.backdrop))) return [`${where}.backdrop must be an image path behind a text`];
   return [];
 }
 
 function validateMatching(task) {
   if (!Array.isArray(task.pairs) || task.pairs.length < 2) return ["pairs must be a list of at least 2 pairs"];
   const promptErrors = task.prompt === undefined || isNonEmptyString(task.prompt) ? [] : ["prompt must be a non-empty string"];
-  return promptErrors.concat(pairErrors(task.pairs));
+  const hintErrors = task.pairHint === undefined || typeof task.pairHint === "boolean" ? [] : ["pairHint must be true or false"];
+  return promptErrors.concat(hintErrors, pairErrors(task.pairs));
 }
 
 function validateCrafting(task) {
@@ -198,13 +205,84 @@ function validateTyping(task) {
 const CATCH_IMAGES = ["background", "bucket", "good"];
 const isImageList = (value) => Array.isArray(value) && value.length > 0 && value.every((path) => IMAGE_PATH.test(path));
 
-/** bad is one picture or a list of pictures; any of them falls as a thing not to catch. */
+const isFactorMap = (value) => typeof value === "object" && value !== null && !Array.isArray(value)
+  && Object.entries(value).every(([path, factor]) => IMAGE_PATH.test(path) && typeof factor === "number" && factor > 0);
+const isLevelMap = (value) => typeof value === "object" && value !== null && !Array.isArray(value)
+  && Object.entries(value).every(([path, level]) => IMAGE_PATH.test(path) && [1, 2, 3, 4].includes(level));
+
+/** bad is one picture or a list of pictures; any of them falls as a thing not to catch. large lists the pictures that fall
+    big, fromLevel maps a picture to the first level it falls on, pickWeight to how often it is picked
+    and speed to a factor on the fall speed. */
 function validateCatch(task) {
   const errors = CATCH_IMAGES.filter((field) => !IMAGE_PATH.test(task[field] ?? "")).map((field) => `${field} must be a path like images/name.webp`);
   if (!IMAGE_PATH.test(task.bad ?? "") && !isImageList(task.bad)) errors.push("bad must be a picture path or a list of them");
+  if (task.large !== undefined && !isImageList(task.large)) errors.push("large must be a list of picture paths");
+  if (task.fromLevel !== undefined && !isLevelMap(task.fromLevel)) errors.push("fromLevel must map picture paths to a level 1-4");
+  for (const field of ["pickWeight", "speed"]) {
+    if (task[field] !== undefined && !isFactorMap(task[field])) errors.push(`${field} must map picture paths to a positive number`);
+  }
   if (!(Number.isInteger(task.goal) && task.goal > 0)) errors.push("goal must be a positive whole number");
   if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
   return errors;
+}
+
+const isPuzzleSide = (value) => Number.isInteger(value) && value >= 2 && value <= 8;
+
+function validatePuzzle(task) {
+  // picture, not image: image is the plain picture every task can show above itself, which would give the answer away.
+  const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
+  if (!isPuzzleSide(task.cols) || !isPuzzleSide(task.rows)) errors.push("cols and rows must be whole numbers 2-8");
+  if (task.prompt !== undefined && !isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  return errors;
+}
+
+function groupItemErrors(item, where) {
+  if (!isPlainObject(item)) return [`${where} must be an object`];
+  const hasImage = item.image !== undefined;
+  if (hasImage && !IMAGE_PATH.test(item.image)) return [`${where}.image must be a path like images/name.webp`];
+  return hasImage || isNonEmptyString(item.text) ? [] : [`${where} must have text or an image`];
+}
+
+/** One or more groups, each with a name and 2 or more items; groups may differ in size. */
+function validateGrouping(task) {
+  if (!Array.isArray(task.groups) || task.groups.length === 0) return ["groups must be a non-empty list of groups"];
+  return task.groups.flatMap((group, g) => {
+    const where = `groups[${g}]`;
+    if (!isPlainObject(group) || !isNonEmptyString(group.name)) return [`${where} must have a name`];
+    if (!Array.isArray(group.items) || group.items.length < 2) return [`${where}.items must be a list of at least 2 items`];
+    return group.items.flatMap((item, i) => groupItemErrors(item, `${where}.items[${i}]`));
+  });
+}
+
+const isPercent = (value) => typeof value === "number" && value >= 0 && value <= 100;
+
+function hotspotAreaErrors(area) {
+  const { x, y, width, height } = isPlainObject(area) ? area : {};
+  if (![x, y, width, height].every(isPercent)) return ["area needs x, y, width and height in percent (0-100)"];
+  if (width <= 0 || height <= 0 || x + width > 100 || y + height > 100) return ["area must have a size and stay inside the picture"];
+  return [];
+}
+
+function validateHotspot(task) {
+  // picture, not image: image is the plain picture every task can show above itself.
+  const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
+  if (!isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
+  if (![undefined, "bottom", "bottom-left"].includes(task.captionAt)) errors.push('captionAt must be "bottom" or "bottom-left"');
+  if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  if (task.areas === undefined) return [...errors, ...hotspotAreaErrors(task.area)];
+  if (!Array.isArray(task.areas) || task.areas.length === 0) return [...errors, "areas must be a list of areas"];
+  return [...errors, ...task.areas.flatMap((area, index) => hotspotAreaErrors(area).map((error) => `areas[${index}]: ${error}`))];
+}
+
+/** rows are equally long strings of letters; every word must be written somewhere in them. */
+function validateWordSearch(task) {
+  const rows = Array.isArray(task.rows) ? task.rows : [];
+  const grid = gridLetters(rows.filter((row) => typeof row === "string"));
+  const even = grid.length >= 2 && grid.length === rows.length && grid.every((row) => row.length === grid[0].length && row.every((letter) => /^\p{L}$/u.test(letter)));
+  if (!even) return ["rows must be at least 2 equally long strings of letters"];
+  const words = Array.isArray(task.words) && task.words.length > 0 && task.words.every(isNonEmptyString) ? task.words : null;
+  if (!words) return ["words must be a list of words to find"];
+  return words.filter((word) => !findWord(grid, word)).map((word) => `word "${word}" is not in the grid`);
 }
 
 const TASK_VALIDATORS = {
@@ -218,6 +296,10 @@ const TASK_VALIDATORS = {
   pick: validatePick,
   typing: validateTyping,
   catch: validateCatch,
+  puzzle: validatePuzzle,
+  hotspot: validateHotspot,
+  grouping: validateGrouping,
+  wordsearch: validateWordSearch,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 
@@ -225,7 +307,8 @@ export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 const IMAGE_PATH = /^images\/(?!.*\.\.)[\w./-]+\.(jpe?g|png|webp|gif|svg)$/i;
 
 function validateImage(task) {
-  if (task.image === undefined) return task.alt === undefined ? [] : ["alt requires image"];
+  // A hotspot's alt describes its picture instead.
+  if (task.image === undefined) return task.alt === undefined || task.picture !== undefined ? [] : ["alt requires image"];
   const errors = IMAGE_PATH.test(task.image) ? [] : ["image must be a path like images/name.jpg"];
   if (task.alt !== undefined && !isNonEmptyString(task.alt)) errors.push("alt must be a non-empty string");
   return errors;
@@ -247,11 +330,19 @@ function validateWorksheet(task) {
 function validateTaskCommon(task) {
   const errors = [...validateWorksheet(task)];
   if (task.pageTitle !== undefined && !isNonEmptyString(task.pageTitle)) errors.push("pageTitle must be a non-empty string");
+  if (task.hint !== undefined && !isNonEmptyString(task.hint)) errors.push("hint must be a non-empty string");
+  if (task.story !== undefined && !isNonEmptyString(task.story)) errors.push("story must be a non-empty string");
+  if (task.statements !== undefined && !(Array.isArray(task.statements) && task.statements.length > 0 && task.statements.every((s) => isNonEmptyString(s?.who) && isNonEmptyString(s?.text)))) {
+    errors.push('statements must be a non-empty list of { "who": "...", "text": "..." }');
+  }
   if (!isNonEmptyString(task.id)) errors.push("id must be a non-empty string");
   if (task.weight !== undefined && !(Number.isFinite(task.weight) && task.weight > 0)) {
     errors.push("weight must be a positive number");
   }
   if (task.clue !== undefined && !isNonEmptyString(task.clue)) errors.push("clue must be a non-empty string");
+  if (task.ticket !== undefined && !(isPlainObject(task.ticket) && IMAGE_PATH.test(task.ticket.image ?? ""))) {
+    errors.push('ticket must be { "image": "images/..." } with optional locked, unlocked and note texts');
+  }
   return [...errors, ...recipeErrors(task.recipe), ...validateImage(task)];
 }
 
@@ -287,11 +378,16 @@ function rewardErrors(reward) {
   }
   const item = reward.item;
   const hasPicture = isPlainObject(item) && (IMAGE_PATH.test(item.image ?? "") || isNonEmptyString(item.emoji));
+  if (isPlainObject(item) && item.note !== undefined && !isNonEmptyString(item.note)) errors.push("reward.item.note must be a non-empty string");
   if (item !== undefined && !(hasPicture && isNonEmptyString(item.name))) {
     errors.push('reward.item must be { "name": "...", "image": "images/..." } or { "name": "...", "emoji": "🍿" }');
   }
   if (reward.clue !== undefined && !CLUES.includes(reward.clue)) errors.push(`reward.clue must be one of ${CLUES.join(", ")}`);
-  if (!hasDigit && reward.item === undefined && reward.clue === undefined) errors.push("reward must have a digit, an item or a clue");
+  if (reward.prize !== undefined && !(isPrize(reward.prize) && IMAGE_PATH.test(reward.prize.image))) {
+    errors.push('reward.prize must be { "image": "images/...", "code": "...", "text": "..." }');
+  }
+  const gives = hasDigit || [reward.item, reward.clue, reward.prize].some((part) => part !== undefined);
+  if (!gives) errors.push("reward must have a digit, an item, a clue or a prize");
   return errors;
 }
 

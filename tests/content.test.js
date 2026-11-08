@@ -240,8 +240,34 @@ test("a catch game needs its four pictures and a goal", () => {
   assert.deepEqual(validateDoor(catchDoor({})), []);
   assert.match(validateDoor(catchDoor({ bad: "https://x/apple.png" })).join(), /bad must be/);
   assert.match(validateDoor(catchDoor({ goal: 0 })).join(), /goal must be/);
+  assert.deepEqual(validateDoor(catchDoor({ large: ["images/door-3/mamma-mu.webp"] })), []);
+  assert.match(validateDoor(catchDoor({ large: "images/door-3/mamma-mu.webp" })).join(), /large must be/);
+  assert.deepEqual(validateDoor(catchDoor({ fromLevel: { "images/door-3/mamma-mu.webp": 3 } })), []);
+  assert.match(validateDoor(catchDoor({ fromLevel: { "images/door-3/mamma-mu.webp": 7 } })).join(), /fromLevel must/);
+  assert.deepEqual(validateDoor(catchDoor({ pickWeight: { "images/door-3/mamma-mu.webp": 3 }, speed: { "images/door-3/mamma-mu.webp": 0.7 } })), []);
+  assert.match(validateDoor(catchDoor({ speed: { "images/door-3/mamma-mu.webp": 0 } })).join(), /speed must/);
   assert.deepEqual(validateDoor(catchDoor({ bad: ["images/door-3/apple.svg", "images/door-3/skruv.svg"] })), []);
   assert.match(validateDoor(catchDoor({ bad: [] })).join(), /bad must be/);
+});
+
+test("a puzzle needs a picture and 2-8 columns and rows", () => {
+  const puzzleDoor = (overrides) => ({ door: 12, tasks: [{ id: "p", type: "puzzle", picture: "images/door-12/jul.webp", cols: 6, rows: 3, ...overrides }] });
+  assert.deepEqual(validateDoor(puzzleDoor({})), []);
+  assert.match(validateDoor(puzzleDoor({ cols: 1 })).join(), /cols and rows/);
+  assert.match(validateDoor(puzzleDoor({ picture: "jul.webp" })).join(), /picture must be/);
+});
+
+test("grouping needs named groups of 2+ items, as text or pictures, sizes may differ", () => {
+  const group = (name, items) => ({ name, items });
+  const door = (groups) => ({ door: 15, tasks: [{ id: "g", type: "grouping", groups }] });
+  const fruit = group("Frukt", [{ text: "äpple" }, { text: "päron" }]);
+  assert.deepEqual(validateDoor(door([fruit, group("Djur", [{ image: "images/door-15/ko.webp", alt: "Ko" }, { text: "katt" }])])), []);
+  assert.deepEqual(validateDoor(door([fruit])), []);
+  assert.match(validateDoor(door([])).join(), /non-empty list of groups/);
+  assert.match(validateDoor(door([fruit, group("Djur", [{ text: "ko" }])])).join(), /at least 2 items/);
+  assert.deepEqual(validateDoor(door([fruit, group("Tre", [{ text: "a" }, { text: "b" }, { text: "c" }])])), []);
+  assert.match(validateDoor(door([fruit, group("", [{ text: "a" }, { text: "b" }])])).join(), /must have a name/);
+  assert.match(validateDoor(door([fruit, group("Djur", [{ text: "ko" }, {}])])).join(), /text or an image/);
 });
 
 test("svg images are accepted", () => {
@@ -357,4 +383,66 @@ test("a challenge may carry a recipe with ingredients and steps", () => {
   assert.deepEqual(validateDoor(bake({ ingredients: ["3 ägg"], steps: ["Knäck i 3 ägg."] })), []);
   assert.equal(validateDoor(bake({ ingredients: [], steps: ["x"] })).length, 1);
   assert.deepEqual(validateDoor(quizDoor({ recipe: { ingredients: ["2 ägg"], steps: ["Vispa."] } })), []);
+});
+
+test("a quiz may show a ticket picture that unlocks with the code", () => {
+  assert.deepEqual(validateDoor(quizDoor({ ticket: { image: "images/door-24/biobiljett.webp" } })), []);
+  assert.equal(validateDoor(quizDoor({ ticket: { image: "biljett.webp" } })).length, 1);
+});
+
+test("a door may give the prize", () => {
+  const prize = { image: "images/door-24/cinema-ticket.svg", code: "123", text: "Grattis!" };
+  assert.deepEqual(validateDoor({ ...quizDoor(), reward: { prize } }), []);
+  assert.equal(validateDoor({ ...quizDoor(), reward: { prize: { image: "images/x.svg" } } }).length, 1);
+});
+
+test("a text side may have a backdrop picture behind it", () => {
+  const door = (item) => ({ door: 3, tasks: [{ id: "m", type: "matching", pairs: [{ item, target: { text: "a" } }, { item: { text: "c" }, target: { text: "d" } }] }] });
+  assert.deepEqual(validateDoor(door({ text: "Mending", backdrop: "images/door-1/enchanted-book.svg" })), []);
+  assert.equal(validateDoor(door({ text: "Mending", backdrop: "book.svg" })).length, 1);
+});
+
+test("a hotspot needs a picture, a prompt and an area inside the picture", () => {
+  const hotspotDoor = (overrides) => ({ door: 8, tasks: [{ id: "h", type: "hotspot", picture: "images/door-8/hogwarts.webp", prompt: "Tryck på tornet", area: { x: 60, y: 10, width: 10, height: 30 }, ...overrides }] });
+  assert.deepEqual(validateDoor(hotspotDoor({})), []);
+  assert.deepEqual(validateDoor(hotspotDoor({ alt: "Hogwarts" })), []);
+  assert.match(validateDoor(hotspotDoor({ picture: "hogwarts.webp" })).join(), /picture must be/);
+  assert.match(validateDoor(hotspotDoor({ prompt: "" })).join(), /prompt must be/);
+  assert.match(validateDoor(hotspotDoor({ area: { x: 60, y: 10 } })).join(), /area needs/);
+  assert.match(validateDoor(hotspotDoor({ area: { x: 95, y: 10, width: 10, height: 30 } })).join(), /stay inside/);
+  const hats = [{ x: 10, y: 10, width: 5, height: 5 }, { x: 50, y: 50, width: 10, height: 10 }];
+  assert.deepEqual(validateDoor(hotspotDoor({ area: undefined, areas: hats })), []);
+  assert.match(validateDoor(hotspotDoor({ area: undefined, areas: [] })).join(), /areas must be/);
+  assert.deepEqual(validateDoor(hotspotDoor({ captionAt: "bottom-left" })), []);
+  assert.match(validateDoor(hotspotDoor({ captionAt: "top" })).join(), /captionAt must be/);
+  assert.match(validateDoor(hotspotDoor({ area: undefined, areas: [hats[0], { x: 1 }] })).join(), /areas\[1\]: area needs/);
+});
+
+test("a quiz time range needs HH:MM times with from before to", () => {
+  const timeDoor = (timeRange) => ({ door: 2, tasks: [{ id: "t", type: "quiz", question: "När?", answers: ["01:30"], timeRange }] });
+  assert.deepEqual(validateDoor(timeDoor({ from: "01:15", to: "01:45" })), []);
+  assert.match(validateDoor(timeDoor({ from: "1:15", to: "01:45" })).join(), /timeRange must be/);
+  assert.match(validateDoor(timeDoor({ from: "02:00", to: "01:00" })).join(), /timeRange must be/);
+});
+
+test("a word search needs equal rows of letters and words that are in the grid", () => {
+  const door = (overrides) => ({ door: 21, tasks: [{ id: "w", type: "wordsearch", rows: ["GTAX", "XMUX"], words: ["GTA", "Mu"], ...overrides }] });
+  assert.deepEqual(validateDoor(door({})), []);
+  assert.match(validateDoor(door({ rows: ["GTAX", "XMU"] })).join(), /rows must be/);
+  assert.match(validateDoor(door({ rows: ["GTA1", "XMUX"] })).join(), /rows must be/);
+  assert.match(validateDoor(door({ words: [] })).join(), /words must be/);
+  assert.match(validateDoor(door({ words: ["GTA", "Teemo"] })).join(), /"Teemo" is not in the grid/);
+});
+
+test("a pick task may have a hint", () => {
+  const door = (overrides) => ({ door: 8, tasks: [{ id: "p", type: "pick", options: [{ text: "A", correct: true }, { text: "B" }], ...overrides }] });
+  assert.deepEqual(validateDoor(door({ hint: "Tänk på julen." })), []);
+  assert.match(validateDoor(door({ hint: "" })).join(), /hint must be/);
+});
+
+test("a matching pair hint is true or false", () => {
+  const pairs = [{ item: { text: "A" }, target: { text: "1" } }, { item: { text: "B" }, target: { text: "2" } }];
+  const hintDoor = (pairHint) => ({ door: 7, tasks: [{ id: "m", type: "matching", pairs, pairHint }] });
+  assert.deepEqual(validateDoor(hintDoor(true)), []);
+  assert.match(validateDoor(hintDoor("ja")).join(), /pairHint must be/);
 });

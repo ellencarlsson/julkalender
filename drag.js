@@ -1,6 +1,13 @@
-/** Drag a picture button onto a target, or tap it: shared by the ordering and crafting tasks. */
+/** Drag a button onto a target, or tap it: shared by the ordering, crafting and grouping tasks. */
 
 const DRAG_START_PX = 6;
+
+/** A picture button drags its picture; a text card drags a copy of itself. */
+function makeGhost(button) {
+  const picture = button.querySelector("img");
+  if (picture) return Object.assign(picture.cloneNode(), { className: "drag-ghost" });
+  return Object.assign(button.cloneNode(true), { className: "drag-ghost drag-ghost--card" });
+}
 
 function moveGhost(ghost, event) {
   ghost.style.left = `${event.clientX}px`;
@@ -11,7 +18,7 @@ function moveGhost(ghost, event) {
  * Makes a button draggable with pointer events (mouse and touch alike).
  *
  * Args:
- *   button: a button holding an <img>; the image follows the pointer while dragging.
+ *   button: the button to drag; its <img> (or, for a text card, a copy of it) follows the pointer.
  *   options: { targetSelector, onDrop(target), onTap() } where onDrop gets the element matching
  *     targetSelector under the pointer when the drag ends, and onTap runs for a press without a drag.
  */
@@ -31,7 +38,7 @@ export function enableDrag(button, { targetSelector, onDrop, onTap }) {
     if (!drag) return;
     if (!drag.ghost && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < DRAG_START_PX) return;
     if (!drag.ghost) {
-      drag.ghost = Object.assign(button.querySelector("img").cloneNode(), { className: "drag-ghost" });
+      drag.ghost = makeGhost(button);
       document.body.append(drag.ghost);
       button.classList.add("drag-source--dragging");
     }

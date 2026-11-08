@@ -45,8 +45,10 @@ check "version stamps are up to date" node scripts/stamp-versions.mjs --check
 check "palette is defined as CSS variables" bash -c 'for v in --bg --surface --surface-raised --cell --gold --cream; do grep -q "^  $v:" style.css || exit 1; done'
 check "no bright filled surfaces (cream only for text and accents)" bash -c '! grep -nE "background: (var\(--cream\)|#f3d9a4|#d8efc9|#fff)" style.css'
 check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js style.css index.html'
-check "check icon is a plain ink tick, no green box" bash -c '! grep -q "check-mask" style.css && sed -n "/^\.check-icon {/,/^}/p" style.css | grep -q "tick-mask"'
+check "solved typed answers show no check mark" bash -c '! grep -q "check-icon" style.css quiz-view.js task-ui.js'
 check "footer is pushed to the bottom of the page" bash -c 'sed -n "/^\.app-footer {/,/^}/p" style.css | grep -q "margin-top: auto"'
+check "a locked door asks the player to come back on the right day" grep -q "Kom tillbaka då för att öppna den" door-view.js
+check "locked side quests say when they open" bash -c 'grep -q "Sidequests är låsta" sidequest-view.js && grep -q "unlockLabel(1)" sidequest-view.js'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
@@ -90,7 +92,8 @@ check "side quests readable only from door 1 unlock (or admin)" grep -q "match /
 check "quiz-view.js has valid syntax" check_js_syntax quiz-view.js
 check "matching-view.js has valid syntax" check_js_syntax matching-view.js
 check "task-ui.js has valid syntax" check_js_syntax task-ui.js
-check "reset button is wired into the door view" grep -q "resetHandler(number, result.door, progress)" app.js
+check "reset and complete door buttons are wired into the door view" grep -q "doorTestTools(number, result.door, progress)" app.js
+check "whole-calendar test tools are shown on the overview" bash -c 'grep -q "id=\"calendar-tools\"" index.html && grep -q "showCalendarTestTools()" app.js'
 check "crossword-view.js has valid syntax" check_js_syntax crossword-view.js
 check "level-tracker.js has valid syntax" check_js_syntax level-tracker.js
 check "level-up message element exists" grep -q 'id="level-up"' index.html
@@ -112,7 +115,7 @@ check "doors with examples page their tasks beside the examples" grep -q "^funct
 check "a solved quiz tells the pager to move on" grep -q '"task-solved"' quiz-view.js
 check "a solved quiz keeps the typed answer" grep -q "solvedState(ctx.task, answer)" quiz-view.js
 check "door 22 formulas draw letters as strokes, never font text" bash -c '! grep -l "<text" images/door-22/*.svg'
-check "exam quizzes get the teacher's cursive R when solved" grep -q "task.exam ? examAnswer(text)" quiz-view.js
+check "every typed answer gets the exam line and the teacher's cursive R" bash -c 'grep -q "const row = examAnswer(text);" quiz-view.js && grep -q "input.classList.add(\"exam-blank\")" quiz-view.js && ! grep -q "task.exam" quiz-view.js'
 check "backpack-view.js has valid syntax" check_js_syntax backpack-view.js
 check "no merge conflict markers left" bash -c "! grep -nE \"^(<<<<<<<|>>>>>>>) \" *.html *.js *.css lib/*.js tests/*.js tools/*.js scripts/*.sh"
 check "backpack has the Items section with the chokladboll first" grep -q "<h3>Items</h3>" index.html
@@ -129,6 +132,10 @@ check "pick-view.js has valid syntax" check_js_syntax pick-view.js
 check "catch-view.js has valid syntax" check_js_syntax catch-view.js
 check "catch game stars pick a level" grep -q "chooseLevel(ctx, level)" catch-view.js
 check "recipe-view.js has valid syntax" check_js_syntax recipe-view.js
+check "puzzle-view.js has valid syntax" check_js_syntax puzzle-view.js
+check "hotspot-view.js has valid syntax" check_js_syntax hotspot-view.js
+check "ticket-view.js has valid syntax" check_js_syntax ticket-view.js
+check "grouping-view.js has valid syntax" check_js_syntax grouping-view.js
 check "all local imports exist" check_local_imports
 check "unit tests pass" node --test "tests/*.test.js"
 

@@ -1,10 +1,10 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
 import { XP_PER_LEVEL } from "./lib/level.js";
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
-import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
+import { codeWordLength, isCorrectAnswer, isTimeInRange } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
-import { checkIcon, paragraph } from "./task-ui.js";
+import { paragraph } from "./task-ui.js";
 
 function answerInput() {
   const input = document.createElement("input");
@@ -17,12 +17,14 @@ function answerInput() {
   return input;
 }
 
-function letterBox(index, count) {
+function letterBox(index, count, digits) {
   const box = answerInput();
   box.className = "quiz-letter";
   box.maxLength = 1;
-  box.setAttribute("aria-label", `Bokstav ${index + 1} av ${count}`);
+  box.setAttribute("aria-label", `${digits ? "Siffra" : "Bokstav"} ${index + 1} av ${count}`);
   box.setAttribute("autocapitalize", "characters");
+  // A code of digits brings up the number keyboard on phones.
+  if (digits) box.inputMode = "numeric";
   return box;
 }
 
@@ -39,9 +41,9 @@ function onLetterKey(event, boxes, index) {
 }
 
 /** One box per letter; typing moves on to the next box and Backspace steps back. */
-function letterBoxes(count) {
+function letterBoxes(count, digits = false) {
   const row = Object.assign(document.createElement("div"), { className: "quiz-letters" });
-  const boxes = Array.from({ length: count }, (_, index) => letterBox(index, count));
+  const boxes = Array.from({ length: count }, (_, index) => letterBox(index, count, digits));
   boxes.forEach((box, index) => {
     box.addEventListener("input", () => onLetterInput(boxes, index));
     box.addEventListener("keydown", (event) => onLetterKey(event, boxes, index));
@@ -64,7 +66,8 @@ function retry(field) {
 async function submitAnswer(ctx) {
   const answer = typedAnswer(ctx.field);
   if (!answer.trim()) return;
-  if (!isCorrectAnswer(answer, ctx.task.answers)) {
+  const right = ctx.task.timeRange ? isTimeInRange(answer, ctx.task.timeRange) : isCorrectAnswer(answer, ctx.task.answers);
+  if (!right) {
     ctx.status.textContent = QUIZ_WRONG_LABEL;
     retry(ctx.field);
     return;
@@ -101,16 +104,22 @@ function examAnswer(text) {
 /** Only completion is stored, so a reload shows the first accepted answer. */
 function solvedAnswer(task, typed) {
   const text = typed?.trim() || task.answers[0];
-  const row = task.exam ? examAnswer(text) : paragraph("task-done-state quiz-solved-answer", `${text} `);
-  if (!task.exam) row.append(checkIcon());
+  const row = examAnswer(text);
   row.setAttribute("role", "status");
   row.setAttribute("aria-label", `${QUIZ_DONE_LABEL} ${text}`);
   return row;
 }
 
+/** A picture that reveals the answer, shown once the question is solved. */
+function solvedPicture(task) {
+  const picture = Object.assign(document.createElement("img"), { src: task.solvedImage, alt: task.solvedAlt ?? "", className: "task-image quiz-solved-image" });
+  picture.loading = "lazy";
+  return picture;
+}
+
 /** A solved tile quiz shows the real symbols and its picture; any other quiz keeps the answer. */
 function solvedState(task, typed) {
-  if (!task.tiles) return [solvedAnswer(task, typed)];
+  if (!task.tiles) return [solvedAnswer(task, typed), ...(task.solvedImage ? [solvedPicture(task)] : [])];
   const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
   // The revealed symbols and picture are the answer, so no separate "Rätt svar!" line.
   const tiles = createPeriodicTiles(task.tiles, { mode: "solved", result });
@@ -122,9 +131,10 @@ function solvedState(task, typed) {
 /** Tiles take the answer themselves; otherwise letter boxes or a plain text field. */
 function answerField(task) {
   if (task.tiles) return createPeriodicTiles(task.tiles, { mode: "input" });
-  if (task.letters) return letterBoxes(codeWordLength(task.answers));
+  if (task.letters) return letterBoxes(codeWordLength(task.answers), /^\d+$/.test(task.answers[0] ?? ""));
   const input = answerInput();
-  if (task.exam) input.classList.add("exam-blank");
+  input.classList.add("exam-blank");
+  if (task.timeRange) input.placeholder = "t.ex. 03:15";
   return input;
 }
 

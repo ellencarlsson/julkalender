@@ -1,7 +1,7 @@
 /** Tests for matching task logic. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkLinks, isCorrectPair, isMatchingSolved, matchingBoard, nextBadge, shuffled } from "../lib/matching.js";
+import { checkLinks, isCorrectPair, isMatchingSolved, matchingBoard, shuffled } from "../lib/matching.js";
 
 const PAIRS = [
   { item: { text: "Sorteringshatten" }, target: { text: "Harry Potter" } },
@@ -38,9 +38,4 @@ test("pairs are only judged once every item has a partner", () => {
   assert.equal(checkLinks(new Map([[0, 0]]), 2), "incomplete");
   assert.equal(checkLinks(new Map([[0, 0], [1, 1]]), 2), "right");
   assert.equal(checkLinks(new Map([[0, 1], [1, 0]]), 2), "wrong");
-});
-
-test("a freed badge number is reused", () => {
-  assert.equal(nextBadge(new Set()), 1);
-  assert.equal(nextBadge(new Set([1, 2, 4])), 3);
 });

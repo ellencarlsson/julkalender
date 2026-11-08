@@ -77,7 +77,11 @@ export function hideLevelUp() {
 
 export function showLevelUp(level) {
   const toast = element("level-up");
-  toast.textContent = `Nivå upp! Du är nu på nivå ${level} 🎉`;
+  const title = Object.assign(document.createElement("span"), { className: "level-up-title", textContent: "Nivå upp!" });
+  const text = Object.assign(document.createElement("span"), { className: "level-up-text", textContent: ` Du är nu på nivå ${level}` });
+  const words = document.createElement("span");
+  words.append(title, text);
+  toast.replaceChildren(words);
   toast.hidden = false;
   clearTimeout(levelUpTimer);
   levelUpTimer = setTimeout(() => (toast.hidden = true), LEVEL_UP_VISIBLE_MS);
