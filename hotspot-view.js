@@ -59,6 +59,22 @@ function savedFound(task, key, progress, count) {
   return decodeFound(progress.crosswordEntries?.(key), count);
 }
 
+/** The prompt written on the picture; captionAt "bottom-left" keeps it off things hidden in the middle. */
+function caption(task) {
+  const placed = task.captionAt === "bottom-left" ? " hotspot-caption--bottom-left" : "";
+  const text = Object.assign(element("span", `hotspot-caption${placed}`), { textContent: task.prompt });
+  text.setAttribute("aria-hidden", "true");
+  return text;
+}
+
+/** A picture with many things to find scrolls sideways on phones, so it can be shown bigger. */
+function scroller(ctx) {
+  if (ctx.areas.length < 2) return ctx.frame;
+  const box = element("div", "hotspot-scroll");
+  box.append(ctx.frame);
+  return box;
+}
+
 /**
  * Builds a hotspot task.
  *
@@ -73,12 +89,10 @@ export function createHotspot({ task, key, progress, card }) {
   ctx.frame = element("div", "hotspot-frame");
   ctx.picture = Object.assign(element("img", "hotspot-picture"), { src: task.picture, alt: `${task.prompt} ${task.alt ?? ""}`.trim(), draggable: false });
   ctx.picture.addEventListener("click", (event) => onTap(ctx, event));
-  const caption = Object.assign(element("span", "hotspot-caption"), { textContent: task.prompt });
-  caption.setAttribute("aria-hidden", "true");
-  ctx.frame.append(ctx.picture, caption);
+  ctx.frame.append(ctx.picture, caption(task));
   ctx.status = paragraph("task-status hotspot-status", "");
   ctx.status.setAttribute("role", "status");
   savedFound(task, key, progress, ctx.areas.length).forEach((index) => showFound(ctx, index));
   showProgress(ctx);
-  return [ctx.frame, ctx.status];
+  return [scroller(ctx), ctx.status];
 }

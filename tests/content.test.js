@@ -412,5 +412,7 @@ test("a hotspot needs a picture, a prompt and an area inside the picture", () =>
   const hats = [{ x: 10, y: 10, width: 5, height: 5 }, { x: 50, y: 50, width: 10, height: 10 }];
   assert.deepEqual(validateDoor(hotspotDoor({ area: undefined, areas: hats })), []);
   assert.match(validateDoor(hotspotDoor({ area: undefined, areas: [] })).join(), /areas must be/);
+  assert.deepEqual(validateDoor(hotspotDoor({ captionAt: "bottom-left" })), []);
+  assert.match(validateDoor(hotspotDoor({ captionAt: "top" })).join(), /captionAt must be/);
   assert.match(validateDoor(hotspotDoor({ area: undefined, areas: [hats[0], { x: 1 }] })).join(), /areas\[1\]: area needs/);
 });
