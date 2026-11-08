@@ -22,6 +22,7 @@ import { createCatchGame } from "./catch-view.js";
 import { createPuzzle } from "./puzzle-view.js";
 import { createHotspot } from "./hotspot-view.js";
 import { createGrouping } from "./grouping-view.js";
+import { createWordSearch } from "./wordsearch-view.js";
 import { envelope, letterAddress, letterSent, worksheetHeader } from "./worksheet-view.js";
 
 const element = (id) => document.getElementById(id);
@@ -35,7 +36,7 @@ const STATE_MESSAGES = {
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
-  if (["matching", "catch", "puzzle", "grouping"].includes(task.type)) return task.prompt ?? null;
+  if (["matching", "catch", "puzzle", "grouping", "wordsearch"].includes(task.type)) return task.prompt ?? null;
   if (task.type === "pick") return task.question ?? null;
   return null;
 }
@@ -107,6 +108,7 @@ const TASK_BUILDERS = {
   puzzle: createPuzzle,
   hotspot: createHotspot,
   grouping: createGrouping,
+  wordsearch: createWordSearch,
 };
 
 function taskCard(task, door, progress, xp) {
