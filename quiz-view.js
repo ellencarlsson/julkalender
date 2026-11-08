@@ -109,9 +109,16 @@ function solvedAnswer(task, typed) {
   return row;
 }
 
+/** A picture that reveals the answer, shown once the question is solved. */
+function solvedPicture(task) {
+  const picture = Object.assign(document.createElement("img"), { src: task.solvedImage, alt: task.solvedAlt ?? "", className: "task-image quiz-solved-image" });
+  picture.loading = "lazy";
+  return picture;
+}
+
 /** A solved tile quiz shows the real symbols and its picture; any other quiz keeps the answer. */
 function solvedState(task, typed) {
-  if (!task.tiles) return [solvedAnswer(task, typed)];
+  if (!task.tiles) return [solvedAnswer(task, typed), ...(task.solvedImage ? [solvedPicture(task)] : [])];
   const result = task.solvedImage ? { src: task.solvedImage, alt: task.solvedAlt } : null;
   // The revealed symbols and picture are the answer, so no separate "Rätt svar!" line.
   const tiles = createPeriodicTiles(task.tiles, { mode: "solved", result });

@@ -4043,3 +4043,45 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     margin-block: 0;
   }
 }
+
+/* Story text at the top of a task page (#261). */
+.task-story {
+  margin: 0 0 1rem;
+  font-style: italic;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.quiz-solved-image {
+  margin-top: 1rem;
+}
+
+/* Witness statements (#261). */
+.task-statements {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.task-statements dt {
+  font-family: "Cinzel", Georgia, serif;
+  font-weight: 700;
+}
+
+.task-statements dd {
+  margin: 0;
+  font-style: italic;
+}
+
+@media (max-width: 35.99rem) {
+  .task-statements {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+
+  .task-statements dd {
+    margin-bottom: 0.6rem;
+  }
+}
