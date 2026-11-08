@@ -20,7 +20,6 @@ import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { collectRewards } from "./lib/rewards.js";
 import { parseRoute } from "./lib/router.js";
-import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { calendarTaskKeys, doorResetPlan } from "./lib/test-reset.js";
 import { testButton } from "./test-tools.js";
 import { loadProgress } from "./progress.js";
@@ -187,9 +186,8 @@ async function openDoor(number) {
 }
 
 async function loadDoorStates() {
-  const [results, testDoor] = await Promise.all([doors.readAllDoors(), doors.readDoor(TEST_LOCKED_DOOR)]);
+  const results = await doors.readAllDoors();
   results.forEach((result, index) => markDoor(index + 1, result.state));
-  markDoor(TEST_LOCKED_DOOR, testDoor.state);
   levels.setAllDoors(results);
 }
 

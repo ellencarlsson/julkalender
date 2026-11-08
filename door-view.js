@@ -13,7 +13,6 @@ import { ticketPicture } from "./ticket-view.js";
 import { paragraph, photoSentControls } from "./task-ui.js";
 import { DOOR_STATE, doorLabel } from "./lib/door-state.js";
 import { CHALLENGE_DONE_LABEL, taskKey } from "./lib/progress.js";
-import { TEST_LOCKED_DOOR, TEST_LOCKED_DOOR_LABEL } from "./lib/test-door.js";
 import { unlockLabel } from "./lib/unlock-time.js";
 import { doorXp, taskXp } from "./lib/level.js";
 import { codeRewardLines, isItem } from "./lib/rewards.js";
@@ -170,8 +169,7 @@ function showMessage(...lines) {
 const COME_BACK = "Kom tillbaka då för att öppna den!";
 
 function showLocked(number) {
-  const when = number === TEST_LOCKED_DOOR ? TEST_LOCKED_DOOR_LABEL : unlockLabel(number);
-  showMessage("Denna lucka är låst", when, COME_BACK);
+  showMessage("Denna lucka är låst", unlockLabel(number), COME_BACK);
   element("task-area").firstChild.className = "locked-title";
 }
 

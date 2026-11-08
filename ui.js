@@ -1,12 +1,11 @@
 /** Signed-in app shell: door grid and hash-based switching between views. */
 import { xpRingPercent } from "./lib/level.js";
 import { doorHash, parseRoute } from "./lib/router.js";
-import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { DOOR_COUNT } from "./lib/unlock-time.js";
 import { chokladbollar } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
-const GRID_DOORS = [...Array.from({ length: DOOR_COUNT }, (_, index) => index + 1), TEST_LOCKED_DOOR];
+const GRID_DOORS = Array.from({ length: DOOR_COUNT }, (_, index) => index + 1);
 
 function renderDoorGrid() {
   const grid = element("door-grid");

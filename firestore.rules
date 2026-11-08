@@ -29,7 +29,7 @@ service cloud.firestore {
     }
 
     match /doors/{door} {
-      // Only doors 1-24 are readable, also for the admin, so the temporary test door 25 is always locked.
+      // Only doors 1-24 are readable, also for the admin.
       allow read: if isValidDoor(door)
         && (isAdmin() || (isSignedIn() && request.time >= unlockTime(int(door))));
       allow write: if isAdmin();
