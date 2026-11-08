@@ -78,12 +78,14 @@ function validateQuiz(task) {
 }
 
 function validateChallenge(task) {
-  const errors = isNonEmptyString(task.description) ? [] : ["description must be a non-empty string"];
-  const recipe = task.recipe;
-  if (recipe !== undefined && !(isPlainObject(recipe) && isNonEmptyStringList(recipe.ingredients) && isNonEmptyStringList(recipe.steps))) {
-    errors.push('recipe must be { "ingredients": ["..."], "steps": ["..."] }');
-  }
-  return errors;
+  return isNonEmptyString(task.description) ? [] : ["description must be a non-empty string"];
+}
+
+/** Any task may show a recipe card: a bake to do (door 5) or one to guess (door 14). */
+function recipeErrors(recipe) {
+  if (recipe === undefined) return [];
+  const valid = isPlainObject(recipe) && isNonEmptyStringList(recipe.ingredients) && isNonEmptyStringList(recipe.steps);
+  return valid ? [] : ['recipe must be { "ingredients": ["..."], "steps": ["..."] }'];
 }
 
 function validateGrid(grid) {
@@ -341,7 +343,7 @@ function validateTaskCommon(task) {
   if (task.ticket !== undefined && !(isPlainObject(task.ticket) && IMAGE_PATH.test(task.ticket.image ?? ""))) {
     errors.push('ticket must be { "image": "images/..." } with optional locked, unlocked and note texts');
   }
-  return [...errors, ...validateImage(task)];
+  return [...errors, ...recipeErrors(task.recipe), ...validateImage(task)];
 }
 
 function validateTask(task, index) {
