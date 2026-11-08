@@ -44,3 +44,8 @@ test("calendar task keys cover every task in every readable door", () => {
   const results = [{ door: DOOR }, { door: null }, { door: { tasks: [{ id: "quiz", type: "quiz" }] } }];
   assert.deepEqual(calendarTaskKeys(results), ["1-korsord", "1-baka", "3-quiz"]);
 });
+
+test("resetting a door also clears found hotspots", () => {
+  const door = { tasks: [{ id: "hattar", type: "hotspot" }] };
+  assert.deepEqual(doorResetPlan(11, door, []).crosswords, ["11-hattar"]);
+});
