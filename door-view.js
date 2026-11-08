@@ -77,8 +77,8 @@ function exampleGallery(examples, table) {
   return gallery;
 }
 
-/** A plain picture question (not an exam sheet or tile sum) gets its answer beside the picture. */
-const isPictureQuiz = (task) => task.type === "quiz" && task.image && !task.exam && !task.tiles && !task.worksheet;
+/** A plain picture question (not an exam sheet, tile sum or witness list) gets its answer beside the picture. */
+const isPictureQuiz = (task) => task.type === "quiz" && task.image && !task.exam && !task.tiles && !task.worksheet && !task.statements;
 
 /** Task types that write their prompt into their own controls, so it is never shown above the card. */
 const DRAWS_OWN_PROMPT = new Set(["hotspot"]);

@@ -53,6 +53,9 @@ function exampleTableErrors(task) {
   return [...errors, ...badRows.map((index) => `examplesTable.rows[${index}] must be ${headers.length} strings`)];
 }
 
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const validTimeRange = (range) => isPlainObject(range) && TIME.test(range.from) && TIME.test(range.to) && range.from <= range.to;
+
 function validateQuiz(task) {
   const errors = [];
   // A tile sum is the question itself, so the question text may be left out then.
@@ -64,6 +67,7 @@ function validateQuiz(task) {
   if (task.exam !== undefined && typeof task.exam !== "boolean") errors.push("exam must be true or false");
   if (task.tiles !== undefined && !validTiles(task.tiles)) errors.push("tiles must be a list of atomic numbers 1-118 or single letters");
   if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
+  if (task.timeRange !== undefined && !validTimeRange(task.timeRange)) errors.push('timeRange must be { "from": "HH:MM", "to": "HH:MM" } with from before to');
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
   if (task.examplesTable !== undefined) errors.push(...exampleTableErrors(task));
   for (const field of ["hint", "submitLabel", "solvedAlt", "formula"]) {
@@ -260,6 +264,7 @@ function validateHotspot(task) {
   const errors = IMAGE_PATH.test(task.picture ?? "") ? [] : ["picture must be a path like images/name.webp"];
   if (!isNonEmptyString(task.prompt)) errors.push("prompt must be a non-empty string");
   if (![undefined, "bottom", "bottom-left"].includes(task.captionAt)) errors.push('captionAt must be "bottom" or "bottom-left"');
+  if (task.solvedImage !== undefined && !IMAGE_PATH.test(task.solvedImage)) errors.push("solvedImage must be a path like images/name.jpg");
   if (task.areas === undefined) return [...errors, ...hotspotAreaErrors(task.area)];
   if (!Array.isArray(task.areas) || task.areas.length === 0) return [...errors, "areas must be a list of areas"];
   return [...errors, ...task.areas.flatMap((area, index) => hotspotAreaErrors(area).map((error) => `areas[${index}]: ${error}`))];

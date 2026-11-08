@@ -1,7 +1,7 @@
 /** Tests for quiz answer checking and code-word quiz helpers. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { codeWordLength, isCorrectAnswer, normalizeAnswer, quizHintKey } from "../lib/quiz.js";
+import { codeWordLength, isCorrectAnswer, isTimeInRange, normalizeAnswer, parseTime, quizHintKey } from "../lib/quiz.js";
 
 test("answers ignore case, outer spaces and repeated spaces", () => {
   assert.equal(normalizeAnswer("  Harry   POTTER \n"), "harry potter");
@@ -45,4 +45,24 @@ test("letters joined from boxes are checked like a typed answer", () => {
 test("the quiz hint key belongs to its task, so resetting the door refunds it", () => {
   assert.equal(quizHintKey("8/ekvation"), "8/ekvation|hint");
   assert.ok(quizHintKey("8/ekvation").startsWith("8/ekvation|"));
+});
+
+test("times can be typed with colon, dot, comma, no separator or as whole hours", () => {
+  assert.equal(parseTime("1:30"), 90);
+  assert.equal(parseTime("01.30"), 90);
+  assert.equal(parseTime("1,30"), 90);
+  assert.equal(parseTime("0130"), 90);
+  assert.equal(parseTime("2"), 120);
+  assert.equal(parseTime("25:00"), null);
+  assert.equal(parseTime("halv två"), null);
+});
+
+test("a time answer is right anywhere inside its range", () => {
+  const range = { from: "01:15", to: "01:45" };
+  assert.equal(isTimeInRange("1:15", range), true);
+  assert.equal(isTimeInRange("01:30", range), true);
+  assert.equal(isTimeInRange("1.45", range), true);
+  assert.equal(isTimeInRange("1:10", range), false);
+  assert.equal(isTimeInRange("2", range), false);
+  assert.equal(isTimeInRange("", range), false);
 });

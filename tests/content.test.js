@@ -416,3 +416,10 @@ test("a hotspot needs a picture, a prompt and an area inside the picture", () =>
   assert.match(validateDoor(hotspotDoor({ captionAt: "top" })).join(), /captionAt must be/);
   assert.match(validateDoor(hotspotDoor({ area: undefined, areas: [hats[0], { x: 1 }] })).join(), /areas\[1\]: area needs/);
 });
+
+test("a quiz time range needs HH:MM times with from before to", () => {
+  const timeDoor = (timeRange) => ({ door: 2, tasks: [{ id: "t", type: "quiz", question: "När?", answers: ["01:30"], timeRange }] });
+  assert.deepEqual(validateDoor(timeDoor({ from: "01:15", to: "01:45" })), []);
+  assert.match(validateDoor(timeDoor({ from: "1:15", to: "01:45" })).join(), /timeRange must be/);
+  assert.match(validateDoor(timeDoor({ from: "02:00", to: "01:00" })).join(), /timeRange must be/);
+});

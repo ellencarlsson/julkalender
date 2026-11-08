@@ -26,8 +26,16 @@ function showFound(ctx, index) {
   ctx.frame.append(areaOutline(ctx.areas[index]));
 }
 
+/** A picture that tells how it ended, shown below once everything is found. */
+function showSolvedPicture(ctx) {
+  if (!ctx.task.solvedImage || ctx.solvedPicture) return;
+  ctx.solvedPicture = Object.assign(document.createElement("img"), { src: ctx.task.solvedImage, alt: ctx.task.solvedAlt ?? "", className: "task-image hotspot-solved-image" });
+  ctx.status.after(ctx.solvedPicture);
+}
+
 function showProgress(ctx) {
   ctx.frame.classList.toggle("hotspot-frame--done", allFound(ctx));
+  if (allFound(ctx)) showSolvedPicture(ctx);
   if (allFound(ctx)) ctx.status.textContent = ctx.areas.length > 1 ? `Du hittade alla ${ctx.areas.length}!` : "Där är det!";
   else ctx.status.textContent = ctx.areas.length > 1 ? countText(ctx) : "";
 }
@@ -94,5 +102,6 @@ export function createHotspot({ task, key, progress, card }) {
   ctx.status.setAttribute("role", "status");
   savedFound(task, key, progress, ctx.areas.length).forEach((index) => showFound(ctx, index));
   showProgress(ctx);
-  return [scroller(ctx), ctx.status];
+  // Already solved on load: the picture is returned here, since the status is not in the page yet.
+  return [scroller(ctx), ctx.status, ...(ctx.solvedPicture ? [ctx.solvedPicture] : [])];
 }
