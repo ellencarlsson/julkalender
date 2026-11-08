@@ -3895,6 +3895,30 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   pointer-events: none;
 }
 
+/* The question written at the bottom of the picture (#249), clear of the tower at the top. */
+.hotspot-caption {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 50%;
+  padding: 0.3rem 0.9rem;
+  border-radius: 0.4rem;
+  background: rgba(251, 243, 220, 0.88);
+  color: var(--cream);
+  font-family: "Dancing Script", cursive;
+  font-size: 1.6rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (max-width: 35.99rem) {
+  .hotspot-caption {
+    bottom: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    font-size: 1.1rem;
+  }
+}
+
 .hotspot-status {
   margin-top: 0.5rem;
   text-align: center;

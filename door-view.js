@@ -35,7 +35,7 @@ const STATE_MESSAGES = {
 function taskPrompt(task) {
   if (task.type === "quiz") return task.question;
   if (task.type === "challenge") return task.description;
-  if (["matching", "catch", "puzzle", "grouping", "hotspot"].includes(task.type)) return task.prompt ?? null;
+  if (["matching", "catch", "puzzle", "grouping"].includes(task.type)) return task.prompt ?? null;
   if (task.type === "pick") return task.question ?? null;
   return null;
 }
@@ -79,6 +79,9 @@ function exampleGallery(examples, table) {
 
 /** A plain picture question (not an exam sheet or tile sum) gets its answer beside the picture. */
 const isPictureQuiz = (task) => task.type === "quiz" && task.image && !task.exam && !task.tiles && !task.worksheet;
+
+/** Task types that write their prompt into their own controls, so it is never shown above the card. */
+const DRAWS_OWN_PROMPT = new Set(["hotspot"]);
 
 /** Each task type's own controls; every builder returns the elements to append to the card. */
 const TASK_BUILDERS = {
@@ -133,7 +136,7 @@ function taskElements(tasks, door, progress, paged) {
   if (examples.length > 0) return [examplesLayout(tasks, examples, door, progress)];
   if (!isPagedDoor(tasks, { paged })) return tasks.map((task) => taskCard(task, door, progress, taskXp(task, tasks)));
   // The block title above the cards already names each task, so its prompt is not repeated in the card.
-  const cards = tasks.map((task) => taskCard({ ...task, prompt: null }, door, progress, taskXp(task, tasks)));
+  const cards = tasks.map((task) => taskCard(DRAWS_OWN_PROMPT.has(task.type) ? task : { ...task, prompt: null }, door, progress, taskXp(task, tasks)));
   return [blockPager(cards, tasks.map((task) => task.pageTitle ?? task.prompt ?? ""))];
 }
 

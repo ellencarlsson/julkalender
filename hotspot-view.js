@@ -1,5 +1,5 @@
 /**
- * Hotspot task: a picture and a question like "Tryck på astronomitornet". A tap inside the right area
+ * Hotspot task: a picture with its question written on it, like "Klicka på astronomitornet". A tap inside the right area
  * solves it and outlines the area; a tap anywhere else just says to try again.
  */
 import { isInArea, tapPercent } from "./lib/hotspot.js";
@@ -48,9 +48,11 @@ async function onTap(ctx, event) {
 export function createHotspot({ task, key, progress, card }) {
   const ctx = { task, key, progress, card, done: false };
   ctx.frame = element("div", "hotspot-frame");
-  ctx.picture = Object.assign(element("img", "hotspot-picture"), { src: task.picture, alt: task.alt ?? "", draggable: false });
+  ctx.picture = Object.assign(element("img", "hotspot-picture"), { src: task.picture, alt: `${task.prompt} ${task.alt ?? ""}`.trim(), draggable: false });
   ctx.picture.addEventListener("click", (event) => onTap(ctx, event));
-  ctx.frame.append(ctx.picture);
+  const caption = Object.assign(element("span", "hotspot-caption"), { textContent: task.prompt });
+  caption.setAttribute("aria-hidden", "true");
+  ctx.frame.append(ctx.picture, caption);
   ctx.status = paragraph("task-status hotspot-status", "");
   ctx.status.setAttribute("role", "status");
   if (progress.isCompleted(key)) showFound(ctx);
