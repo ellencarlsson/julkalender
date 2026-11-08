@@ -4043,3 +4043,32 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     margin-block: 0;
   }
 }
+
+/* Hidden hats (#263): a caption can sit bottom-left, and a picture with many things to find is shown
+   at double width on phones, scrolled sideways. */
+.hotspot-caption--bottom-left {
+  left: 0.6rem;
+  transform: none;
+}
+
+@media (max-width: 35.99rem) {
+  .hotspot-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+  }
+
+  .hotspot-scroll > .hotspot-frame {
+    width: 200%;
+    max-width: none;
+  }
+
+  .hotspot-scroll .hotspot-picture {
+    width: 100%;
+    max-height: none;
+  }
+
+  .hotspot-scroll .hotspot-caption {
+    font-size: 1.3rem;
+  }
+}
