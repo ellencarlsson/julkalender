@@ -4235,3 +4235,10 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   opacity: 0.55;
   text-decoration: line-through;
 }
+
+/* A dashed line between the code and the items (#283), like the one above the prize; only when the code shows. */
+#view-backpack:is(.has-code-start, .has-code-end, .has-code-title) .items-part {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
