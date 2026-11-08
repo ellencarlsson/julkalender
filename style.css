@@ -2969,7 +2969,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 }
 
 .pick-option {
-  padding: 0.6rem 1rem;
+  position: relative;
+  padding: 0.6rem 1.5rem;
   border: 2px solid rgba(58, 39, 22, 0.35);
   border-radius: 0.5rem;
   background: rgba(255, 248, 232, 0.55);
@@ -2984,8 +2985,11 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   background: rgba(58, 39, 22, 0.12);
 }
 
+/* The tick sits in the side padding so choosing an option never widens it and reflows the row. */
 .pick-option[aria-pressed="true"]::before {
-  content: "✓ ";
+  content: "✓";
+  position: absolute;
+  left: 0.45rem;
 }
 
 .pick-option:disabled {
