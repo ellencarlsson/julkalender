@@ -4242,3 +4242,8 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   padding-top: 1rem;
   border-top: 1px dashed var(--line);
 }
+
+/* Door 8 (#283): the tall Mr Bean picture is kept small. */
+.task-image[src*="images/door-8/mr-bean"] {
+  max-width: 9rem;
+}
