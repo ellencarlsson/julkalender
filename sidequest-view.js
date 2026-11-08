@@ -1,34 +1,21 @@
-/** Side quests list: a handwritten checklist where ticking a quest earns its chokladbollar (hint points). */
+/** Side quests list: a handwritten checklist where ticking a quest earns its chokladbollar (hint points) and unticking takes them back. */
 import { sideQuestReward } from "./lib/hints.js";
 import { unlockLabel } from "./lib/unlock-time.js";
-import { chokladbollar, chokladbollIcon, paragraph } from "./task-ui.js";
+import { chokladbollar, chokladbollIcon, paragraph, saveTick } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
-
-
-async function completeQuest(item, checkbox, quest, progress) {
-  checkbox.disabled = true;
-  item.querySelector(".sq-error")?.remove();
-  try {
-    await progress.completeSideQuest(quest.id);
-    item.classList.add("sq-item--done");
-  } catch {
-    checkbox.checked = false;
-    checkbox.disabled = false;
-    item.append(paragraph("sq-error", "Kunde inte spara. Försök igen."));
-  }
-}
 
 function questItem(quest, progress) {
   const done = progress.isSideQuestCompleted(quest.id);
   const item = document.createElement("li");
   const label = Object.assign(document.createElement("label"), { className: `sq-item${done ? " sq-item--done" : ""}` });
-  const checkbox = Object.assign(document.createElement("input"), { type: "checkbox", className: "sq-check", checked: done, disabled: done });
+  const checkbox = Object.assign(document.createElement("input"), { type: "checkbox", className: "sq-check", checked: done });
   const text = Object.assign(document.createElement("span"), { className: "sq-text", textContent: quest.text });
   const reward = Object.assign(document.createElement("span"), { className: "sq-reward", textContent: `+${sideQuestReward(quest)}` });
   reward.append(chokladbollIcon());
   reward.setAttribute("aria-label", chokladbollar(sideQuestReward(quest)));
-  checkbox.addEventListener("change", () => checkbox.checked && completeQuest(label, checkbox, quest, progress));
+  checkbox.addEventListener("change", () =>
+    saveTick(label, checkbox, (ticked) => (ticked ? progress.completeSideQuest(quest.id) : progress.uncompleteSideQuest(quest.id))));
   label.append(checkbox, text, reward);
   item.append(label);
   return item;

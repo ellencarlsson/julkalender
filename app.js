@@ -89,6 +89,10 @@ function withLevelUpdates(progress) {
       await progress.complete(key);
       levels.refresh({ celebrate: true });
     },
+    async uncomplete(key) {
+      await progress.uncomplete(key);
+      levels.refresh();
+    },
     async markWordsCorrect(keys) {
       await progress.markWordsCorrect(keys);
       levels.refresh({ celebrate: true });
@@ -110,6 +114,10 @@ function withLevelUpdates(progress) {
     },
     async completeSideQuest(id) {
       await progress.completeSideQuest(id);
+      hints.refresh();
+    },
+    async uncompleteSideQuest(id) {
+      await progress.uncompleteSideQuest(id);
       hints.refresh();
     },
   };

@@ -94,7 +94,7 @@ function statementList(statements) {
 
 /** Each task type's own controls; every builder returns the elements to append to the card. */
 const TASK_BUILDERS = {
-  challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), () => progress.complete(key)),
+  challenge: ({ card, key, progress }) => photoSentControls(card, progress.isCompleted(key), (done) => (done ? progress.complete(key) : progress.uncomplete(key))),
   crossword: (options) => [createCrossword(options)],
   quiz: createQuiz,
   matching: createMatching,

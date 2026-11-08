@@ -14,6 +14,7 @@ import { doorResetPlan } from "./lib/test-reset.js";
 
 // arrayUnion + merge so saving from two devices at once never drops an entry.
 const addToList = (ref, field, items) => setDoc(ref, { [field]: arrayUnion(...items) }, { merge: true });
+const removeFromList = (ref, field, item) => setDoc(ref, { [field]: arrayRemove(item) }, { merge: true });
 
 function taskMethods(ref, completed) {
   return {
@@ -21,6 +22,10 @@ function taskMethods(ref, completed) {
     async complete(key) {
       await addToList(ref, "completedTasks", [key]);
       completed.add(key);
+    },
+    async uncomplete(key) {
+      await removeFromList(ref, "completedTasks", key);
+      completed.delete(key);
     },
   };
 }
@@ -48,6 +53,10 @@ function hintMethods(ref, completedSideQuests, revealedWords, correctWords) {
     async completeSideQuest(id) {
       await addToList(ref, "completedSideQuests", [id]);
       completedSideQuests.add(id);
+    },
+    async uncompleteSideQuest(id) {
+      await removeFromList(ref, "completedSideQuests", id);
+      completedSideQuests.delete(id);
     },
     completedSideQuestIds: () => [...completedSideQuests],
     /** TEST_RESET_SIDEQUESTS: forgets the player's own completed side quests. */
