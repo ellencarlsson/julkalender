@@ -110,6 +110,7 @@ scripts/test.sh
 - `images/door-11/hatt-tomteluva.webp` — cropped from "Santa Claus cap" by Tuphuggy, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Santa_Claus_cap.jpg); this crop is shared under the same licence
 - `images/door-3/mamma-mu.webp` — Mamma Mu illustration by Sven Nordqvist, from the books by Jujja Wieslander
 - `images/icons/sidequests.webp`, `images/icons/kalender.webp` — made by Ellen with Google Gemini
+- `images/items/pepsi-max.webp` — Pepsi Max bottle product photo (© PepsiCo), saved by Ellen
 - `images/icons/ryggsack.webp` — cut out from a Haglöfs Corker Medium product photo (© Haglöfs)
 - `images/door-11/gomda-hattar.webp` — made by Ellen with Google Gemini
 - `images/door-11/hatt-{indiana,gandalf,dumbledore,ash,jack}.webp` — hats cropped from pictures Ellen saved (Indiana Jones © Lucasfilm, Gandalf © New Line Cinema, Dumbledore © Warner Bros., Ash Ketchum © The Pokémon Company, Jack Sparrow © Disney)
