@@ -1,5 +1,6 @@
 /** Side quests list: a handwritten checklist where ticking a quest earns its chokladbollar (hint points). */
 import { sideQuestReward } from "./lib/hints.js";
+import { unlockLabel } from "./lib/unlock-time.js";
 import { chokladbollar, chokladbollIcon, paragraph } from "./task-ui.js";
 
 const element = (id) => document.getElementById(id);
@@ -50,8 +51,13 @@ function resetButton(onReset) {
   return button;
 }
 
+/** Side quests open together with door 1, so before then they read like a locked door. */
+function lockedMessage() {
+  return [paragraph("locked-title", "Sidequests är låsta"), paragraph("", unlockLabel(1)), paragraph("", "Kom tillbaka då för att öppna dem!")];
+}
+
 /**
- * Shows the side quests, or a short message when there are none (yet).
+ * Shows the side quests, or a locked message before they open.
  *
  * Args:
  *   quests: side quests from Firestore, already sorted.
@@ -62,7 +68,7 @@ export function renderSideQuests(quests, progress, onReset) {
   const list = element("sidequest-list");
   element("sidequest-tools").replaceChildren(...(progress && onReset ? [resetButton(onReset)] : []));
   if (!progress) return list.replaceChildren(paragraph("", "Laddar…"));
-  if (quests.length === 0) return list.replaceChildren(paragraph("", "Sidouppdragen dyker upp 1 december."));
+  if (quests.length === 0) return list.replaceChildren(...lockedMessage());
   const checklist = Object.assign(document.createElement("ul"), { className: "sq-list" });
   checklist.append(...quests.map((quest) => questItem(quest, progress)));
   list.replaceChildren(checklist);

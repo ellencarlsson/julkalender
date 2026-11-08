@@ -48,6 +48,7 @@ check "no ✅ emoji anywhere in the UI" bash -c '! grep -rq "✅" *.js lib/*.js 
 check "solved typed answers show no check mark" bash -c '! grep -q "check-icon" style.css quiz-view.js task-ui.js'
 check "footer is pushed to the bottom of the page" bash -c 'sed -n "/^\.app-footer {/,/^}/p" style.css | grep -q "margin-top: auto"'
 check "a locked door asks the player to come back on the right day" grep -q "Kom tillbaka då för att öppna den" door-view.js
+check "locked side quests say when they open" bash -c 'grep -q "Sidequests är låsta" sidequest-view.js && grep -q "unlockLabel(1)" sidequest-view.js'
 check "load-error fallback exists" grep -q 'id="load-error"' index.html
 check "app marks itself ready for the fallback" grep -q "dataset.appReady" app.js
 check "sign-in button exists" grep -q 'id="sign-in-button"' index.html
