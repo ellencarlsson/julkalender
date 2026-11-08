@@ -4,6 +4,7 @@
  * never reveal whether they are right.
  */
 import { checkLinks, matchingBoard, shuffled } from "./lib/matching.js";
+import { createMatchingHint, pairHintKey } from "./matching-hint.js";
 import { paragraph } from "./task-ui.js";
 
 const WRONG_MS = 600;
@@ -112,6 +113,22 @@ function checkAll(ctx) {
   complete(ctx);
 }
 
+/** A pair given by a chokladboll: joined, locked and no longer chosen. */
+function revealPair(ctx, pair) {
+  if (ctx.selected && Number(ctx.selected.dataset.pair) === pair) select(ctx, ctx.selected);
+  link(ctx, pair, pair);
+  for (const role of ["item", "target"]) {
+    const button = card(ctx, role, pair);
+    button.classList.add("match-done");
+    button.disabled = true;
+  }
+}
+
+function pairHint(ctx) {
+  const selectedPair = () => (ctx.selected ? Number(ctx.selected.dataset.pair) : null);
+  return createMatchingHint({ key: ctx.key, progress: ctx.progress, selectedPair, onReveal: (pair) => (revealPair(ctx, pair), checkAll(ctx)) });
+}
+
 /** Solved: every picture is joined to its own name. */
 function lockAll(ctx) {
   ctx.task.pairs.forEach((_, pair) => ctx.links.set(pair, pair));
@@ -181,5 +198,7 @@ export function createMatching({ task, key, progress, card: taskCard }) {
     lockAll(ctx);
     return [ctx.root];
   }
-  return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  if (!task.pairHint) return [paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
+  task.pairs.forEach((_, pair) => progress.isWordRevealed?.(pairHintKey(key, pair)) && revealPair(ctx, pair));
+  return [pairHint(ctx), paragraph("task-instruction", INSTRUCTION), ctx.root, ctx.status];
 }

@@ -134,7 +134,8 @@ function validateSide(side, where) {
 function validateMatching(task) {
   if (!Array.isArray(task.pairs) || task.pairs.length < 2) return ["pairs must be a list of at least 2 pairs"];
   const promptErrors = task.prompt === undefined || isNonEmptyString(task.prompt) ? [] : ["prompt must be a non-empty string"];
-  return promptErrors.concat(pairErrors(task.pairs));
+  const hintErrors = task.pairHint === undefined || typeof task.pairHint === "boolean" ? [] : ["pairHint must be true or false"];
+  return promptErrors.concat(hintErrors, pairErrors(task.pairs));
 }
 
 function validateCrafting(task) {

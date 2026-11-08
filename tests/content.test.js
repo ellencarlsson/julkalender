@@ -438,3 +438,10 @@ test("a pick task may have a hint", () => {
   assert.deepEqual(validateDoor(door({ hint: "Tänk på julen." })), []);
   assert.match(validateDoor(door({ hint: "" })).join(), /hint must be/);
 });
+
+test("a matching pair hint is true or false", () => {
+  const pairs = [{ item: { text: "A" }, target: { text: "1" } }, { item: { text: "B" }, target: { text: "2" } }];
+  const hintDoor = (pairHint) => ({ door: 7, tasks: [{ id: "m", type: "matching", pairs, pairHint }] });
+  assert.deepEqual(validateDoor(hintDoor(true)), []);
+  assert.match(validateDoor(hintDoor("ja")).join(), /pairHint must be/);
+});
