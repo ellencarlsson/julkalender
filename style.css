@@ -4114,3 +4114,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     margin-bottom: 0.6rem;
   }
 }
+
+.hotspot-solved-image {
+  margin-top: 1rem;
+}

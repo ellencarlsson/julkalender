@@ -1,7 +1,7 @@
 /** Quiz task: a typed answer checked against the accepted answers. */
 import { XP_PER_LEVEL } from "./lib/level.js";
 import { QUIZ_DONE_LABEL, QUIZ_WRONG_LABEL } from "./lib/progress.js";
-import { codeWordLength, isCorrectAnswer } from "./lib/quiz.js";
+import { codeWordLength, isCorrectAnswer, isTimeInRange } from "./lib/quiz.js";
 import { createPeriodicTiles, tilesAnswer } from "./periodic-tiles.js";
 import { createQuizHint } from "./quiz-hint.js";
 import { paragraph } from "./task-ui.js";
@@ -66,7 +66,8 @@ function retry(field) {
 async function submitAnswer(ctx) {
   const answer = typedAnswer(ctx.field);
   if (!answer.trim()) return;
-  if (!isCorrectAnswer(answer, ctx.task.answers)) {
+  const right = ctx.task.timeRange ? isTimeInRange(answer, ctx.task.timeRange) : isCorrectAnswer(answer, ctx.task.answers);
+  if (!right) {
     ctx.status.textContent = QUIZ_WRONG_LABEL;
     retry(ctx.field);
     return;
@@ -133,6 +134,7 @@ function answerField(task) {
   if (task.letters) return letterBoxes(codeWordLength(task.answers), /^\d+$/.test(task.answers[0] ?? ""));
   const input = answerInput();
   input.classList.add("exam-blank");
+  if (task.timeRange) input.placeholder = "t.ex. 03:15";
   return input;
 }
 
