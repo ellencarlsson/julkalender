@@ -1,7 +1,7 @@
 /** Tests for collecting backpack rewards from completed doors. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CODE_LENGTH, collectRewards } from "../lib/rewards.js";
+import { CODE_LENGTH, codeRewardLines, collectRewards } from "../lib/rewards.js";
 
 const POPCORN = { name: "Popcorn", image: "images/items/popcorn.webp" };
 const DRICKA = { name: "Dricka", image: "images/items/dricka.webp" };
@@ -51,4 +51,12 @@ test("a completed prize door gives the prize", () => {
   const prize = { image: "images/door-24/cinema-ticket.svg", code: "123", text: "Grattis!" };
   assert.deepEqual(collectRewards([[24, door({ prize })]], progressWith("24-a")).prize, prize);
   assert.equal(collectRewards([[24, door({ prize })]], progressWith()).prize, null);
+});
+
+test("a door's code reward is told as short lines", () => {
+  assert.deepEqual(codeRewardLines({ clue: "code-title" }), ["Hemlig kod"]);
+  assert.deepEqual(codeRewardLines({ clue: "code-start" }), ["Kodrutor 1-6"]);
+  assert.deepEqual(codeRewardLines({ digit: "9", position: 3 }), ["Kodsiffra 9"]);
+  assert.deepEqual(codeRewardLines({ item: { name: "Popcorn", emoji: "x" } }), []);
+  assert.deepEqual(codeRewardLines(undefined), []);
 });

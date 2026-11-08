@@ -1866,8 +1866,13 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
     font-size: 0.85rem;
   }
 
+  #view-door .door-done {
+    max-width: 3.3rem;
+  }
+
   #view-door .door-done-xp {
     font-size: 1.05rem;
+    white-space: nowrap;
   }
 
   #view-door .door-done-item img,
