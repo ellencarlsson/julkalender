@@ -71,7 +71,7 @@ function validateQuiz(task) {
   if (task.timeRange !== undefined && !validTimeRange(task.timeRange)) errors.push('timeRange must be { "from": "HH:MM", "to": "HH:MM" } with from before to');
   if (task.examples !== undefined) errors.push(...exampleErrors(task.examples));
   if (task.examplesTable !== undefined) errors.push(...exampleTableErrors(task));
-  for (const field of ["hint", "submitLabel", "solvedAlt", "formula"]) {
+  for (const field of ["submitLabel", "solvedAlt", "formula"]) {
     if (task[field] !== undefined && !isNonEmptyString(task[field])) errors.push(`${field} must be a non-empty string`);
   }
   return errors;
@@ -160,7 +160,6 @@ function validatePick(task) {
   const errors = valid ? [] : ['options must be at least 2 { "text": "...", "correct": true } cards'];
   if (valid && !options.some((option) => option.correct === true)) errors.push("at least one option must have correct: true");
   if (task.question !== undefined && !isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
-  if (task.hint !== undefined && !isNonEmptyString(task.hint)) errors.push("hint must be a non-empty string");
   return errors;
 }
 
@@ -328,6 +327,7 @@ function validateWorksheet(task) {
 function validateTaskCommon(task) {
   const errors = [...validateWorksheet(task)];
   if (task.pageTitle !== undefined && !isNonEmptyString(task.pageTitle)) errors.push("pageTitle must be a non-empty string");
+  if (task.hint !== undefined && !isNonEmptyString(task.hint)) errors.push("hint must be a non-empty string");
   if (task.story !== undefined && !isNonEmptyString(task.story)) errors.push("story must be a non-empty string");
   if (task.statements !== undefined && !(Array.isArray(task.statements) && task.statements.length > 0 && task.statements.every((s) => isNonEmptyString(s?.who) && isNonEmptyString(s?.text)))) {
     errors.push('statements must be a non-empty list of { "who": "...", "text": "..." }');
