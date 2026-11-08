@@ -4162,3 +4162,12 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .hotspot-solved-image {
   margin-top: 1rem;
 }
+
+/* #275: a long submit label (door 18's "Skicka till högkvarteret") grows the button instead of
+   spilling out of it; short labels keep the R's width so the answer line stays the same. */
+#view-door .task:has(.exam-blank) .quiz-form button[type="submit"] {
+  width: auto;
+  min-width: 5.5rem;
+  height: auto;
+  min-height: 2.9rem;
+}
