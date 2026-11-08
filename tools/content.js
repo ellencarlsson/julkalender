@@ -2,6 +2,7 @@
 import { DOOR_COUNT, isValidDoor } from "../lib/unlock-time.js";
 import { CLUES, CODE_LENGTH, isCodePosition, isDigit, isPrize } from "../lib/rewards.js";
 import { isValidSolution, parseGrid } from "../lib/sudoku.js";
+import { findWord, gridLetters } from "../lib/wordsearch.js";
 
 const BLOCK = "#";
 const SPACE = " ";
@@ -270,6 +271,17 @@ function validateHotspot(task) {
   return [...errors, ...task.areas.flatMap((area, index) => hotspotAreaErrors(area).map((error) => `areas[${index}]: ${error}`))];
 }
 
+/** rows are equally long strings of letters; every word must be written somewhere in them. */
+function validateWordSearch(task) {
+  const rows = Array.isArray(task.rows) ? task.rows : [];
+  const grid = gridLetters(rows.filter((row) => typeof row === "string"));
+  const even = grid.length >= 2 && grid.length === rows.length && grid.every((row) => row.length === grid[0].length && row.every((letter) => /^\p{L}$/u.test(letter)));
+  if (!even) return ["rows must be at least 2 equally long strings of letters"];
+  const words = Array.isArray(task.words) && task.words.length > 0 && task.words.every(isNonEmptyString) ? task.words : null;
+  if (!words) return ["words must be a list of words to find"];
+  return words.filter((word) => !findWord(grid, word)).map((word) => `word "${word}" is not in the grid`);
+}
+
 const TASK_VALIDATORS = {
   quiz: validateQuiz,
   challenge: validateChallenge,
@@ -284,6 +296,7 @@ const TASK_VALIDATORS = {
   puzzle: validatePuzzle,
   hotspot: validateHotspot,
   grouping: validateGrouping,
+  wordsearch: validateWordSearch,
 };
 export const TASK_TYPES = Object.keys(TASK_VALIDATORS);
 

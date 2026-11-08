@@ -49,3 +49,8 @@ test("resetting a door also clears found hotspots", () => {
   const door = { tasks: [{ id: "hattar", type: "hotspot" }] };
   assert.deepEqual(doorResetPlan(11, door, []).crosswords, ["11-hattar"]);
 });
+
+test("resetting a door also clears found words", () => {
+  const door = { tasks: [{ id: "ordjakt", type: "wordsearch" }] };
+  assert.deepEqual(doorResetPlan(21, door, []).crosswords, ["21-ordjakt"]);
+});

@@ -423,3 +423,12 @@ test("a quiz time range needs HH:MM times with from before to", () => {
   assert.match(validateDoor(timeDoor({ from: "1:15", to: "01:45" })).join(), /timeRange must be/);
   assert.match(validateDoor(timeDoor({ from: "02:00", to: "01:00" })).join(), /timeRange must be/);
 });
+
+test("a word search needs equal rows of letters and words that are in the grid", () => {
+  const door = (overrides) => ({ door: 21, tasks: [{ id: "w", type: "wordsearch", rows: ["GTAX", "XMUX"], words: ["GTA", "Mu"], ...overrides }] });
+  assert.deepEqual(validateDoor(door({})), []);
+  assert.match(validateDoor(door({ rows: ["GTAX", "XMU"] })).join(), /rows must be/);
+  assert.match(validateDoor(door({ rows: ["GTA1", "XMUX"] })).join(), /rows must be/);
+  assert.match(validateDoor(door({ words: [] })).join(), /words must be/);
+  assert.match(validateDoor(door({ words: ["GTA", "Teemo"] })).join(), /"Teemo" is not in the grid/);
+});

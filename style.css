@@ -4171,3 +4171,62 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
   height: auto;
   min-height: 2.9rem;
 }
+
+/* Word search (#276): a square letter grid that fits a phone, the tapped first letter ringed, found
+   words tinted, and the word list below with found words struck through. */
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 0.15rem;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.ws-cell,
+#view-door .ws-cell {
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.3rem;
+  background: rgba(255, 248, 232, 0.55);
+  box-shadow: none;
+  color: var(--cream);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: clamp(0.85rem, 3.6vw, 1.3rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+#view-door .ws-cell--found {
+  background: rgba(44, 106, 63, 0.3);
+}
+
+#view-door .ws-cell--start {
+  outline: 3px solid var(--cream);
+  outline-offset: -3px;
+}
+
+.ws-status {
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+.ws-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--hand-font);
+  font-size: 1.15rem;
+}
+
+.ws-word--found {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
