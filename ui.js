@@ -23,6 +23,11 @@ function renderDoorGrid() {
   }
 }
 
+/** TEST_LOCKED_DOOR: only the admin sees the test door in the grid. */
+export function showTestDoor(visible) {
+  element("door-grid").querySelector(`[data-door="${TEST_LOCKED_DOOR}"]`).parentElement.hidden = !visible;
+}
+
 const [FIRST_DOOR, LAST_DOOR] = [1, 24];
 
 /** Points an arrow at a neighbouring door, or hides it past the first or last door. */
