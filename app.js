@@ -175,6 +175,10 @@ function showCalendarTestTools() {
 async function openDoor(number) {
   const user = auth.currentUser;
   if (!user || !progressReady) return;
+  if (number === TEST_LOCKED_DOOR && !isAdminUser(user)) {
+    location.hash = "";
+    return;
+  }
   showDoorLoading();
   try {
     const [result, progress] = await Promise.all([doors.readDoor(number), progressReady]);
