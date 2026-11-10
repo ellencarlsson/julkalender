@@ -20,6 +20,7 @@ import { createLevelTracker } from "./level-tracker.js";
 import { DOOR_STATE } from "./lib/door-state.js";
 import { collectRewards } from "./lib/rewards.js";
 import { parseRoute } from "./lib/router.js";
+import { isAdminUser } from "./lib/admin.js";
 import { TEST_LOCKED_DOOR } from "./lib/test-door.js";
 import { calendarTaskKeys, doorResetPlan } from "./lib/test-reset.js";
 import { testButton } from "./test-tools.js";
@@ -27,7 +28,7 @@ import { loadProgress } from "./progress.js";
 import { createLeaderboard } from "./leaderboard.js";
 import { renderSideQuests } from "./sidequest-view.js";
 import { readSideQuests } from "./sidequests.js";
-import { createShell, hideLevelUp } from "./ui.js";
+import { createShell, hideLevelUp, showTestDoor } from "./ui.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -52,7 +53,8 @@ function showSideQuestsIfOpen() {
 }
 
 function openSideQuests() {
-  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress), resetSideQuests);
+  const onReset = isAdminUser(auth.currentUser) ? resetSideQuests : null;
+  renderSideQuests(hints.sideQuests(), loadedProgress && withLevelUpdates(loadedProgress), onReset);
 }
 
 /** TEST_RESET_SIDEQUESTS: clears the signed-in user's own ticked side quests and shows the list fresh. */
@@ -173,12 +175,16 @@ function showCalendarTestTools() {
 async function openDoor(number) {
   const user = auth.currentUser;
   if (!user || !progressReady) return;
+  if (number === TEST_LOCKED_DOOR && !isAdminUser(user)) {
+    location.hash = "";
+    return;
+  }
   showDoorLoading();
   try {
     const [result, progress] = await Promise.all([doors.readDoor(number), progressReady]);
     markDoor(number, result.state);
     levels.setDoor(number, result);
-    const testTools = result.door && doorTestTools(number, result.door, progress);
+    const testTools = result.door && isAdminUser(user) && doorTestTools(number, result.door, progress);
     if (parseRoute(location.hash).door === number) showDoorContent(number, result, { ...withLevelUpdates(progress), leaderboard: createLeaderboard(db, user) }, testTools);
   } catch {
     progressReady = startProgressLoad(user.uid);
@@ -186,11 +192,11 @@ async function openDoor(number) {
   }
 }
 
-async function loadDoorStates() {
-  const [results, testDoor] = await Promise.all([doors.readAllDoors(), doors.readDoor(TEST_LOCKED_DOOR)]);
+async function loadDoorStates(user) {
+  const results = await doors.readAllDoors();
   results.forEach((result, index) => markDoor(index + 1, result.state));
-  markDoor(TEST_LOCKED_DOOR, testDoor.state);
   levels.setAllDoors(results);
+  if (isAdminUser(user)) markDoor(TEST_LOCKED_DOOR, (await doors.readDoor(TEST_LOCKED_DOOR)).state);
 }
 
 function showUser(user) {
@@ -226,9 +232,10 @@ onAuthStateChanged(auth, (user) => {
   loadedProgress = null;
   progressReady = user ? startProgressLoad(user.uid) : null;
   showShell();
-  if (user) loadDoorStates();
+  showTestDoor(isAdminUser(user));
+  if (user) loadDoorStates(user);
   element("calendar-tools").replaceChildren();
-  if (user) showCalendarTestTools();
+  if (isAdminUser(user)) showCalendarTestTools();
   if (user) readSideQuests(db).then((quests) => {
     hints.setSideQuests(quests);
     showSideQuestsIfOpen();
