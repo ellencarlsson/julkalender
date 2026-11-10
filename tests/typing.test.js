@@ -1,7 +1,7 @@
 /** Tests for the typing race: progress through the text, timing, leaderboard and passing. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { beatsEllen, formatTime, isEllen, raceText, topResults, typingProgress } from "../lib/typing.js";
+import { ELLEN_EMAIL, beatsEllen, formatTime, isEllen, raceText, topResults, typingProgress } from "../lib/typing.js";
 
 test("the race text is the sentences joined by single spaces", () => {
   assert.equal(raceText({ sentences: ["Hej tomten.", " God jul! "] }), "Hej tomten. God jul!");
@@ -31,7 +31,7 @@ test("a time passes only when it beats Ellen's best", () => {
 });
 
 test("Ellen is recognised by her verified email", () => {
-  assert.equal(isEllen({ email: "carlssonellen@live.se", emailVerified: true }), true);
-  assert.equal(isEllen({ email: "carlssonellen@live.se", emailVerified: false }), false);
+  assert.equal(isEllen({ email: ELLEN_EMAIL, emailVerified: true }), true);
+  assert.equal(isEllen({ email: ELLEN_EMAIL, emailVerified: false }), false);
   assert.equal(isEllen({ email: "someone@example.com", emailVerified: true }), false);
 });
