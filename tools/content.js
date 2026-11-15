@@ -163,6 +163,7 @@ function validatePick(task) {
   const errors = valid ? [] : ['options must be at least 2 { "text": "...", "correct": true } cards'];
   if (valid && !options.some((option) => option.correct === true)) errors.push("at least one option must have correct: true");
   if (task.question !== undefined && !isNonEmptyString(task.question)) errors.push("question must be a non-empty string");
+  if (task.explanation !== undefined && !isNonEmptyString(task.explanation)) errors.push("explanation must be a non-empty string");
   return errors;
 }
 

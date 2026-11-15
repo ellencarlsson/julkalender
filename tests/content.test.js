@@ -440,6 +440,12 @@ test("a pick task may have a hint", () => {
   assert.match(validateDoor(door({ hint: "" })).join(), /hint must be/);
 });
 
+test("a pick task may have an explanation shown once solved", () => {
+  const door = (overrides) => ({ door: 8, tasks: [{ id: "p", type: "pick", options: [{ text: "A", correct: true }, { text: "B" }], ...overrides }] });
+  assert.deepEqual(validateDoor(door({ explanation: "Därför." })), []);
+  assert.match(validateDoor(door({ explanation: "" })).join(), /explanation must be/);
+});
+
 test("a matching pair hint is true or false", () => {
   const pairs = [{ item: { text: "A" }, target: { text: "1" } }, { item: { text: "B" }, target: { text: "2" } }];
   const hintDoor = (pairHint) => ({ door: 7, tasks: [{ id: "m", type: "matching", pairs, pairHint }] });

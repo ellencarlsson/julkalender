@@ -32,11 +32,16 @@ async function check(ctx) {
     ctx.list.querySelectorAll(".pick-option").forEach((card) => (card.disabled = true));
     ctx.button.remove();
     const label = ctx.xp && ctx.xp < 100 ? `Alla rätt! +${ctx.xp} XP` : CHALLENGE_DONE_LABEL;
-    ctx.status.replaceWith(Object.assign(doneState(label), { className: "task-done-state task-done-signed match-success" }));
+    const done = Object.assign(doneState(label), { className: "task-done-state task-done-signed match-success" });
+    ctx.status.replaceWith(...explanation(ctx.task), done);
     ctx.card.dispatchEvent(new CustomEvent("task-solved", { bubbles: true }));
   } catch {
     ctx.status.textContent = "Kunde inte spara. Försök igen.";
   }
+}
+
+function explanation(task) {
+  return task.explanation ? [paragraph("task-story pick-explanation", task.explanation)] : [];
 }
 
 /** A finished pick shows only the right options, chosen. */
@@ -54,12 +59,13 @@ function solvedList(task) {
  * Builds a pick task.
  *
  * Args:
- *   options: { task, key, progress, card, xp } where task.options are { text, correct } cards.
+ *   options: { task, key, progress, card, xp } where task.options are { text, correct } cards and
+ *     the optional task.explanation is shown once the task is solved.
  * Returns:
  *   The elements to append to the card.
  */
 export function createPick({ task, key, progress, card, xp }) {
-  if (progress.isCompleted(key)) return [solvedList(task), doneState(CHALLENGE_DONE_LABEL)];
+  if (progress.isCompleted(key)) return [solvedList(task), ...explanation(task), doneState(CHALLENGE_DONE_LABEL)];
   const ctx = { task, key, progress, card, xp, chosen: new Set() };
   ctx.list = element("div", "pick-list");
   ctx.list.append(...shuffled(task.options.map((option, index) => optionCard(ctx, option, index)), key));

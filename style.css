@@ -4247,3 +4247,7 @@ body:has(:is(#view-door, #view-sidequests, #view-backpack):not([hidden]))::befor
 .task-image[src*="images/door-8/mr-bean"] {
   max-width: 9rem;
 }
+
+.pick-explanation {
+  margin-top: 1rem;
+}
