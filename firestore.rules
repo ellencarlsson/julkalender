@@ -16,6 +16,13 @@ service cloud.firestore {
         && request.auth.token.email_verified == true;
     }
 
+    // Read-only accounts that see every door and side quest early, without admin powers.
+    function isViewer() {
+      return isSignedIn()
+        && request.auth.token.email in ["idaa.ryberg@gmail.com"]
+        && request.auth.token.email_verified == true;
+    }
+
     function isValidDoor(door) {
       return door.matches('^([1-9]|1[0-9]|2[0-4])$');
     }
@@ -31,13 +38,13 @@ service cloud.firestore {
     match /doors/{door} {
       // Only doors 1-24 are readable, also for the admin, so the temporary test door 25 is always locked.
       allow read: if isValidDoor(door)
-        && (isAdmin() || (isSignedIn() && request.time >= unlockTime(int(door))));
+        && (isAdmin() || isViewer() || (isSignedIn() && request.time >= unlockTime(int(door))));
       allow write: if isAdmin();
     }
 
     // Side quests are not tied to a door; they become visible together with door 1.
     match /sidequests/{quest} {
-      allow read: if isAdmin() || (isSignedIn() && request.time >= unlockTime(1));
+      allow read: if isAdmin() || isViewer() || (isSignedIn() && request.time >= unlockTime(1));
       allow write: if isAdmin();
     }
 
