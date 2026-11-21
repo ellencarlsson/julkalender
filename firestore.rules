@@ -19,7 +19,7 @@ service cloud.firestore {
     // Read-only accounts that see every door and side quest early, without admin powers.
     function isViewer() {
       return isSignedIn()
-        && request.auth.token.email in ["idaa.ryberg@gmail.com"]
+        && request.auth.token.email in ["idaa.ryberg@gmail.com", "aljonasamuelsson@gmail.com"]
         && request.auth.token.email_verified == true;
     }
 
