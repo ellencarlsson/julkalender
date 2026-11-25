@@ -6,10 +6,11 @@ import { readFileSync } from "node:fs";
 const rules = readFileSync(new URL("../firestore.rules", import.meta.url), "utf8");
 const block = (start) => rules.slice(rules.indexOf(start), rules.indexOf("\n    }", rules.indexOf(start)));
 
-test("Ida and Aljona are verified viewers", () => {
+test("Ida, Aljona and Haris are verified viewers", () => {
   const viewer = block("function isViewer()");
   assert.ok(viewer.includes('"idaa.ryberg@gmail.com"'));
   assert.ok(viewer.includes('"aljonasamuelsson@gmail.com"'));
+  assert.ok(viewer.includes('"harisalic96@gmail.com"'));
   assert.ok(viewer.includes("email_verified == true"));
 });
 
